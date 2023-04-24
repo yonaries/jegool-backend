@@ -1,0 +1,255 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId       String  @id @unique @default(cuid())
+  firstName    String
+  lastName     String
+  email        String  @unique
+  status       Boolean
+  profileImage String
+  residence    String
+
+  Page         Page?
+  Subscription Subscription[]
+  user1Id      PrivateChat[]  @relation("user1Id")
+  user2Id      PrivateChat[]  @relation("user2Id")
+}
+
+model Page {
+  pageId                String  @id @unique @default(cuid())
+  name                  String
+  headline              String
+  profileImage          String
+  coverImage            String
+  description           String
+  introVideo            String
+  brandColor            String
+  earningsVisibility    Boolean
+  supportersVisibility  Boolean
+  status                Boolean
+  highlightedMembership String
+
+  owner         User           @relation(fields: [ownerId], references: [userId])
+  ownerId       String         @unique
+  Membership    Membership[]
+  Goal          Goal[]
+  CommunityChat CommunityChat?
+  SocialLink    SocialLink[]
+  Project       Project[]
+  Post          Post[]
+}
+
+model Membership {
+  membershipId String   @id @unique @default(cuid())
+  name         String
+  description  String
+  coverImage   String
+  price        Float
+  status       Boolean
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  page         Page           @relation(fields: [pageId], references: [pageId])
+  pageId       String
+  Subscription Subscription[]
+  Benefit      Benefit[]
+}
+
+model Subscription {
+  subscriptionId String   @id @unique @default(cuid())
+  status         Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [userId])
+  userId String
+
+  membership   Membership @relation(fields: [membershipId], references: [membershipId])
+  membershipId String
+}
+
+model Goal {
+  goalId      String @id @unique @default(cuid())
+  type        String
+  amount      Int
+  description String
+
+  page   Page   @relation(fields: [pageId], references: [pageId])
+  pageId String
+}
+
+model BenefitCategory {
+  benefitCategoryId String    @id @unique @default(cuid())
+  name              String
+  description       String
+  Benefit           Benefit[]
+}
+
+model Benefit {
+  benefitId         String          @id @unique @default(cuid())
+  name              String
+  BenefitCategory   BenefitCategory @relation(fields: [benefitCategoryId], references: [benefitCategoryId])
+  benefitCategoryId String
+
+  Membership   Membership @relation(fields: [membershipId], references: [membershipId])
+  membershipId String
+}
+
+model SocialLink {
+  socialLinkId String @id @unique @default(cuid())
+  name         String
+  url          String
+
+  page   Page   @relation(fields: [pageId], references: [pageId])
+  pageId String
+}
+
+model Chat {
+  chatId    String   @id @unique @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Message       Message[]
+  PrivateChat   PrivateChat?
+  CommunityChat CommunityChat?
+}
+
+model PrivateChat {
+  privateChatId Chat   @relation(fields: [chatId], references: [chatId])
+  chatId        String @unique
+  user1         User   @relation(fields: [user1Id], references: [userId], name: "user1Id")
+  user1Id       String
+  user2         User   @relation(fields: [user2Id], references: [userId], name: "user2Id")
+  user2Id       String
+
+  @@id([chatId])
+}
+
+model CommunityChat {
+  communityChatId Chat   @relation(fields: [chatId], references: [chatId])
+  chatId          String @unique
+  page            Page   @relation(fields: [pageId], references: [pageId])
+  pageId          String @unique
+
+  @@id([chatId])
+}
+
+model Message {
+  messageId  String       @id @unique @default(cuid())
+  content    String
+  sender     String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  
+  chat       Chat         @relation(fields: [chatId], references: [chatId])
+  chatId     String
+  Attachment Attachment[]
+}
+
+model Attachment {
+  attachmentId String  @id @unique @default(cuid())
+  url          String
+  contentType  String
+  message      Message @relation(fields: [messageId], references: [messageId])
+  messageId    String
+}
+
+model DonationItem {
+  donationItemId String   @id @unique @default(uuid())
+  name           String   @unique
+  price          Float    @unique
+  status         Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  Donates Donation[]
+}
+
+model Donation {
+  donatesId    String   @id @unique @default(uuid())
+  quantity     Int
+  donatorName  String
+  donatorEmail String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  donationItem   DonationItem @relation(fields: [donationItemId], references: [donationItemId])
+  donationItemId String
+}
+
+
+
+
+model Project {
+  projectId   String   @id @unique @default(cuid())
+  title       String
+  status      String
+  coverImage  String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+
+page Page? @relation(fields: [pageId], references: [pageId])
+  pageId String?
+  projectPost ProjectPost[]
+}
+
+//?? TODO: CHECK IF CONTENT TYPE TABLE IS NEEDED
+
+model Post {
+  postId      String   @id @unique @default(cuid())
+  title       String
+  content     String
+  contentType String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  thumbnail   String?
+  file        String?
+
+page Page? @relation(fields: [pageId], references: [pageId])
+  pageId String?
+
+}
+
+model ProjectPost {
+  projectPostId String   @id @unique @default(cuid())
+  title         String
+  content       String
+  contentType   String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  thumbnail     String?
+  file          String?
+
+  project   Project @relation(fields: [projectId], references: [projectId])
+  projectId String
+
+}
+
+
+// model Tag {
+//   tagId String @id @unique @default(cuid())
+//   name  String
+// }
+
+model Transaction {
+  transactionId String   @id @unique @default(cuid())
+  amount        Float
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // user   User   @relation(fields: [userId], references: [userId])
+  // userId String
+}
