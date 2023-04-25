@@ -11,13 +11,16 @@ datasource db {
 }
 
 model User {
-  userId       String  @id @unique @default(cuid())
+  id           String   @id @unique @default(cuid())
   firstName    String
   lastName     String
-  email        String  @unique
-  status       Boolean
-  profileImage String
+  displayName  String
+  email        String   @unique
+  status       Boolean  @default(true)
   residence    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  profileImage String?
 
   Page         Page?
   Subscription Subscription[]
@@ -26,20 +29,23 @@ model User {
 }
 
 model Page {
-  pageId                String  @id @unique @default(cuid())
+  id                    String   @id @unique @default(cuid())
+  url                   String   @unique
   name                  String
   headline              String
   profileImage          String
-  coverImage            String
   description           String
-  introVideo            String
-  brandColor            String
-  earningsVisibility    Boolean
-  supportersVisibility  Boolean
-  status                Boolean
-  highlightedMembership String
+  status                Boolean  @default(true)
+  earningsVisibility    Boolean  @default(false)
+  supportersVisibility  Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  highlightedMembership String?
+  coverImage            String?
+  introVideo            String?
+  brandColor            String?
 
-  owner         User           @relation(fields: [ownerId], references: [userId])
+  owner         User           @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   ownerId       String         @unique
   Membership    Membership[]
   Goal          Goal[]
@@ -50,74 +56,79 @@ model Page {
 }
 
 model Membership {
-  membershipId String   @id @unique @default(cuid())
-  name         String
-  description  String
-  coverImage   String
-  price        Float
-  status       Boolean
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id          String   @id @unique @default(cuid())
+  title       String
+  coverImage  String
+  fee         Float
+  status      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?
 
-  page         Page           @relation(fields: [pageId], references: [pageId])
+  page         Page           @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId       String
   Subscription Subscription[]
   Benefit      Benefit[]
+  Project      Project[]
+  Post         Post[]
 }
 
 model Subscription {
-  subscriptionId String   @id @unique @default(cuid())
-  status         Boolean
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id        String   @id @unique @default(cuid())
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user   User   @relation(fields: [userId], references: [userId])
-  userId String
+  subscriber   User   @relation(fields: [subscriberId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  subscriberId String
 
-  membership   Membership @relation(fields: [membershipId], references: [membershipId])
+  membership   Membership @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   membershipId String
 }
 
 model Goal {
-  goalId      String @id @unique @default(cuid())
+  id          String   @id @unique @default(cuid())
+  title       String
   type        String
   amount      Int
   description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  page   Page   @relation(fields: [pageId], references: [pageId])
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
 }
 
+// TODO: CHECK IF BENEFIT CATEGORY IS NEEDED
 model BenefitCategory {
-  benefitCategoryId String    @id @unique @default(cuid())
-  name              String
-  description       String
-  Benefit           Benefit[]
+  id          String    @id @unique @default(cuid())
+  name        String
+  description String
+  Benefit     Benefit[]
 }
 
 model Benefit {
-  benefitId         String          @id @unique @default(cuid())
-  name              String
-  BenefitCategory   BenefitCategory @relation(fields: [benefitCategoryId], references: [benefitCategoryId])
-  benefitCategoryId String
+  id   String @id @unique @default(cuid())
+  name String
 
-  Membership   Membership @relation(fields: [membershipId], references: [membershipId])
-  membershipId String
+  BenefitCategory   BenefitCategory @relation(fields: [benefitCategoryId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  benefitCategoryId String
+  Membership        Membership      @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  membershipId      String
 }
 
 model SocialLink {
-  socialLinkId String @id @unique @default(cuid())
-  name         String
-  url          String
+  id   String @id @unique @default(cuid())
+  name String
+  url  String
 
-  page   Page   @relation(fields: [pageId], references: [pageId])
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
 }
 
 model Chat {
-  chatId    String   @id @unique @default(cuid())
+  id        String   @id @unique @default(cuid())
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   Message       Message[]
   PrivateChat   PrivateChat?
@@ -125,91 +136,91 @@ model Chat {
 }
 
 model PrivateChat {
-  privateChatId Chat   @relation(fields: [chatId], references: [chatId])
-  chatId        String @unique
-  user1         User   @relation(fields: [user1Id], references: [userId], name: "user1Id")
-  user1Id       String
-  user2         User   @relation(fields: [user2Id], references: [userId], name: "user2Id")
-  user2Id       String
+  id      Chat    @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  chatId  String  @unique
+  user1   User?   @relation(fields: [user1Id], references: [id], name: "user1Id", onUpdate: Cascade, onDelete: SetNull)
+  user1Id String?
+  user2   User?   @relation(fields: [user2Id], references: [id], name: "user2Id", onUpdate: Cascade, onDelete: SetNull)
+  user2Id String?
 
   @@id([chatId])
 }
 
 model CommunityChat {
-  communityChatId Chat   @relation(fields: [chatId], references: [chatId])
-  chatId          String @unique
-  page            Page   @relation(fields: [pageId], references: [pageId])
-  pageId          String @unique
+  id     Chat   @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  chatId String @unique
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId String @unique
 
   @@id([chatId])
 }
 
 model Message {
-  messageId  String       @id @unique @default(cuid())
-  content    String
-  sender     String
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id        String   @id @unique @default(cuid())
+  content   String
+  author    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  
-  chat       Chat         @relation(fields: [chatId], references: [chatId])
+  chat       Chat         @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   chatId     String
   Attachment Attachment[]
 }
 
 model Attachment {
-  attachmentId String  @id @unique @default(cuid())
-  url          String
-  contentType  String
-  message      Message @relation(fields: [messageId], references: [messageId])
-  messageId    String
+  id          String  @id @unique @default(cuid())
+  url         String
+  contentType String
+  message     Message @relation(fields: [messageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  messageId   String
 }
 
 model DonationItem {
-  donationItemId String   @id @unique @default(uuid())
-  name           String   @unique
-  price          Float    @unique
-  status         Boolean
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  price     Float    @unique
+  status    Boolean
+  image     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   Donates Donation[]
 }
 
 model Donation {
-  donatesId    String   @id @unique @default(uuid())
-  quantity     Int
-  donatorName  String
-  donatorEmail String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id         String   @id @unique @default(uuid())
+  donorName  String
+  donorEmail String
+  quantity   Int
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  donationItem   DonationItem @relation(fields: [donationItemId], references: [donationItemId])
-  donationItemId String
+  item          DonationItem @relation(fields: [itemId], references: [id])
+  itemId        String
+  transaction   Transaction  @relation(fields: [transactionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  transactionId String
 }
 
-
-
-
 model Project {
-  projectId   String   @id @unique @default(cuid())
+  id          String   @id @unique @default(cuid())
   title       String
-  status      String
+  status      Boolean  @default(false)
   coverImage  String
   description String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-
-page Page? @relation(fields: [pageId], references: [pageId])
-  pageId String?
-  projectPost ProjectPost[]
+  page         Page        @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId       String
+  // TODO: SEE IF MEMEBERSHIP ID IS NEEDED
+  memberShip   Membership? @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  membershipId String?
+  post         Post[]
 }
 
-//?? TODO: CHECK IF CONTENT TYPE TABLE IS NEEDED
-
 model Post {
-  postId      String   @id @unique @default(cuid())
+  id          String   @id @unique @default(cuid())
   title       String
   content     String
   contentType String
@@ -218,38 +229,28 @@ model Post {
   thumbnail   String?
   file        String?
 
-page Page? @relation(fields: [pageId], references: [pageId])
-  pageId String?
-
+  page         Page        @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId       String
+  // TODO: SEE IF MEMEBERSHIP ID IS NEEDED
+  memberShip   Membership? @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+  membershipId String?
+  project      Project     @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  projectId    String
 }
-
-model ProjectPost {
-  projectPostId String   @id @unique @default(cuid())
-  title         String
-  content       String
-  contentType   String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  thumbnail     String?
-  file          String?
-
-  project   Project @relation(fields: [projectId], references: [projectId])
-  projectId String
-
-}
-
-
-// model Tag {
-//   tagId String @id @unique @default(cuid())
-//   name  String
-// }
 
 model Transaction {
-  transactionId String   @id @unique @default(cuid())
-  amount        Float
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @unique @default(cuid())
+  reference String
+  provider  String
+  payer     String
+  payee     String
+  amount    Float
+  currency  String
+  remark    String
+  status    String
+  createdAt DateTime @default(now())
 
-  // user   User   @relation(fields: [userId], references: [userId])
-  // userId String
+  donation Donation[]
 }
+
+//?? CHECK IF CONTENT TYPE TABLE IS NEEDED
