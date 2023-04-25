@@ -26,6 +26,7 @@ model User {
   Subscription Subscription[]
   user1Id      PrivateChat[]  @relation("user1Id")
   user2Id      PrivateChat[]  @relation("user2Id")
+  Donation     Donation[]
 }
 
 model Page {
@@ -34,8 +35,9 @@ model Page {
   name                  String
   headline              String
   profileImage          String
-  description           String
+  description           String   @db.Text
   status                Boolean  @default(true)
+  isPublished           Boolean  @default(false)
   earningsVisibility    Boolean  @default(false)
   supportersVisibility  Boolean  @default(false)
   createdAt             DateTime @default(now())
@@ -63,27 +65,27 @@ model Membership {
   status      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  description String?
+  description String?  @db.Text
 
   page         Page           @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId       String
   Subscription Subscription[]
   Benefit      Benefit[]
-  Project      Project[]
-  Post         Post[]
 }
 
 model Subscription {
-  id        String   @id @unique @default(cuid())
-  status    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String        @id @unique @default(cuid())
+  status    PaymentStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   subscriber   User   @relation(fields: [subscriberId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   subscriberId String
 
-  membership   Membership @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  membershipId String
+  membership    Membership  @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  membershipId  String
+  transaction   Transaction @relation(fields: [transactionId], references: [reference], onUpdate: Cascade, onDelete: NoAction)
+  transactionId String
 }
 
 model Goal {
@@ -91,7 +93,7 @@ model Goal {
   title       String
   type        String
   amount      Int
-  description String
+  description String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -99,28 +101,19 @@ model Goal {
   pageId String
 }
 
-// TODO: CHECK IF BENEFIT CATEGORY IS NEEDED
-model BenefitCategory {
-  id          String    @id @unique @default(cuid())
-  name        String
-  description String
-  Benefit     Benefit[]
-}
-
 model Benefit {
-  id   String @id @unique @default(cuid())
-  name String
+  id          String @id @unique @default(cuid())
+  title       String
+  description String @db.Text
 
-  BenefitCategory   BenefitCategory @relation(fields: [benefitCategoryId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  benefitCategoryId String
-  Membership        Membership      @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  membershipId      String
+  Membership   Membership @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  membershipId String
 }
 
 model SocialLink {
-  id   String @id @unique @default(cuid())
-  name String
+  id   String         @id @unique @default(cuid())
   url  String
+  type SocialLinkType
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
@@ -157,7 +150,7 @@ model CommunityChat {
 
 model Message {
   id        String   @id @unique @default(cuid())
-  content   String
+  message   String   @db.Text
   author    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -168,11 +161,15 @@ model Message {
 }
 
 model Attachment {
-  id          String  @id @unique @default(cuid())
-  url         String
-  contentType String
-  message     Message @relation(fields: [messageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  messageId   String
+  id        String   @id @unique @default(cuid())
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  message   Message? @relation(fields: [messageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  messageId String?
+  post      Post?    @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  postId    String?
 }
 
 model DonationItem {
@@ -188,18 +185,21 @@ model DonationItem {
 }
 
 model Donation {
-  id         String   @id @unique @default(uuid())
+  id         String        @id @unique @default(uuid())
   donorName  String
   donorEmail String
   quantity   Int
-  status     String   @default("pending")
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  message    String        @db.Text
+  status     PaymentStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   item          DonationItem @relation(fields: [itemId], references: [id])
   itemId        String
-  transaction   Transaction  @relation(fields: [transactionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  transaction   Transaction  @relation(fields: [transactionId], references: [reference], onUpdate: Cascade, onDelete: NoAction)
   transactionId String
+  donor         User?        @relation(fields: [donorId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  donorId       String?
 }
 
 model Project {
@@ -207,50 +207,74 @@ model Project {
   title       String
   status      Boolean  @default(false)
   coverImage  String
-  description String
+  description String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  visibleTo   Json?    @default("{\"memberships\": \"[]\"}")
 
-  page         Page        @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  pageId       String
-  // TODO: SEE IF MEMEBERSHIP ID IS NEEDED
-  memberShip   Membership? @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  membershipId String?
-  post         Post[]
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId String
+  post   Post[]
 }
 
 model Post {
-  id          String   @id @unique @default(cuid())
-  title       String
-  content     String
-  contentType String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  thumbnail   String?
-  file        String?
+  id        String      @id @unique @default(cuid())
+  title     String
+  caption   String      @db.Text
+  type      ContentType
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  thumbnail String?
+  file      String?
+  visibleTo Json?       @default("{\"memberships\": \"[]\"}")
 
-  page         Page        @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  pageId       String
-  // TODO: SEE IF MEMEBERSHIP ID IS NEEDED
-  memberShip   Membership? @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: SetNull)
-  membershipId String?
-  project      Project     @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  projectId    String
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId String
+
+  project    Project?     @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  projectId  String?
+  Attachment Attachment[]
 }
 
 model Transaction {
-  id        String   @id @unique @default(cuid())
-  reference String
+  reference String            @id @unique @default(cuid())
   provider  String
   payer     String
   payee     String
   amount    Float
   currency  String
   remark    String
-  status    String
-  createdAt DateTime @default(now())
+  status    TransactionStatus @default(PENDING)
+  createdAt DateTime          @default(now())
 
-  donation Donation[]
+  donation     Donation[]
+  subscription Subscription[]
 }
 
-//?? CHECK IF CONTENT TYPE TABLE IS NEEDED
+enum TransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  FILE
+}
+
+enum SocialLinkType {
+  FACEBOOK
+  TWITTER
+  INSTAGRAM
+  YOUTUBE
+  LINKEDIN
+  TIKTOK
+}
