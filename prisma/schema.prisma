@@ -91,7 +91,7 @@ model Subscription {
 model Goal {
   id          String   @id @unique @default(cuid())
   title       String
-  type        String
+  type        GoalType
   amount      Int
   description String   @db.Text
   createdAt   DateTime @default(now())
@@ -278,3 +278,10 @@ enum SocialLinkType {
   LINKEDIN
   TIKTOK
 }
+
+
+enum GoalType {
+  COMMUNITY
+  EARNING
+}
+
