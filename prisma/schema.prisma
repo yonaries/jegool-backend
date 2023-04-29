@@ -36,8 +36,8 @@ model Page {
   headline              String
   profileImage          String
   description           String   @db.Text
-  status                Boolean  @default(true)
-  isPublished           Boolean  @default(false)
+  status                PageStatus  @default(INACTIVE)
+  // isPublished           Boolean  @default(false)
   earningsVisibility    Boolean  @default(false)
   supportersVisibility  Boolean  @default(false)
   createdAt             DateTime @default(now())
@@ -205,7 +205,7 @@ model Donation {
 model Project {
   id          String   @id @unique @default(cuid())
   title       String
-  status      Boolean  @default(false)
+  status      PostStatus  @default(INACTIVE)
   coverImage  String
   description String   @db.Text
   createdAt   DateTime @default(now())
@@ -222,6 +222,7 @@ model Post {
   title     String
   caption   String      @db.Text
   type      ContentType
+  status      PostStatus  @default(ACTIVE)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   thumbnail String?
@@ -285,3 +286,14 @@ enum GoalType {
   EARNING
 }
 
+enum PostStatus {
+  BANNED
+  ACTIVE
+  INACTIVE
+}
+
+enum PageStatus {
+  BANNED
+  ACTIVE
+  INACTIVE
+}
