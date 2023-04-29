@@ -1,0 +1,27 @@
+name: PlanetScale Migrate and Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - database/migrations
+
+jobs:
+  migrate-deploy:
+    name: Migrate and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy
+        uses: PropFuel/planetscale-deploy-action@v1.0.0
+        with:
+          planetscale-service-token-id: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+          planetscale-service-token: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+          planetscale-org-name: ${{ secrets.PLANETSCALE_ORG_NAME }}
+          planetscale-db-name: ${{ secrets.PLANETSCALE_DB_NAME }}
+          branch-name: jegool-main-branch
+          delete-branch: false
+      - run: "npm run prisma:push"

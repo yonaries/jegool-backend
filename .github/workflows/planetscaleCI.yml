@@ -1,0 +1,47 @@
+# .github/workflows/ci-pr.yml
+
+name: pull request opened/synced or closed.
+
+env:
+  PLANETSCALE_ORG_NAME: ${{ secrets.PLANETSCALE_ORG_NAME }}
+  PLANETSCALE_DB_NAME: ${{ secrets.PLANETSCALE_DB_NAME }}
+  PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+  PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+
+on:
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - main
+
+jobs:
+  open:
+    name: Create Planetscale Dev Branch
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' }}
+    outputs:
+      branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
+      connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create db branch
+        id: create-db-branch
+        uses: barelylabs/planetscale-action@v0.1.3-alpha
+        with:
+          action: "create-branch"
+          overwrite-existing-branch: true
+
+  close:
+    name: Delete Planetscale Dev Branch
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'closed'  }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Delete db branch
+        uses: barelylabs/planetscale-action@v0.1.3-alpha
+        with:
+          action: "delete-branch"
