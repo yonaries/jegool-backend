@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
@@ -30,18 +31,18 @@ model User {
 }
 
 model Page {
-  id                    String   @id @unique @default(cuid())
-  url                   String   @unique
+  id                    String     @id @unique @default(cuid())
+  url                   String     @unique
   name                  String
   headline              String
   profileImage          String
-  description           String   @db.Text
-  status                PageStatus  @default(INACTIVE)
+  description           String     @db.Text
+  status                PageStatus @default(INACTIVE)
   // isPublished           Boolean  @default(false)
-  earningsVisibility    Boolean  @default(false)
-  supportersVisibility  Boolean  @default(false)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  earningsVisibility    Boolean    @default(false)
+  supportersVisibility  Boolean    @default(false)
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
   highlightedMembership String?
   coverImage            String?
   introVideo            String?
@@ -71,6 +72,8 @@ model Membership {
   pageId       String
   Subscription Subscription[]
   Benefit      Benefit[]
+
+  @@index([pageId])
 }
 
 model Subscription {
@@ -86,6 +89,10 @@ model Subscription {
   membershipId  String
   transaction   Transaction @relation(fields: [transactionId], references: [reference], onUpdate: Cascade, onDelete: NoAction)
   transactionId String
+
+  @@index([subscriberId])
+  @@index([membershipId])
+  @@index([transactionId])
 }
 
 model Goal {
@@ -99,6 +106,8 @@ model Goal {
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
+
+  @@index([pageId])
 }
 
 model Benefit {
@@ -108,6 +117,8 @@ model Benefit {
 
   Membership   Membership @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   membershipId String
+
+  @@index([membershipId])
 }
 
 model SocialLink {
@@ -117,6 +128,8 @@ model SocialLink {
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
+
+  @@index([pageId])
 }
 
 model Chat {
@@ -137,6 +150,8 @@ model PrivateChat {
   user2Id String?
 
   @@id([chatId])
+  @@index([user1Id])
+  @@index([user2Id])
 }
 
 model CommunityChat {
@@ -158,6 +173,8 @@ model Message {
   chat       Chat         @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   chatId     String
   Attachment Attachment[]
+
+  @@index([chatId])
 }
 
 model Attachment {
@@ -170,6 +187,9 @@ model Attachment {
   messageId String?
   post      Post?    @relation(fields: [postId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   postId    String?
+
+  @@index([messageId])
+  @@index([postId])
 }
 
 model DonationItem {
@@ -200,21 +220,27 @@ model Donation {
   transactionId String
   donor         User?        @relation(fields: [donorId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   donorId       String?
+
+  @@index([itemId])
+  @@index([transactionId])
+  @@index([donorId])
 }
 
 model Project {
-  id          String   @id @unique @default(cuid())
+  id          String     @id @unique @default(cuid())
   title       String
-  status      PostStatus  @default(INACTIVE)
+  status      PostStatus @default(INACTIVE)
   coverImage  String
-  description String   @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  visibleTo   Json?    @default("{\"memberships\": \"[]\"}")
+  description String     @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  visibleTo   Json?      @default("{\"memberships\": \"[]\"}")
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
   post   Post[]
+
+  @@index([pageId])
 }
 
 model Post {
@@ -222,7 +248,7 @@ model Post {
   title     String
   caption   String      @db.Text
   type      ContentType
-  status      PostStatus  @default(ACTIVE)
+  status    PostStatus  @default(ACTIVE)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   thumbnail String?
@@ -235,6 +261,9 @@ model Post {
   project    Project?     @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   projectId  String?
   Attachment Attachment[]
+
+  @@index([pageId])
+  @@index([projectId])
 }
 
 model Transaction {
@@ -279,7 +308,6 @@ enum SocialLinkType {
   LINKEDIN
   TIKTOK
 }
-
 
 enum GoalType {
   COMMUNITY
