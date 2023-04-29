@@ -21,4 +21,4 @@ jobs:
         with:
           # All inputs are optional - see Configuration section below
           version: latest # If empty, pulls from package.json
-          schema: path/to/schema.prisma
+          schema: prisma/schema.prisma

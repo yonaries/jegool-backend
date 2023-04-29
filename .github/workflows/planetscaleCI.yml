@@ -1,6 +1,6 @@
 # .github/workflows/ci-pr.yml
 
-name: pull request opened/synced or closed.
+name: PlanetScale CI.
 
 env:
   PLANETSCALE_ORG_NAME: ${{ secrets.PLANETSCALE_ORG_NAME }}
