@@ -1,4 +1,4 @@
-import { getPort } from "./server"
+import { getPort } from "./port";
 
 describe('Getting port ', () => {
     test('should be 5000', (done) => {
