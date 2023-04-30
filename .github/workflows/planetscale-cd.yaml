@@ -5,23 +5,29 @@ on:
     branches:
       - main
     paths:
-      - database/migrations
+      - prisma/migrations
+
+env:
+  PLANETSCALE_ORG_NAME: ${{ secrets.PLANETSCALE_ORG_NAME }}
+  PLANETSCALE_DB_NAME: ${{ secrets.PLANETSCALE_DB_NAME }}
+  PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+  PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
 
 jobs:
-  migrate-deploy:
-    name: Migrate and deploy
+  merge_changes:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     steps:
-      - name: Checkout
+      - name: checkout
         uses: actions/checkout@v3
-
-      - name: Deploy
-        uses: PropFuel/planetscale-deploy-action@v1.0.0
+      - name: Create a deploy request
+        uses: planetscale/create-deploy-request-action@v1
+        id: create_deploy_request
         with:
-          planetscale-service-token-id: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
-          planetscale-service-token: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
-          planetscale-org-name: ${{ secrets.PLANETSCALE_ORG_NAME }}
-          planetscale-db-name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch-name: jegool-main-branch
-          delete-branch: false
-      - run: "npm run prisma:push"
+          branch_name: ${{ github.event.pull_request.head.ref }}
+
+      - name: Deploy a deploy request
+        uses: planetscale/deploy-deploy-request-action@v1
+        with:
+          number: ${{ steps.create_deploy_request.outputs.number }}
+          wait: true
