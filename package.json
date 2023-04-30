@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --forceExit --detectOpenHandles --coverage --verbose --watchAll=false",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "start": "node dist/index.js",
+    "start": "node ./src/server.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "ci": "npm run clean && npm run build && npm run test",
