@@ -33,13 +33,13 @@ jobs:
           action: "create-branch"
           overwrite-existing-branch: true
 
-      - name: Migrate prisma schema to create-db-branch
+      - name: Migrate Prisma Schema to create-db-branch
         if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
         run: npm run prisma:push
 
   # merge updated database with main
   merge_changes:
-    name: Deploy database to PlanetScale
+    name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
     steps:
