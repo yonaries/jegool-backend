@@ -1,7 +1,7 @@
 name: "Auto Assign"
 on:
   pull_request:
-    types: [opened, ready_for_review]
+    types: [opened, reopened, ready_for_review]
     branches:
       - main
 
@@ -21,6 +21,5 @@ jobs:
         with:
           configuration-path: ".github/some_name_for_configs.yml" # Only needed if you use something other than .github/auto_assign.yml
           addReviewers: true
-          addAssignees: author
-          reviewers: rewinaz yonaries
+          reviewers: rewinaz, yonaries
           numberOfReviewers: 2
