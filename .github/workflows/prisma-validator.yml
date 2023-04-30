@@ -2,7 +2,7 @@ name: Prisma Schema Validation
 on:
   pull_request:
     branches: ["main"]
-    paths: ["**/schema.prisma"]
+    paths: ["prisma/schema.prisma"]
 
 jobs:
   validate:

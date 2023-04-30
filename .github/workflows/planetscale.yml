@@ -1,6 +1,6 @@
 # .github/workflows/ci-pr.yml
 
-name: PlanetScale CI.
+name: PlanetScale CI/CD
 
 env:
   PLANETSCALE_ORG_NAME: ${{ secrets.PLANETSCALE_ORG_NAME }}
@@ -13,10 +13,10 @@ on:
     types: [opened, synchronize, closed]
     branches:
       - main
-  create:
 
 jobs:
-  create_a_branch:
+  # create dev branch on planetscale
+  open:
     name: Create Planetscale Dev Branch
     runs-on: ubuntu-latest
     outputs:
@@ -33,23 +33,32 @@ jobs:
           action: "create-branch"
           overwrite-existing-branch: true
 
-  open:
-    name: Create Planetscale Dev Branch on PR
+      - name: Migrate prisma schema to create-db-branch
+        if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
+        run: npm run prisma:push
+
+  # merge updated database with main
+  merge_changes:
+    name: Deploy database to PlanetScale
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' }}
-    outputs:
-      branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
-      connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
-
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
     steps:
-      - uses: actions/checkout@v3
+      - name: checkout
+        uses: actions/checkout@v3
 
-      - name: Create db branch
-        id: create-db-branch
-        uses: barelylabs/planetscale-action@v0.1.3-alpha
+      # creating deploy request
+      - name: Create a deploy request
+        uses: planetscale/create-deploy-request-action@v1
+        id: create_deploy_request
         with:
-          action: "create-branch"
-          overwrite-existing-branch: true
+          branch_name: ${{ github.event.pull_request.head.ref }}
+
+      # deploying request
+      - name: Deploy a deploy request
+        uses: planetscale/deploy-deploy-request-action@v1
+        with:
+          number: ${{ steps.create_deploy_request.outputs.number }}
+          wait: true
 
   close:
     name: Delete Planetscale Dev Branch
