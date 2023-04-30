@@ -25,7 +25,7 @@ jobs:
 
       # Prisma validation fails if it cannot load env vars
       - name: Create dummy .env file
-        run: echo "DATABASE_URL=mongodb+srv://test:test@localhost" > .env
+        run: echo "DATABASE_URL=mysql://${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}:${{ secrets.PLANETSCALE_SERVICE_TOKEN }}@aws.connect.psdb.cloud/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict" > .env
 
       - name: Run schema validator
         uses: elijaholmos/prisma-schema-validate@v1
