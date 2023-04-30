@@ -3,11 +3,13 @@ on:
   pull_request:
     branches: ["main"]
     paths: ["prisma/schema.prisma"]
+    types: [opened, synchronize, closed]
 
 jobs:
   validate:
     name: Validate prisma.schema
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
