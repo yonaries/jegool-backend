@@ -18,10 +18,10 @@ jobs:
         with:
           repo-token: ${{ secrets.GH_TOKEN }}
 
-  assign-reviewer:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: delivery-much/actions-assigner@v1
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          reviewers: rewinaz, yonaries
+  # assign-reviewer:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: delivery-much/actions-assigner@v1
+  #       with:
+  #         token: ${{ secrets.GH_TOKEN }}
+  #         reviewers: rewinaz, yonaries
