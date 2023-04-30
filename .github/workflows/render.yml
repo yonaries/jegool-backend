@@ -1,4 +1,4 @@
-name: Jegool Render Deploy
+name: Render Deploy
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged
+    # if: github.event.pull_request.merged
     steps:
       - name: Deploy to production
         uses: johnbeynon/render-deploy-action@v0.0.8
