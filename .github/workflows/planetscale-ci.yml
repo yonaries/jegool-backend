@@ -54,7 +54,7 @@ jobs:
   close:
     name: Delete Planetscale Dev Branch
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'closed'  }}
+    if: ${{ github.event.action == 'closed' }}
 
     steps:
       - uses: actions/checkout@v3

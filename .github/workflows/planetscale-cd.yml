@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - prisma/migrations
+      - prisma
 
 env:
   PLANETSCALE_ORG_NAME: ${{ secrets.PLANETSCALE_ORG_NAME }}
@@ -16,7 +16,7 @@ env:
 jobs:
   merge_changes:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: ${{github.event.pull_request.merged == true && ${GITHUB_REF##*/} == 'db/**'}}
     steps:
       - name: checkout
         uses: actions/checkout@v3
