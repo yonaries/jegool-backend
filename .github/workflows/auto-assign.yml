@@ -3,7 +3,7 @@ name: Auto Author Assign
 
 on:
   pull_request_target:
-    types: [opened, reopened, ready_for_review]
+    types: [opened, reopened]
 
 permissions:
   pull-requests: write
@@ -12,4 +12,14 @@ jobs:
   assign-author:
     runs-on: ubuntu-latest
     steps:
-      - uses: toshimaru/auto-author-assign@v1.6.2
+      - uses: toshimaru/auto-author-assign
+        with:
+          repo-token: ${{ secrets.GH_TOKEN }}
+
+  assign-reviewer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: delivery-much/actions-assigner@v1
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          reviewers: rewinaz, yonaries
