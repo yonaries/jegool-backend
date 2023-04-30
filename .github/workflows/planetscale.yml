@@ -60,6 +60,7 @@ jobs:
   # merge updated database with main
   merge_changes:
     name: Deploy PlanetScale Dev Branch
+    needs: open
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
     steps:
