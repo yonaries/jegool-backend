@@ -37,6 +37,7 @@ jobs:
   open:
     name: Create Planetscale Dev Branch
     runs-on: ubuntu-latest
+    needs: validate_schema
     outputs:
       branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
       connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
