@@ -1,25 +1,15 @@
-name: "Auto Assign"
+# .github/workflows/auto-author-assign.yml
+name: Auto Author Assign
+
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, reopened, ready_for_review]
-    branches:
-      - main
+
+permissions:
+  pull-requests: write
 
 jobs:
-  open:
+  assign-author:
     runs-on: ubuntu-latest
     steps:
-      - uses: kentaro-m/auto-assign-action@v1.2.5
-        with:
-          configuration-path: ".github/some_name_for_configs.yml" # Only needed if you use something other than .github/auto_assign.yml
-          addAssignees: author
-
-  add-reviews:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: kentaro-m/auto-assign-action@v1.2.5
-        with:
-          configuration-path: ".github/some_name_for_configs.yml" # Only needed if you use something other than .github/auto_assign.yml
-          addReviewers: true
-          reviewers: rewinaz, yonaries
-          numberOfReviewers: 2
+      - uses: toshimaru/auto-author-assign@v1.6.2
