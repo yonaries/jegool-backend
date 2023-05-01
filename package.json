@@ -9,7 +9,7 @@
     "start": "ts-node -T ./src/server.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "ci": "npm run clean && npm run build && npm run test",
+    "ci": "npm run clean && npm run build",
     "prisma:generate": "npx prisma generate",
     "prisma:push": "npx prisma db push"
   },

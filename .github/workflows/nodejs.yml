@@ -25,8 +25,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+
+      - name: Create .env file for test env
+        run: echo "DATABASE_URL=mysql://${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}:${{ secrets.PLANETSCALE_SERVICE_TOKEN }}@aws.connect.psdb.cloud/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict" > .env
+
       - name: Install Dependencies
         run: npm install
       - run: npm run ci
-      - run: npm run build --if-present
       - run: npm run test
