@@ -55,6 +55,9 @@ jobs:
           overwrite-existing-branch: true
 
       - name: Migrate Prisma Schema to create-db-branch
+        env:
+          DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
+
         run: npm run prisma:push
 
   # merge updated database with main
