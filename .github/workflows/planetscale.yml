@@ -37,7 +37,7 @@ jobs:
   # create dev branch on planetscale
   open:
     name: Create Planetscale Dev Branch
-    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'db/') && github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
     runs-on: ubuntu-latest
     needs: validate_schema
 
@@ -45,8 +45,8 @@ jobs:
       branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
       connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
 
-      env:
-        DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
+    env:
+      DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
 
     steps:
       - uses: actions/checkout@v3
@@ -61,30 +61,11 @@ jobs:
       - name: Migrate Prisma Schema to create-db-branch
         run: npm run prisma:push
 
-      - name: Install Render CLI
-        run: |
-          curl https://render.com/install.sh | bash
-
-      - name: Authenticate with Render
-        env:
-          RENDER_ACCOUNT_ID: ${{ secrets.MY_RENDER_SERVICE_ID }}
-          RENDER_API_KEY: ${{ secrets.MY_RENDER_API_KEY }}
-        run: |
-          render login --account-id $RENDER_ACCOUNT_ID --api-key $RENDER_API_KEY
-
-      - name: Create Render environment variable
-        env:
-          RENDER_ENV_VAR_NAME: DATABASE_URL
-          RENDER_ENV_VAR_VALUE: ${{ steps.create-db-branch.outputs.connection-string }}
-        run: |
-          render environment create --name $RENDER_ENV_VAR_NAME --value $RENDER_ENV_VAR_VALUE
-
   # merge updated database with main
   merge_changes:
     name: Deploy PlanetScale Dev Branch
-    needs: open
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/**')
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'db/')
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -106,7 +87,7 @@ jobs:
   close:
     name: Delete Planetscale Dev Branch
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'closed' }}
+    if: ${{ github.event.action == 'closed' && startsWith(github.event.pull_request.head.ref, 'db/')}}
 
     steps:
       - uses: actions/checkout@v3
