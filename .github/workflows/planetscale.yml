@@ -7,6 +7,7 @@ env:
   PLANETSCALE_DB_NAME: ${{ secrets.PLANETSCALE_DB_NAME }}
   PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
   PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+  DATABASE_URL: ""
 
 on:
   pull_request:
@@ -43,6 +44,9 @@ jobs:
     outputs:
       branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
       connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
+
+      env:
+        DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
 
     steps:
       - uses: actions/checkout@v3
@@ -103,7 +107,6 @@ jobs:
     name: Delete Planetscale Dev Branch
     runs-on: ubuntu-latest
     if: ${{ github.event.action == 'closed' }}
-    needs: open
 
     steps:
       - uses: actions/checkout@v3
