@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit --coverage --verbose --watchAll=false --port=3002",
+    "test": "jest --forceExit --detectOpenHandles --coverage --verbose --watchAll=false",
     "dev": "nodemon --exec ts-node src/server.ts",
     "start": "ts-node -T ./src/server.ts",
     "build": "tsc --build",
     "clean": "tsc --build --clean",
-    "prisma:push": "npx prisma db push --preview-feature"
+    "ci": "npm run clean && npm run build",
+    "prisma:generate": "npx prisma generate",
+    "prisma:push": "npx prisma db push"
   },
   "keywords": [],
   "author": "",

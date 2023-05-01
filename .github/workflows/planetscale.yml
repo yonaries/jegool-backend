@@ -1,0 +1,110 @@
+# .github/workflows/ci-pr.yml
+
+name: PlanetScale CI/CD
+
+env:
+  PLANETSCALE_ORG_NAME: ${{ secrets.PLANETSCALE_ORG_NAME }}
+  PLANETSCALE_DB_NAME: ${{ secrets.PLANETSCALE_DB_NAME }}
+  PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+  PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+    branches:
+      - main
+
+jobs:
+  # validate prisma schema
+  validate_schema:
+    name: Validate prisma.schema
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Prisma validation fails if it cannot load env vars
+      - name: Create dummy .env file
+        run: echo "DATABASE_URL=mysql://${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}:${{ secrets.PLANETSCALE_SERVICE_TOKEN }}@aws.connect.psdb.cloud/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict" > .env
+
+      - name: Run schema validator
+        uses: elijaholmos/prisma-schema-validate@v1
+        with:
+          # All inputs are optional - see Configuration section below
+          version: latest # If empty, pulls from package.json
+          schema: prisma/schema.prisma
+
+  check-branch:
+    name: Check if branch is DB
+    if: startsWith(github.event.pull_request.head.ref, 'db/')
+    runs-on: ubuntu-latest
+    needs: validate_schema
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Echo branch check
+        run: echo "Branch is DB"
+
+  # create dev branch on planetscale
+  open:
+    name: Create Planetscale Dev Branch
+    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
+    runs-on: ubuntu-latest
+    needs: check-branch
+
+    outputs:
+      branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
+      connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create db branch
+        id: create-db-branch
+        uses: barelylabs/planetscale-action@v0.1.3-alpha
+        with:
+          action: "create-branch"
+          overwrite-existing-branch: true
+
+      - name: Migrate Prisma Schema to create-db-branch
+        env:
+          DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
+
+        run: npm run prisma:push
+
+  # merge updated database with main
+  merge_changes:
+    name: Deploy PlanetScale Dev Branch
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      # creating deploy request
+      - name: Create a deploy request
+        uses: planetscale/create-deploy-request-action@v1
+        id: create_deploy_request
+        with:
+          branch_name: ${{ github.event.pull_request.head.ref }}
+
+      # deploying request
+      - name: Deploy a deploy request
+        uses: planetscale/deploy-deploy-request-action@v1
+        with:
+          number: ${{ steps.create_deploy_request.outputs.number }}
+          wait: true
+
+  close:
+    name: Delete Planetscale Dev Branch
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'db/') && github.event.action == 'closed' }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Delete db branch
+        uses: barelylabs/planetscale-action@v0.1.3-alpha
+        with:
+          action: "delete-branch"
