@@ -25,6 +25,6 @@ describe('GET /user', function () {
                 expect(user).toHaveProperty('updatedAt');
             });
 
-        })
+        }).close()
     });
 });

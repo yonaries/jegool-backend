@@ -2,7 +2,7 @@ import express from "express"
 
 const runTestServer = (port: number, callback: Function) => {
     const app = express()
-    app.listen(port, callback(app)).close()
+    return app.listen(port, callback(app))
 }
 
 export default runTestServer
