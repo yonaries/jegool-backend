@@ -92,7 +92,9 @@ jobs:
         env:
           DATABASE_URL: mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300
 
-        run: npm run prisma:push
+        run: |
+          echo "mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300" \
+          npm run prisma:push
 
   # merge updated database with main
   merge_changes:
