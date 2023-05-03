@@ -100,7 +100,8 @@ jobs:
   merge_changes:
     name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
-    if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
+    # if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
+    needs: open
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -111,13 +112,17 @@ jobs:
         id: create_deploy_request
         with:
           branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
+          deploy_to: main
+
+      - name: Get the deploy request number
+        run: |
+          echo "Deploy request number: ${{ steps.create_deploy_request.outputs.number }}"
 
       # deploying request
       - name: Deploy a deploy request
         uses: planetscale/deploy-deploy-request-action@v1
         with:
-          number: ${{ steps.create_deploy_request.outputs.number }}
-          wait: true
+          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
 
   close:
     name: Delete Planetscale Dev Branch
