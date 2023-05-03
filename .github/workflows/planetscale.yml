@@ -49,7 +49,7 @@ jobs:
   # create dev branch on planetscale
   open:
     name: Create Planetscale Dev Branch
-    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
+    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     needs: check-branch
 
@@ -100,8 +100,8 @@ jobs:
   merge_changes:
     name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
-    if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
     needs: open
+    if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -131,10 +131,24 @@ jobs:
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
           number: ${{ steps.create_deploy_request.outputs.number }}
 
-  close:
+  close_after_merge:
     name: Delete Planetscale Dev Branch
     runs-on: ubuntu-latest
+    needs: merge_changes
     if: ${{ startsWith(github.event.pull_request.head.ref, 'db/') && github.event.action == 'closed' }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Delete db branch
+        uses: barelylabs/planetscale-action@v0.1.3-alpha
+        with:
+          action: "delete-branch"
+
+  close_without_merge:
+    name: Delete Planetscale Dev Branch
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'db/') && github.event.action == 'closed' && github.event.pull_request.merged == false }}
 
     steps:
       - uses: actions/checkout@v3
