@@ -129,7 +129,6 @@ jobs:
         with:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch_name: ${{ needs.open.outputs.branch-name }}
           number: ${{ steps.create_deploy_request.outputs.number }}
 
   close:
