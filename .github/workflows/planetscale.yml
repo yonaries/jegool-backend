@@ -49,7 +49,7 @@ jobs:
   # create dev branch on planetscale
   open:
     name: Create Planetscale Dev Branch
-    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' }}
+    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     needs: check-branch
 
@@ -100,13 +100,14 @@ jobs:
   merge_changes:
     name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
+    needs: open
     if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
     steps:
       - name: checkout
         uses: actions/checkout@v3
 
       - name: echo branch name
-        run: echo ${{ github.job.open.outputs.branch-name }}
+        run: echo ${{ needs.open.outputs.branch-name }}
 
       # creating deploy request
       - name: Create a deploy request
