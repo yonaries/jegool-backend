@@ -15,7 +15,7 @@ model User {
   displayName  String
   email        String   @unique
   status       Boolean  @default(true)
-  residence    String
+  residence    String   @default("ETH")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   profileImage String?
