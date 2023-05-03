@@ -110,10 +110,11 @@ jobs:
         with:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
+          branch_name: ${{ open.steps.create-db-branch.outputs.branch-name }}
         env:
           PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
           PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+
       - name: Get the deploy request number
         run: |
           echo "Deploy request number: ${{ steps.create_deploy_request.outputs.number }}"
