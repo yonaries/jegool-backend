@@ -110,7 +110,7 @@ jobs:
         uses: planetscale/create-deploy-request-action@v1
         id: create_deploy_request
         with:
-          branch_name: ${{ github.event.pull_request.head.ref }}
+          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
 
       # deploying request
       - name: Deploy a deploy request
