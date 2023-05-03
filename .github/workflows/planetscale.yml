@@ -55,6 +55,7 @@ jobs:
 
     outputs:
       branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
+      role: admin
       connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
 
     steps:
