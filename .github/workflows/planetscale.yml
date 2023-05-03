@@ -113,7 +113,7 @@ jobs:
         with:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
+          branch_name: ${{ needs.open.steps.create-db-branch.outputs.branch-name }}
           deploy_to: main
 
       - name: Get the deploy request number
@@ -126,7 +126,7 @@ jobs:
         with:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
+          branch_name: ${{ needs.open.steps.create-db-branch.outputs.branch-name }}
 
   close:
     name: Delete Planetscale Dev Branch
