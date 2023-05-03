@@ -16,6 +16,7 @@ const userSchema = Joi.object({
     .email({ tlds: { allow: ["com", "net"] } })
     .required(),
   residence: Joi.string().min(2).max(50).required(),
+  status: Joi.boolean(),
   profileImage: Joi.string().min(1),
 });
 

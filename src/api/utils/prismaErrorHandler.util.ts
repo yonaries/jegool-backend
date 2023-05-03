@@ -1,12 +1,24 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { Response } from "express";
 
-export const handlePrismaError = (error: any) => {
+export const handlePrismaError = (
+  res: Response,
+  error: any,
+  objectName: string
+) => {
   const e = error as PrismaClientKnownRequestError;
 
+  if (!e.code)
+    return res.status(500).json({ message: "Internal Server Error" });
+
   switch (e.code) {
+    case "P2002":
+      res.status(400).json({ message: `${objectName} Already Exists` });
+      break;
     case "P2025":
-      throw new Error("User Not Found");
+      res.status(400).json({ message: `${objectName} Not Found` });
+      break;
     default:
-      throw new Error("Internal Server Error");
+      res.status(500).json({ message: "Internal Server Error" });
   }
 };
