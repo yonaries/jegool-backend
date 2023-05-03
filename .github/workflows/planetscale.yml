@@ -15,99 +15,14 @@ on:
       - main
 
 jobs:
-  # validate prisma schema
-  validate_schema:
-    name: Validate prisma.schema
+  # deploy updated database with main
+  deploy_changes:
+    name: Deploy PlanetScale Dev Branch to Main
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Prisma validation fails if it cannot load env vars
-      - name: Create dummy .env file
-        run: echo "DATABASE_URL=mysql://${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}:${{ secrets.PLANETSCALE_SERVICE_TOKEN }}@aws.connect.psdb.cloud/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict" > .env
-
-      - name: Run schema validator
-        uses: elijaholmos/prisma-schema-validate@v1
-        with:
-          # All inputs are optional - see Configuration section below
-          version: latest # If empty, pulls from package.json
-          schema: prisma/schema.prisma
-
-  check-branch:
-    name: Check if branch is DB
-    if: startsWith(github.event.pull_request.head.ref, 'db/')
-    runs-on: ubuntu-latest
-    needs: validate_schema
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Echo branch check
-        run: echo "Branch is DB"
-
-  # create dev branch on planetscale
-  open:
-    name: Create Planetscale Dev Branch
-    if: ${{ github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.action == 'reopened' || github.event.pull_request.merged == true }}
-    runs-on: ubuntu-latest
-    needs: check-branch
-
-    outputs:
-      branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
-      connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Create db branch
-        id: create-db-branch
-        uses: barelylabs/planetscale-action@v0.1.3-alpha
-        with:
-          action: "create-branch"
-          overwrite-existing-branch: true
-
-      - name: Create a password
-        uses: planetscale/create-branch-password-action@v1
-        id: create_password
-        with:
-          org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
-          database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
-          name: ${{ steps.create-db-branch.outputs.branch-name }}
-          role: admin
-
-        env:
-          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
-          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
-
-      - name: Get the new credentials
-        run: |
-          echo "Hostname: ${{ steps.create_password.outputs.hostname }}" \
-          echo "Username: ${{ steps.create_password.outputs.username }}" \
-          echo "Password: ${{ steps.create_password.outputs.password }}" \
-          echo "Connection: ${{ steps.create-db-branch.outputs.connection-string }}"
-
-      - name: Migrate Prisma Schema to create-db-branch
-        env:
-          DATABASE_URL: mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300
-
-        run: |
-          echo "mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300" \
-          npm run prisma:push
-
-  # merge updated database with main
-  merge_changes:
-    name: Deploy PlanetScale Dev Branch
-    runs-on: ubuntu-latest
-    needs: open
     if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
     steps:
       - name: checkout
         uses: actions/checkout@v3
-
-      - name: echo branch name
-        run: echo ${{ needs.open.outputs.branch-name }}
 
       # creating deploy request
       - name: Create a deploy request
@@ -116,7 +31,7 @@ jobs:
         with:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
-          branch_name: ${{ needs.open.outputs.branch-name }}
+          branch_name: dev-branch
           deploy_to: main
 
       - name: Get the deploy request number
@@ -130,30 +45,3 @@ jobs:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
           number: ${{ steps.create_deploy_request.outputs.number }}
-
-  close_after_merge:
-    name: Delete Planetscale Dev Branch
-    runs-on: ubuntu-latest
-    needs: merge_changes
-    if: ${{ startsWith(github.event.pull_request.head.ref, 'db/') && github.event.action == 'closed' }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Delete db branch
-        uses: barelylabs/planetscale-action@v0.1.3-alpha
-        with:
-          action: "delete-branch"
-
-  close_without_merge:
-    name: Delete Planetscale Dev Branch
-    runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.pull_request.head.ref, 'db/') && github.event.action == 'closed' && github.event.pull_request.merged == false }}
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Delete db branch
-        uses: barelylabs/planetscale-action@v0.1.3-alpha
-        with:
-          action: "delete-branch"
