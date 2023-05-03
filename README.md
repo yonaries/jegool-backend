@@ -17,3 +17,4 @@ This jegool backend is deployed on render.
 |Expressjs                         |          |                                       |
 |MySQL                             |          |                                       |
 |[Prisma](https://prisma.io)       |          |                                       |
+
