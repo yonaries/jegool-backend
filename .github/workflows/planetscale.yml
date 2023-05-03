@@ -67,11 +67,34 @@ jobs:
           action: "create-branch"
           overwrite-existing-branch: true
 
+      - name: Create a password
+        uses: planetscale/create-branch-password-action@v1
+        id: create_password
+        with:
+          org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
+          database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
+          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
+          name: ${{ steps.create-db-branch.outputs.branch-name }}
+          role: admin
+
+        env:
+          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+
+      - name: Get the new credentials
+        run: |
+          echo "Hostname: ${{ steps.create_password.outputs.hostname }}" \
+          echo "Username: ${{ steps.create_password.outputs.username }}" \
+          echo "Password: ${{ steps.create_password.outputs.password }}" \
+          echo "Connection: ${{ steps.create-db-branch.outputs.connection-string }}"
+
       - name: Migrate Prisma Schema to create-db-branch
         env:
-          DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
+          DATABASE_URL: mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300
 
-        run: npm run prisma:push
+        run: |
+          echo "mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300" \
+          npm run prisma:push
 
   # merge updated database with main
   merge_changes:
