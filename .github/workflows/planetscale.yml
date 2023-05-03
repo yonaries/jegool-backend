@@ -100,7 +100,7 @@ jobs:
   merge_changes:
     name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
-    # if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
+    if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
     needs: open
     steps:
       - name: checkout
