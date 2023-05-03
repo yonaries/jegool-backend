@@ -3,13 +3,18 @@ import { User, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const createUserAccount = async (user: User): Promise<User> => {
+export const createUserAccount = async (
+  user: User
+): Promise<{ id: string }> => {
   try {
     const createdUser = await prisma.user.create({
       data: user,
+      select: {
+        id: true,
+      },
     });
     return createdUser;
-  } catch (error: any) {
+  } catch (error) {
     throw error;
   }
 };
@@ -53,7 +58,7 @@ export const updateUserById = async (
     });
 
     return updatedUser;
-  } catch (error: any) {
+  } catch (error) {
     throw error;
   }
 };
