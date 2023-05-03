@@ -85,11 +85,12 @@ jobs:
         run: |
           echo "Hostname: ${{ steps.create_password.outputs.hostname }}" \
           echo "Username: ${{ steps.create_password.outputs.username }}" \
-          echo "Password: ${{ steps.create_password.outputs.password }}"
+          echo "Password: ${{ steps.create_password.outputs.password }}" \
+          echo "Connection: ${{ steps.create-db-branch.outputs.connection-string }}"
 
       - name: Migrate Prisma Schema to create-db-branch
         env:
-          DATABASE_URL: mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict
+          DATABASE_URL: mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict?connect_timeout=300
 
         run: npm run prisma:push
 
