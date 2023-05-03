@@ -55,7 +55,6 @@ jobs:
 
     outputs:
       branch-name: ${{ steps.create-db-branch.outputs.branch-name }}
-      role: admin
       connection-string: ${{ steps.create-db-branch.outputs.connection-string }}
 
     steps:
@@ -68,9 +67,22 @@ jobs:
           action: "create-branch"
           overwrite-existing-branch: true
 
+      - name: Create a password
+        uses: planetscale/create-branch-password-action@v1
+        id: create_password
+        with:
+          branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
+          name: ${{ steps.create-db-branch.outputs.branch-name }}
+
+      - name: Get the new credentials
+        run: |
+          echo "Hostname: ${{ steps.create_password.outputs.hostname }}" \
+          echo "Username: ${{ steps.create_password.outputs.username }}" \
+          echo "Password: ${{ steps.create_password.outputs.password }}"
+
       - name: Migrate Prisma Schema to create-db-branch
         env:
-          DATABASE_URL: ${{ steps.create-db-branch.outputs.connection-string }}
+          DATABASE_URL: mysql://${{ steps.create_password.outputs.username }}:${{ steps.create_password.outputs.password }}@${{ steps.create_password.outputs.hostname }}/${{ secrets.PLANETSCALE_DB_NAME }}?sslaccept=strict
 
         run: npm run prisma:push
 
