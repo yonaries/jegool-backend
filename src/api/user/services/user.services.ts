@@ -38,3 +38,16 @@ export const getUserById = async (userId: string): Promise<User | null> => {
     throw error;
   }
 };
+
+export const getUsers = async (): Promise<User[] | null> => {
+  try {
+    const users = prisma.user.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return users;
+  } catch (error) {
+    throw error;
+  }
+};
