@@ -1,3 +1,4 @@
+import { handlePrismaError } from "../../utils/prismaErrorHandler.util";
 import { User, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -35,19 +36,37 @@ export const getUserById = async (userId: string): Promise<User | null> => {
     });
     return user;
   } catch (error) {
-    throw error;
+    return handlePrismaError(error);
   }
 };
 
 export const getUsers = async (): Promise<User[] | null> => {
   try {
-    const users = prisma.user.findMany({
+    const users = await prisma.user.findMany({
       orderBy: {
         createdAt: "desc",
       },
     });
     return users;
   } catch (error) {
-    throw error;
+    return handlePrismaError(error);
+  }
+};
+
+export const updateUserById = async (
+  userId: string,
+  user: User
+): Promise<User | null> => {
+  try {
+    const updatedUser = await prisma.user.update({
+      data: user,
+      where: {
+        id: userId,
+      },
+    });
+
+    return updatedUser;
+  } catch (error: any) {
+    return handlePrismaError(error);
   }
 };
