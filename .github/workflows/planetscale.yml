@@ -101,13 +101,12 @@ jobs:
     name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
     if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
-    needs: open
     steps:
       - name: checkout
         uses: actions/checkout@v3
 
       - name: echo branch name
-        run: echo ${{ needs.open.outputs.branch-name }}
+        run: echo ${{ github.job.open.outputs.branch-name }}
 
       # creating deploy request
       - name: Create a deploy request
