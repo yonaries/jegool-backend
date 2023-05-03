@@ -71,8 +71,14 @@ jobs:
         uses: planetscale/create-branch-password-action@v1
         id: create_password
         with:
+          org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
+          database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
           branch_name: ${{ steps.create-db-branch.outputs.branch-name }}
           name: ${{ steps.create-db-branch.outputs.branch-name }}
+
+        env:
+          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
+          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
 
       - name: Get the new credentials
         run: |
