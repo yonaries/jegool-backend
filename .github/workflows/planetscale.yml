@@ -97,13 +97,16 @@ jobs:
           npm run prisma:push
 
   # merge updated database with main
-  create_deploy_request:
+  merge_changes:
+    name: Deploy PlanetScale Dev Branch
     runs-on: ubuntu-latest
-    needs: open
     # if: startsWith(github.event.pull_request.head.ref, 'db/') && github.event.pull_request.merged == true
+    needs: open
     steps:
       - name: checkout
         uses: actions/checkout@v3
+
+      # creating deploy request
       - name: Create a deploy request
         uses: planetscale/create-deploy-request-action@v1
         id: create_deploy_request
@@ -111,13 +114,19 @@ jobs:
           org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
           database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
           branch_name: ${{ open.steps.create-db-branch.outputs.branch-name }}
-        env:
-          PLANETSCALE_SERVICE_TOKEN_ID: ${{ secrets.PLANETSCALE_SERVICE_TOKEN_ID }}
-          PLANETSCALE_SERVICE_TOKEN: ${{ secrets.PLANETSCALE_SERVICE_TOKEN }}
+          deploy_to: main
 
       - name: Get the deploy request number
         run: |
           echo "Deploy request number: ${{ steps.create_deploy_request.outputs.number }}"
+
+      # deploying request
+      - name: Deploy a deploy request
+        uses: planetscale/deploy-deploy-request-action@v1
+        with:
+          org_name: ${{ secrets.PLANETSCALE_ORG_NAME }}
+          database_name: ${{ secrets.PLANETSCALE_DB_NAME }}
+          branch_name: ${{ open.steps.create-db-branch.outputs.branch-name }}
 
   close:
     name: Delete Planetscale Dev Branch
