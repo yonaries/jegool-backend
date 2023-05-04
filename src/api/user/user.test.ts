@@ -1,26 +1,24 @@
 import request from "supertest";
 import app from "../../server";
-import { User, PrismaClient } from "@prisma/client";
+import fakeEmail from "../utils/randomEmailGenerator";
 
-const prisma = new PrismaClient();
-let server = app;
 
 describe("/user", () => {
   afterEach(async () => {
-    await app.close();
-    // await prisma.user.deleteMany();
+    app.close();
   });
 
   describe("GET /", () => {
     test("should create a new user", async () => {
+      const email = fakeEmail()
       const res = await request(app).post("/user").send({
         firstName: "test",
         lastName: "test",
         displayName: "test",
-        email: "re@gmail.com",
+        email: email,
         residence: "Et",
       });
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(201);
     });
   });
 });
