@@ -1,7 +1,7 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { Response } from "express";
 
-export const handlePrismaError = (
+export const PrismaErrorHandler = (
   res: Response,
   error: any,
   objectName: string
