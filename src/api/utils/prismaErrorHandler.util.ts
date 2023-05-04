@@ -13,10 +13,10 @@ export const handlePrismaError = (
 
   switch (e.code) {
     case "P2002":
-      res.status(400).json({ message: `${objectName} Already Exists` });
+      res.status(409).json({ message: `${objectName} Already Exists` });
       break;
     case "P2025":
-      res.status(400).json({ message: `${objectName} Not Found` });
+      res.status(404).json({ message: `${objectName} Not Found` });
       break;
     default:
       res.status(500).json({ message: "Internal Server Error" });

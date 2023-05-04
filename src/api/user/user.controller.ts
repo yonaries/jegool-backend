@@ -11,9 +11,9 @@ export const createUserAccount = async (req: Request, res: Response) => {
     if (error) return res.status(400).json({ error: error.message });
     const createdUser = await UserService.createUserAccount(user);
 
-    return res.status(200).json({ user: createdUser });
+    return res.status(201).json({ user: createdUser });
   } catch (error: any) {
-    return handlePrismaError(res,error, "User")
+    return handlePrismaError(res, error, "User");
   }
 };
 
