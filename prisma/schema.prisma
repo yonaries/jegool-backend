@@ -10,14 +10,14 @@ datasource db {
 
 model User {
   id           String   @id @unique @default(cuid())
-  firstName    String
-  lastName     String
   displayName  String
   email        String   @unique
   status       Boolean  @default(true)
   residence    String   @default("ETH")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  firstName    String?
+  lastName     String?
   profileImage String?
 
   Page         Page?
@@ -31,14 +31,14 @@ model Page {
   id                    String     @id @unique @default(cuid())
   url                   String     @unique
   name                  String
-  headline              String
-  profileImage          String
-  description           String     @db.Text
   status                PageStatus @default(INACTIVE)
   earningsVisibility    Boolean    @default(false)
   supportersVisibility  Boolean    @default(false)
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
+  headline              String?
+  profileImage          String?
+  description           String?    @db.Text
   highlightedMembership String?
   coverImage            String?
   introVideo            String?
