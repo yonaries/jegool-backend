@@ -3,6 +3,10 @@ import { Request, Response } from "express";
 import { validateUser } from "./user.validate";
 import { handlePrismaError } from "../utils/prismaErrorHandler.util";
 
+//todo: after firebase auth integration, request should only contain firebase auth token in headers
+//todo: we'll have a middleware that handle the firebase auth token verification and add the user object to the request object then we'll use it to create/update the user in the database
+//* reference link https://github.com/yonaries/cyllo/blob/master/backend/src/middleware/middleware.ts
+
 export const createUserAccount = async (req: Request, res: Response) => {
   const user = req.body;
 
@@ -20,7 +24,7 @@ export const createUserAccount = async (req: Request, res: Response) => {
 export const getUserDataById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  if (id.length == 0 || !id) {
+  if (id.length === 0 || !id) {
     return res.status(400).json({ error: "User Id Is Required" });
   }
 
@@ -51,7 +55,7 @@ export const updateUserData = async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.body;
 
-  if (id.length == 0 || !id)
+  if (id.length === 0 || !id)
     return res.status(400).json({ error: "User Id Is Required" });
 
   try {
