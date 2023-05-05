@@ -114,4 +114,43 @@ describe("/page", () => {
             expect(res.status).toBe(204);
         }, 10000);
     })
+
+    describe("GET /", () => {
+        test("should get all pages", async () => {
+            const res = await request(app).get("/page");
+            expect(res.status).toBe(200);
+        });
+
+        test("should get a page by id", async () => {
+            let userId: string = "";
+            const createdUser = await prisma.user.create({
+                data: {
+                    firstName: "pagegetbyidtest",
+                    lastName: "pagegetbyidtest",
+                    displayName: "pagegetbyidtest",
+                    email: fakeEmail(),
+                    residence: "ET",
+                },
+            });
+            if (createdUser) {
+                userId = createdUser.id;
+            }
+
+            const name = (Math.random() + 1).toString(36).substring(7)
+            const page = {
+                ownerId: userId,
+                name: name,
+                url: `https://jegool.com/${name.replace(/\s+/g, '').toLowerCase()}`
+            } as Page
+
+            const createdPage = await prisma.page.create({
+                data: page,
+                select: {
+                    id: true,
+                },
+            });
+            const res = await request(app).get(`/page/${createdPage.id}`);
+            expect(res.status).toBe(200);
+        }, 10000);
+    })
 })

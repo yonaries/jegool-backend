@@ -54,3 +54,30 @@ export const deletePage = async (id: string): Promise<{ id: string }> => {
     }
 
 }
+
+export const getPageById = async (id: string): Promise<Page | null> => {
+    try {
+        const page = await prisma.page.findUnique({
+            where: {
+                id: id,
+            },
+        });
+
+        return page;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const getAllPages = async (): Promise<Page[] | null> => {
+    try {
+        const pages = await prisma.page.findMany({
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+        return pages;
+    } catch (error) {
+        throw error;
+    }
+}
