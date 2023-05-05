@@ -18,4 +18,20 @@ export default class MembershipController {
       handlePrismaError(res, error, "Membership");
     }
   }
+
+  static async getMembershipById(req: Request, res: Response) {
+    const { id } = req.params;
+
+    if (id.length === 0 || !id)
+      return res.status(400).json({ error: "Membership Id Is Required" });
+
+    try {
+      const membership = await MembershipService.getMembershipById(id);
+      if (!membership)
+        return res.status(404).json({ error: "Membership not found" });
+      return res.status(200).json({membership});
+    } catch (error) {
+      handlePrismaError(res, error, "Membership");
+    }
+  }
 }

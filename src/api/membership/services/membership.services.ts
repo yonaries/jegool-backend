@@ -15,3 +15,16 @@ export const createMembership = (membership: Membership) => {
     throw error;
   }
 };
+
+export const getMembershipById = async(id: string) => {
+  try {
+    const membership = await prisma.membership.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return membership;
+  } catch (error) {
+    throw error;
+  }
+}
