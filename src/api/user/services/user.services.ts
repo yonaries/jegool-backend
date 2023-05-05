@@ -62,3 +62,21 @@ export const updateUserById = async (
     throw error;
   }
 };
+
+export const deleteUserById = async (
+  userId: string
+): Promise<{ id: string } | null> => {
+  try {
+    const deletedUser = await prisma.user.delete({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+    return deletedUser;
+  } catch (error) {
+    throw error;
+  }
+};
