@@ -5,24 +5,19 @@ on:
     types: [submitted]
 
 jobs:
-  remove-tests:
+  build:
     runs-on: ubuntu-latest
-    if: github.event.review.state == 'approved'
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Remove test files
-        run: |
-          find . -name "*.test.ts" -type f -delete
-      - name: Commit changes
-        run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git commit -am "Remove test files"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+      - uses: actions/checkout@master
         with:
-          github_token: ${{ secrets.GTH_TOKEN }}
-          branch: ${{ github.head_ref }}
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+
+      - name: Remove Tests
+        run: |
+          find . -name '*.test.js' -delete
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
