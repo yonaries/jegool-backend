@@ -69,3 +69,18 @@ export const updateUserData = async (req: Request, res: Response) => {
     return handlePrismaError(res, error, "User");
   }
 };
+
+export const deleteUserData = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id)
+    return res.status(400).json({ error: "User Id Is Required" });
+
+  try {
+    const deletedUser = await UserService.deleteUserById(id);
+
+    return res.status(200).json({ user: deletedUser });
+  } catch (error: any) {
+    return handlePrismaError(res, error, "User");
+  }
+};
