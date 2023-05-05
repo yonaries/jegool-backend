@@ -42,4 +42,43 @@ export default class PageController {
             return handlePrismaError(res, error, 'Page')
         }
     }
+
+    static async deletePage(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (id.length === 0 || !id) {
+            return res.status(400).json({ error: "Page Id Is Required" });
+        }
+
+        try {
+            const deletedPage = await PageServices.deletePage(id)
+            return res.status(204).json({ page: deletedPage })
+        } catch (error) {
+            return handlePrismaError(res, error, 'Page')
+        }
+    }
+
+    static async getPageById(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (id.length === 0 || !id) {
+            return res.status(400).json({ error: "Page Id Is Required" });
+        }
+
+        try {
+            const page = await PageServices.getPageById(id)
+            return res.status(200).json({ page: page })
+        } catch (error) {
+            return handlePrismaError(res, error, 'Page')
+        }
+    }
+
+    static async getAllPages(req: Request, res: Response) {
+        try {
+            const pages = await PageServices.getAllPages()
+            return res.status(200).json({ pages: pages })
+        } catch (error) {
+            return handlePrismaError(res, error, 'Page')
+        }
+    }
 }
