@@ -17,6 +17,7 @@ jobs:
       - name: Remove Tests
         run: |
           find . -name '*.test.js' -delete
+          git add .
 
       - name: Commit & Push changes
         uses: actions-js/push@master
