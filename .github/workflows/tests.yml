@@ -5,7 +5,8 @@ on:
     types: [submitted]
 
 jobs:
-  build:
+  approved:
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
