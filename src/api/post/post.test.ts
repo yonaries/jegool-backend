@@ -49,6 +49,7 @@ describe('POST /api/post', () => {
                 title: 'post test title',
                 type: 'TEXT',
                 caption: 'post test caption',
+                scheduled: Date.now(),
                 visibleTo: ['dadfadf', 'adfadsf'],
             })
             log(res.status)
