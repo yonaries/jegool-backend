@@ -1,4 +1,4 @@
-import { PrismaErrorHandler } from '../utils/prismaErrorHandler.util'
+import { handlePrismaError } from '../utils/prismaErrorHandler.util'
 import { validatePage } from './page.validate'
 import PageServices from './services'
 import { Request, Response } from 'express'
@@ -18,7 +18,7 @@ export default class PageController {
             const createdPage = await PageServices.createPage(page)
             return res.status(201).json({ page: createdPage })
         } catch (error) {
-            return PrismaErrorHandler(res, error, 'Page')
+            return handlePrismaError(res, error, 'Page')
         }
     }
 }

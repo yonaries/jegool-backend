@@ -1,7 +1,7 @@
 import UserService from "./services";
 import { Request, Response } from "express";
 import { validateUser } from "./user.validate";
-import { PrismaErrorHandler } from "../utils/prismaErrorHandler.util";
+import { handlePrismaError } from "../utils/prismaErrorHandler.util";
 
 //todo: after firebase auth integration, request should only contain firebase auth token in headers
 //todo: we'll have a middleware that handle the firebase auth token verification and add the user object to the request object then we'll use it to create/update the user in the database
@@ -17,7 +17,7 @@ export const createUserAccount = async (req: Request, res: Response) => {
 
     return res.status(201).json({ user: createdUser });
   } catch (error: any) {
-    return PrismaErrorHandler(res, error, "User");
+    return handlePrismaError(res, error, "User");
   }
 };
 
@@ -36,7 +36,7 @@ export const getUserDataById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "User Not Found" });
     }
   } catch (error: any) {
-    return PrismaErrorHandler(res, error, "User");
+    return handlePrismaError(res, error, "User");
   }
 };
 
@@ -47,7 +47,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
       return res.status(200).json({ users });
     }
   } catch (error: any) {
-    return PrismaErrorHandler(res, error, "User");
+    return handlePrismaError(res, error, "User");
   }
 };
 
@@ -66,6 +66,6 @@ export const updateUserData = async (req: Request, res: Response) => {
 
     return res.status(200).json({ user: updatedUser });
   } catch (error: any) {
-    return PrismaErrorHandler(res, error, "User");
+    return handlePrismaError(res, error, "User");
   }
 };
