@@ -21,3 +21,17 @@ export const createPost = async (post: Post): Promise<{ id: string }> => {
         throw error;
     }
 }
+
+export const deletePost = async (id: string): Promise<{ id: string }> => {
+    try {
+        const deletedPost = await prisma.post.delete({
+            where: { id },
+            select: {
+                id: true,
+            }
+        });
+        return deletedPost;
+    } catch (error) {
+        throw error;
+    }
+}
