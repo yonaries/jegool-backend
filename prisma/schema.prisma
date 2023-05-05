@@ -312,6 +312,7 @@ enum GoalType {
 }
 
 enum PostStatus {
+  SCHEDULED
   BANNED
   ACTIVE
   INACTIVE
