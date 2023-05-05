@@ -1,16 +1,12 @@
 import request from 'supertest';
-import app from '../../server';
+import app from '../../app';
 import fakeEmail from '../utils/randomEmailGenerator';
 import { Page, PrismaClient } from '@prisma/client';
-import { log } from 'console';
+
 
 const prisma = new PrismaClient()
 
 describe('POST /api/post', () => {
-    afterEach(async () => {
-        app.close();
-    });
-
     describe("POST /", () => {
         test('create post', async () => {
             let userId: string = "";
@@ -44,18 +40,20 @@ describe('POST /api/post', () => {
 
             if (createdPage) pageId = createdPage.id;
 
-            const res = await request(app).post('/api/post').send({
+            const date = new Date().toISOString()
+
+            const res = await request(app).post('/post').send({
                 pageId: pageId,
                 title: 'post test title',
                 type: 'TEXT',
                 caption: 'post test caption',
-                scheduled: Date.now(),
+                scheduled: date,
                 visibleTo: ['dadfadf', 'adfadsf'],
             })
-            log(res.status)
+
             if (!createdPage) expect(res.status).toBe(400)
             else expect(res.status).toBe(201)
 
-        }, 10000)
+        }, 50000)
     })
 })

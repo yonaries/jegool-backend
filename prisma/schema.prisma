@@ -230,7 +230,7 @@ model Project {
   description String     @db.Text
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  visibleTo   Json?      @default("{\"memberships\": \"[]\"}")
+  visibleTo   Json?
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
@@ -250,7 +250,7 @@ model Post {
   caption   String?     @db.Text
   thumbnail String?
   file      String?
-  visibleTo Json?       @default("{\"memberships\": \"[]\"}")
+  visibleTo Json?
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String

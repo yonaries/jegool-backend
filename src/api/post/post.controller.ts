@@ -12,12 +12,6 @@ export default class PostController {
             const { error } = validatePost(post)
             if (error) return res.status(400).json({ error: error.message })
 
-            if (post.visibleTo) {
-                const list: string[] = post.visibleTo
-                post.visibleTo = {
-                    memberships: list
-                }
-            }
             const createdPost = await PostServices.createPost(post)
             return res.status(201).json({ post: createdPost })
         } catch (error) {
