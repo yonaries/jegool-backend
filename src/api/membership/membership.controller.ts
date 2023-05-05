@@ -35,7 +35,7 @@ export default class MembershipController {
     }
   }
 
-  static async updateMembershipById(req: Request, res: Response) {
+  static async updateUserById(req: Request, res: Response) {
     const { id } = req.params;
     const membership = req.body;
 
