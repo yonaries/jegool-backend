@@ -60,7 +60,6 @@ describe("/user", () => {
         userId = createdUser.id;
       }
       const res = await request(app).delete(`/user/${userId}`);
-      console.log("USER_ID ::: ", userId);
       expect(res.status).toBe(200);
     }, 50000);
 
