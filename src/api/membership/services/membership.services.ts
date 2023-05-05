@@ -16,7 +16,7 @@ export const createMembership = (membership: Membership) => {
   }
 };
 
-export const getMembershipById = async(id: string) => {
+export const getMembershipById = async (id: string) => {
   try {
     const membership = await prisma.membership.findUnique({
       where: {
@@ -27,4 +27,21 @@ export const getMembershipById = async(id: string) => {
   } catch (error) {
     throw error;
   }
-}
+};
+
+export const updateMembershipById = async (
+  id: string,
+  membership: Membership
+) => {
+  try {
+    const updatedMembership = await prisma.membership.update({
+      data: membership,
+      where: {
+        id: id,
+      },
+    });
+    return updatedMembership;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -29,7 +29,29 @@ export default class MembershipController {
       const membership = await MembershipService.getMembershipById(id);
       if (!membership)
         return res.status(404).json({ error: "Membership not found" });
-      return res.status(200).json({membership});
+      return res.status(200).json({ membership });
+    } catch (error) {
+      handlePrismaError(res, error, "Membership");
+    }
+  }
+
+  static async updateMembershipById(req: Request, res: Response) {
+    const { id } = req.params;
+    const membership = req.body;
+
+    if (id.length === 0 || !id)
+      return res.status(400).json({ error: "Membership Id Is Required" });
+
+    try {
+      const { error } = validateMembership(membership);
+      if (error) return res.status(400).json({ error: error.message });
+
+      const updatedMembership = await MembershipService.updateMembershipById(
+        id,
+        membership
+      );
+
+      return res.status(200).json({ membership: updatedMembership });
     } catch (error) {
       handlePrismaError(res, error, "Membership");
     }
