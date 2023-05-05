@@ -111,4 +111,30 @@ describe("/membership", () => {
         .expect(404);
     });
   });
+
+  describe("DELETE /", () => {
+    beforeAll(async () => {
+      await prisma.membership.deleteMany({});
+      await prisma.page.deleteMany({});
+      await prisma.user.deleteMany({});
+    }, 200000);
+    afterAll(async () => {
+      await prisma.membership.deleteMany({});
+      await prisma.page.deleteMany({});
+      await prisma.user.deleteMany({});
+    }, 200000);
+
+    test("should return 200 if membership is deleted", async () => {
+      await createMembership();
+      const res = await request(app).delete("/membership/" + membershipId);
+      expect(res.status).toBe(200);
+    }, 1000000);
+
+    test("should return 404 if wrong id is provided", async () => {
+      const res = await request(app)
+        .delete("/membership" + "wrongID")
+        .send({});
+      expect(res.status).toBe(404);
+    });
+  });
 });
