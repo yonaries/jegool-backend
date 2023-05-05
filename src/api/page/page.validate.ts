@@ -12,6 +12,17 @@ const options = {
 const pageSchema = Joi.object({
     ownerId: Joi.string().id().required(),
     name: Joi.string().min(3).max(50).required(),
+    url: Joi.string().uri(),
+    headline: Joi.string(),
+    profileImage: Joi.string(),
+    description: Joi.string(),
+    status: Joi.string().valid('DORMANT', 'BANNED', 'ACTIVE', 'INACTIVE'),
+    earningsVisibility: Joi.boolean(),
+    supportersVisibility: Joi.boolean(),
+    highlightedMembership: Joi.string().id(),
+    coverImage: Joi.string().uri(),
+    introVideo: Joi.string().uri(),
+    brandColor: Joi.string(),
 });
 
 export const validatePage = (
