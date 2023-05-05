@@ -17,3 +17,22 @@ export const createPage = async (page: Page): Promise<{ id: string }> => {
     }
 
 }
+
+export const updatePage = async (id: string, page: Page): Promise<{ id: string }> => {
+    try {
+        const updatedPage = await prisma.page.update({
+            where: {
+                id: id,
+            },
+            data: page,
+            select: {
+                id: true,
+            },
+        });
+        return updatedPage;
+
+    } catch (error) {
+        throw error;
+    }
+
+}

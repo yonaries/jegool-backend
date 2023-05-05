@@ -23,4 +23,23 @@ export default class PageController {
             return handlePrismaError(res, error, 'Page')
         }
     }
+
+    static async updatePage(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (id.length === 0 || !id) {
+            return res.status(400).json({ error: "Page Id Is Required" });
+        }
+
+        try {
+            const page = req.body
+            const { error } = validatePage(page)
+            if (error) return res.status(400).json({ error: error.message })
+
+            const updatedPage = await PageServices.updatePage(id, page)
+            return res.status(204).json({ page: updatedPage })
+        } catch (error) {
+            return handlePrismaError(res, error, 'Page')
+        }
+    }
 }
