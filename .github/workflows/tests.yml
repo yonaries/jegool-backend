@@ -1,0 +1,28 @@
+name: Remove Tests on Approval
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  remove-tests:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove test files
+        run: |
+          find . -name "*.test.ts" -type f -delete
+      - name: Commit changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git commit -am "Remove test files"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
