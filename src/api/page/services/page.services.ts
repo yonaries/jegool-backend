@@ -36,3 +36,21 @@ export const updatePage = async (id: string, page: Page): Promise<{ id: string }
     }
 
 }
+
+export const deletePage = async (id: string): Promise<{ id: string }> => {
+    try {
+        const deletedPage = await prisma.page.delete({
+            where: {
+                id: id,
+            },
+            select: {
+                id: true,
+            },
+        });
+        return deletedPage;
+
+    } catch (error) {
+        throw error;
+    }
+
+}

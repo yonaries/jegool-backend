@@ -42,4 +42,19 @@ export default class PageController {
             return handlePrismaError(res, error, 'Page')
         }
     }
+
+    static async deletePage(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (id.length === 0 || !id) {
+            return res.status(400).json({ error: "Page Id Is Required" });
+        }
+
+        try {
+            const deletedPage = await PageServices.deletePage(id)
+            return res.status(204).json({ page: deletedPage })
+        } catch (error) {
+            return handlePrismaError(res, error, 'Page')
+        }
+    }
 }

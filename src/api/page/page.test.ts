@@ -80,4 +80,38 @@ describe("/page", () => {
             expect(res.status).toBe(204);
         }, 10000);
     });
+
+    describe("DELETE /", () => {
+        test("should delete a page", async () => {
+            let userId: string = "";
+            const createdUser = await prisma.user.create({
+                data: {
+                    firstName: "pagedeletetest",
+                    lastName: "pagedeletetest",
+                    displayName: "pagedeletetest",
+                    email: fakeEmail(),
+                    residence: "ET",
+                },
+            });
+            if (createdUser) {
+                userId = createdUser.id;
+            }
+
+            const name = (Math.random() + 1).toString(36).substring(7)
+            const page = {
+                ownerId: userId,
+                name: name,
+                url: `https://jegool.com/${name.replace(/\s+/g, '').toLowerCase()}`
+            } as Page
+
+            const createdPage = await prisma.page.create({
+                data: page,
+                select: {
+                    id: true,
+                },
+            });
+            const res = await request(app).delete(`/page/${createdPage.id}`);
+            expect(res.status).toBe(204);
+        }, 10000);
+    })
 })
