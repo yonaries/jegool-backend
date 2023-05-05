@@ -60,15 +60,55 @@ describe("/membership", () => {
       await prisma.user.deleteMany({});
     }, 200000);
 
-    it("should return all memberships", async () => {
+    it("should return membership by id", async () => {
       await createMembership();
       const res = await request(app).get("/membership/" + membershipId);
       expect(res.status).toBe(200);
-    });
+    }, 10000);
 
     it("should return 404 if membership not found", async () => {
       const res = await request(app).get("/membership/" + "wrongId");
       expect(res.status).toBe(404);
+    }, 10000);
+  });
+
+  describe("PUT /", () => {
+    beforeAll(async () => {
+      await prisma.membership.deleteMany({});
+      await prisma.page.deleteMany({});
+      await prisma.user.deleteMany({});
+    }, 200000);
+    afterAll(async () => {
+      await prisma.membership.deleteMany({});
+      await prisma.page.deleteMany({});
+      await prisma.user.deleteMany({});
+    }, 200000);
+
+    test("should return 200 if membership is updated", async () => {
+      await createMembership();
+      const res = await request(app)
+        .put("/membership/" + membershipId)
+        .send({
+          title: "membershipTest1",
+          fee: 1000,
+          pageId: pageId,
+          status: true,
+        });
+
+      expect(res.status).toBe(200);
+    }, 1000000);
+
+    test("should return 404 if nedded data is not provided", () => {
+      return request(app)
+        .put("/membership/" + membershipId)
+        .send({})
+        .expect(400);
+    });
+    test("should return 404 if wrong id is provided", () => {
+      return request(app)
+        .put("/membership" + "wrongID")
+        .send({})
+        .expect(404);
     });
   });
 });
