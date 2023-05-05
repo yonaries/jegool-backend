@@ -45,3 +45,18 @@ export const updateMembershipById = async (
     throw error;
   }
 };
+
+export const deleteMembershipById = async (
+  id: string
+): Promise<Membership | null> => {
+  try {
+    const deletedMembership = await prisma.membership.delete({
+      where: {
+        id: id,
+      },
+    });
+    return deletedMembership;
+  } catch (error) {
+    throw error;
+  }
+};
