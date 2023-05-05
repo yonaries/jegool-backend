@@ -10,14 +10,15 @@ const options = {
 };
 
 const postSchema = Joi.object({
+    pageId: Joi.string().id().required(),
     title: Joi.string().required(),
-    caption: Joi.string(),
     type: Joi.string().valid('TEXT', 'IMAGE', 'VIDEO', 'AUDIO', 'FILE').required(),
+    caption: Joi.string(),
     thumbnail: Joi.string(),
     file: Joi.string().uri(),
     visibleTo: Joi.array().items(Joi.string().id()),
     scheduled: Joi.date(),
-    status: Joi.string().valid('SCHEDULED', 'BANNED', 'ACTIVE', 'INACTIVE').required(),
+    status: Joi.string().valid('SCHEDULED', 'BANNED', 'ACTIVE', 'INACTIVE'),
 });
 
 export const validatePost = (
