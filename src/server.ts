@@ -20,10 +20,6 @@ app.use('/page', pageRouter);
 app.use('/post', postRouter);
 app.use("/membership", membershipRouter);
 
-app.get("/", (_req, res) => {
-  res.status(200).send("Hello World!");
-});
-
 const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

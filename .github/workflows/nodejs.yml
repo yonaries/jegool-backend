@@ -39,5 +39,5 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v3
-      - name: Install Dependencies
+      - name: Remove tests
         run: find . -name "*.test.ts" -type f -delete

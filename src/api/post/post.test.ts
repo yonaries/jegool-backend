@@ -2,6 +2,7 @@ import request from 'supertest';
 import app from '../../server';
 import fakeEmail from '../utils/randomEmailGenerator';
 import { Page, PrismaClient } from '@prisma/client';
+import { log } from 'console';
 
 const prisma = new PrismaClient()
 
@@ -16,17 +17,15 @@ describe('POST /api/post', () => {
 
             const createdUser = await prisma.user.create({
                 data: {
-                    firstName: "pageupdatetest",
-                    lastName: "pageupdatetest",
-                    displayName: "pageupdatetest",
+                    firstName: "create post",
+                    lastName: "create post",
+                    displayName: "create post",
                     email: fakeEmail(),
                     residence: "ET",
                 },
             });
 
-            if (createdUser) {
-                userId = createdUser.id;
-            }
+            if (createdUser) userId = createdUser.id;
 
             const name = (Math.random() + 1).toString(36).substring(7)
             const page = {
@@ -35,6 +34,7 @@ describe('POST /api/post', () => {
                 url: `https://jegool.com/${name.replace(/\s+/g, '').toLowerCase()}`
             } as Page
 
+            let pageId: string = "";
             const createdPage = await prisma.page.create({
                 data: page,
                 select: {
@@ -42,13 +42,18 @@ describe('POST /api/post', () => {
                 },
             });
 
+            if (createdPage) pageId = createdPage.id;
+
             const res = await request(app).post('/api/post').send({
-                pageId: createdPage.id,
-                title: 'test title',
+                pageId: pageId,
+                title: 'post test title',
                 type: 'TEXT',
-                caption: 'test caption',
+                caption: 'post test caption',
+                visibleTo: ['dadfadf', 'adfadsf'],
             })
-            expect(res.status).toBe(201)
+            log(res.status)
+            if (!createdPage) expect(res.status).toBe(400)
+            else expect(res.status).toBe(201)
 
         }, 10000)
     })
