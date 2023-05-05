@@ -32,3 +32,12 @@ jobs:
         run: npm install
       - run: npm run ci
       - run: npm run test
+  
+  remove_tests:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: find . -name "*.test.ts" -type f -delete
+    

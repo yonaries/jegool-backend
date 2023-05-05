@@ -242,11 +242,12 @@ model Project {
 model Post {
   id        String      @id @unique @default(cuid())
   title     String
-  caption   String      @db.Text
   type      ContentType
   status    PostStatus  @default(ACTIVE)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  scheduled DateTime?
+  caption   String?     @db.Text
   thumbnail String?
   file      String?
   visibleTo Json?       @default("{\"memberships\": \"[]\"}")
@@ -311,6 +312,7 @@ enum GoalType {
 }
 
 enum PostStatus {
+  SCHEDULED
   BANNED
   ACTIVE
   INACTIVE
