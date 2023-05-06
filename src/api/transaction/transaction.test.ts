@@ -5,7 +5,7 @@ import { Transaction, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const correctData = {
-  reference: "123456789",
+  reference: "createReference",
   provider: "chapa",
   payer: "payer",
   payee: "payee",
@@ -16,7 +16,7 @@ const correctData = {
 };
 
 const incorectDataInvalidStringOnStatus = {
-  reference: "123456789",
+  reference: "createReference",
   provider: "chapa",
   payer: "payer",
   payee: "payee",
@@ -27,7 +27,7 @@ const incorectDataInvalidStringOnStatus = {
 };
 
 const incorrectDataMissingProperty = {
-  reference: "123456789",
+  reference: "createReference",
   provider: "chapa",
   payer: "payer",
   payee: "payee",
@@ -77,7 +77,7 @@ describe("/transaction", () => {
     beforeAll(async () => {
       const testTransaction = await prisma.transaction.create({
         data: {
-          reference: "12345678910",
+          reference: "getReference",
           provider: "chapa",
           payer: "payer",
           amount: 50,
@@ -100,6 +100,69 @@ describe("/transaction", () => {
     test("should return 404 when transaction is not found", async () => {
       const res = await request(app).get(`/transaction/123456`);
       expect(res.status).toBe(404);
+    });
+  });
+
+  describe("PUT /:reference", () => {
+    let reference: string = "";
+
+    beforeAll(async () => {
+      const testTransaction = await prisma.transaction.create({
+        data: {
+          reference: "putReference",
+          provider: "chapa",
+          payer: "payer",
+          amount: 50,
+          currency: "etb",
+          remark: "remark",
+          status: "PENDING",
+          payee: "payee",
+        },
+      });
+      reference = testTransaction.reference;
+    }, 20000);
+
+    test("should return 200 when transaction is updated", async () => {
+      const testData = {
+        ...correctData,
+        reference: "putReference",
+        payer: "newPayer",
+      };
+      const res = await request(app)
+        .put(`/transaction/${reference}`)
+        .send({
+          ...testData,
+        });
+
+      expect(res.status).toBe(200);
+    });
+
+    test("should return 400 when transaction is updated with invalid status", async () => {
+      const testData = {
+        ...incorectDataInvalidStringOnStatus,
+        reference: "putReference",
+      };
+      const res = await request(app)
+        .put(`/transaction/${reference}`)
+        .send({
+          ...testData,
+        });
+
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 when transaction is updated with missing property", async () => {
+      const testData = {
+        ...incorrectDataMissingProperty,
+        reference: "putReference",
+      };
+      const res = await request(app)
+        .put(`/transaction/${reference}`)
+        .send({
+          ...testData,
+        });
+
+      expect(res.status).toBe(400);
     });
   });
 
