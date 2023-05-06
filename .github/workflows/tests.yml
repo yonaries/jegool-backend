@@ -39,23 +39,46 @@ jobs:
       #     git commit -m "Test removed from CI pipeline" --signoff
       #     git push pipeline ${{ github.event.pull_request.head.ref }}
 
-      - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      # - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
+      #   with:
+      #     add: "."
+
+      #     remove: "--cached -r '*.test.ts'"
+
+      #     author_name: ${{github.event.pull_request.user.name}}
+
+      #     author_email: ${{github.event.pull_request.user.email}}
+
+      #     commit: --signoff
+
+      #     default_author: github_actor
+
+      #     fetch: false
+
+      #     message: "Test removed from CI pipeline"
+      #     pathspec_error_handling: ignore
+
+      #     push: "git push origin ${{ github.event.pull_request.head.ref }}"
+
+  remove-test-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          add: "."
+          ref: ${{ github.event.pull_request.head.sha }}
 
-          remove: "--cached -r '*.test.ts'"
+      - name: Remove test files
+        run: |
+          find . -name "*_test.go" -type f -delete
 
-          author_name: ${{github.event.pull_request.user.name}}
+      - name: Stage changes
+        run: git add .
 
-          author_email: ${{github.event.pull_request.user.email}}
+      - name: Commit changes
+        run: git commit -m "Remove test files"
 
-          commit: --signoff
-
-          default_author: github_actor
-
-          fetch: false
-
-          message: "Test removed from CI pipeline"
-          pathspec_error_handling: ignore
-
-          push: "git push origin ${{ github.event.pull_request.head.ref }}"
+      - name: Push changes
+        run: git push origin HEAD:${{ github.event.pull_request.head.ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GTH_TOKEN }}
