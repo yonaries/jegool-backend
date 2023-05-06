@@ -68,14 +68,22 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - run: |
-          echo "Author name: ${{ github.event.pull_request.user.login }}"
-          echo "Author email: ${{ github.event.pull_request.user.name }}"
-
-      - name: Set Git user name and email
+      - name: Fetch user details
+        id: fetch-user
         run: |
-          git config --global user.email "${{ github.event.pull_request.user.email }}"
-          git config --global user.name "${{ github.event.pull_request.user.login }}"
+          username=$(jq -r '.pull_request.user.login' $GITHUB_EVENT_PATH)
+          response=$(curl -s "https://api.github.com/users/$username")
+          email=$(echo $response | jq -r '.email')
+          echo "::set-output name=email::$email"
+
+      - name: Configure Git
+        run: |
+          email=$(/bin/cat $GITHUB_WORKSPACE/email.txt)
+          git config --global user.name "${{ github.event.pull_request.user.name }}"
+          git config --global user.email "$email"
+          git config --global core.autocrlf input
+          git config --global core.filemode false
+          git config --global color.ui true
 
       - name: Remove test files
         run: |
