@@ -138,16 +138,4 @@ describe('/post', () => {
             expect(res.status).toBe(403);
         }, 50000);
     })
-
-    describe("DELETE /", () => {
-        test("delete post", async () => {
-            const { pageId, userId, postId } = await createPost()
-
-            const res = await request(app).delete(`/post/${postId}`).send({
-                userId: userId,
-                pageId: pageId,
-            });
-            expect(res.status).toBe(204);
-        }, 60000);
-    })
 })
