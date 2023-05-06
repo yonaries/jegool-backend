@@ -1,15 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
-import app from '../../app';
-import fakeEmail from '../utils/randomEmailGenerator';
+import app from '../../../app';
+import fakeEmail from '../../utils/randomEmailGenerator';
 
-
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 const createPost = async (): Promise<{ pageId: string, userId: string, postId: string }> => {
     let pageId: string = "";
     let userId: string = "";
-    let postId: string = ""
+    let postId: string = "";
 
     const date = new Date().toISOString()
     const fakeName = () => (Math.random() + 1).toString(36).substring(7)
@@ -52,8 +51,7 @@ const createPost = async (): Promise<{ pageId: string, userId: string, postId: s
 
     return { pageId, userId, postId }
 };
-
-describe('/post', () => {
+describe("/post", () => {
 
     beforeEach(async () => {
         prisma.$connect();
@@ -63,35 +61,35 @@ describe('/post', () => {
         await prisma.$disconnect();
     });
     describe("PUT /", () => {
-        // beforeAll(async () => {
-        //     await prisma.post.deleteMany({});
-        //     await prisma.page.deleteMany({});
-        //     await prisma.user.deleteMany({});
-        // }, 200000);
+        beforeAll(async () => {
+            await prisma.post.deleteMany({});
+            await prisma.page.deleteMany({});
+            await prisma.user.deleteMany({});
+        }, 200000);
 
-        // afterAll(async () => {
-        //     await prisma.post.deleteMany({});
-        //     await prisma.page.deleteMany({});
-        //     await prisma.user.deleteMany({});
-        // }, 200000);
-        test('update post', async () => {
-            const { pageId, userId, postId } = await createPost()
+        afterAll(async () => {
+            await prisma.post.deleteMany({});
+            await prisma.page.deleteMany({});
+            await prisma.user.deleteMany({});
+        }, 200000);
+        test("update post", async () => {
+            const { pageId, userId, postId } = await createPost();
 
             const res = await request(app)
                 .put(`/post/${postId}`)
                 .send({
                     userId: userId,
                     pageId: pageId,
-                    title: 'post test title updated',
-                    type: 'TEXT',
-                    caption: 'post test caption updated',
-                    visibleTo: ['member2'],
-                })
-            expect(res.status).toBe(204)
-        }, 50000)
+                    title: "post test title updated",
+                    type: "TEXT",
+                    caption: "post test caption updated",
+                    visibleTo: ["member2"],
+                });
+            expect(res.status).toBe(204);
+        }, 50000);
 
         test("update post with wrong id", async () => {
-            const { pageId, userId, postId } = await createPost()
+            const { pageId, userId, postId } = await createPost();
 
             const res = await request(app)
                 .put(`/post/${postId}wrong`)
@@ -107,7 +105,7 @@ describe('/post', () => {
         }, 50000);
 
         test("update post with wrong userId", async () => {
-            const { pageId, userId, postId } = await createPost()
+            const { pageId, userId, postId } = await createPost();
 
             const res = await request(app)
                 .put(`/post/${postId}`)
@@ -123,7 +121,7 @@ describe('/post', () => {
         }, 50000);
 
         test("update post with wrong pageId", async () => {
-            const { pageId, userId, postId } = await createPost()
+            const { pageId, userId, postId } = await createPost();
 
             const res = await request(app)
                 .put(`/post/${postId}`)
@@ -137,17 +135,5 @@ describe('/post', () => {
                 });
             expect(res.status).toBe(403);
         }, 50000);
-    })
-
-    describe("DELETE /", () => {
-        test("delete post", async () => {
-            const { pageId, userId, postId } = await createPost()
-
-            const res = await request(app).delete(`/post/${postId}`).send({
-                userId: userId,
-                pageId: pageId,
-            });
-            expect(res.status).toBe(204);
-        }, 60000);
-    })
+    });
 })

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --forceExit --detectOpenHandles --verbose --watchAll=false --passWithNoTests",
+    "test": "jest --forceExit --detectOpenHandles --watchAll=false --passWithNoTests",
     "dev": "nodemon --exec ts-node src/server.ts",
     "start": "ts-node -T ./src/server.ts",
     "build": "tsc --build",
