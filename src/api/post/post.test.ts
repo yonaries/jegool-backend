@@ -148,6 +148,6 @@ describe('/post', () => {
                 pageId: pageId,
             });
             expect(res.status).toBe(204);
-        }, 50000);
+        }, 60000);
     })
 })

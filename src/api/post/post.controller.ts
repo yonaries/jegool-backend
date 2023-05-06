@@ -24,15 +24,20 @@ export default class PostController {
 
     static deletePost = async (req: Request, res: Response) => {
         const { id } = req.params
-        const { pageId } = req.body
-        const { uid } = req.body.user
+        const { pageId, userId } = req.body
 
         try {
             const page = await PageServices.getPageById(pageId)
             if (!page) return res.status(404).json({ error: 'Page not found' })
-            if (!page.id || page.ownerId !== uid) return res.status(403).json({ error: 'Unauthorized request' })
+            if (!page.id || page.ownerId !== userId) return res.status(403).json({ error: 'Unauthorized request' })
 
-            //todo: check if post is in page before deleting by id
+            const postInPage = await PostController.prisma.post.findFirst({
+                where: {
+                    id,
+                    pageId: pageId
+                }
+            })
+            if (!postInPage) return res.status(404).json({ error: 'Post not found' })
 
             const deletedPost = await PostServices.deletePost(id)
             return res.status(204).json({ post: deletedPost })

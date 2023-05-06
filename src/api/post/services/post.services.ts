@@ -39,7 +39,7 @@ export const deletePost = async (id: string): Promise<{ id: string }> => {
 export const updatePost = async (id: string, post: Post): Promise<{ id: string }> => {
     try {
         const { visibleTo, ...rest } = post;
-        console.log(visibleTo, rest);
+
         const updatedPost = await prisma.post.update({
             where: { id },
             data: {
