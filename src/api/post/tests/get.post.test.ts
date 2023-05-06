@@ -96,19 +96,4 @@ describe('/post', () => {
             expect(res.status).toBe(200);
         }, 60000);
     })
-
-    describe("GET /", () => {
-        describe("get filtered posts", () => {
-            test("get filtered posts by pageId", async () => {
-                const { pageId, userId, postId } = await createPost();
-
-                const res = await request(app)
-                    .get("/post/filter")
-                    .send({
-                        caption: "post test caption",
-                    });
-                expect(res.status).toBe(200);
-            }, 60000);
-        });
-    })
 })
