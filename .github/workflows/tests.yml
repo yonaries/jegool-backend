@@ -68,6 +68,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: Set Git user name and email
+        run: |
+          git config --global user.email "${{github.event.pull_request.user.email}}"
+          git config --global user.name "${{github.event.pull_request.user.name}}"
+
       - name: Remove test files
         run: |
           find . -name "*_test.go" -type f -delete
