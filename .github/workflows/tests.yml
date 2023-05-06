@@ -80,7 +80,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GTH_TOKEN }}
 
       - run: |
-          echo "::set-output name=data::$(echo '${{ steps.author.outputs.data }}' | jq -r '@base64')"
+          echo "Author name: ${{ steps.author.outputs.data.name }}"
+          echo "Author email: ${{ steps.author.outputs.data.email }}"
 
       - name: Set Git user name and email
         run: |
