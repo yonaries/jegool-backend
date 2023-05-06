@@ -250,7 +250,7 @@ model Post {
   caption   String?     @db.Text
   thumbnail String?
   file      String?
-  visibleTo Json?
+  visibleTo Json?       @default("{\"memberships\": \"[]\"}")
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
