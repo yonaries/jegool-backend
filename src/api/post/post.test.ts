@@ -6,16 +6,16 @@ import { Page, PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient()
 
-describe('POST /api/post', () => {
-    describe("DELETE /", () => {
-        test('delete post', async () => {
+describe('/api/post', () => {
+    describe("GET /", () => {
+        test('get post', async () => {
             let userId: string = "";
 
             const createdUser = await prisma.user.create({
                 data: {
-                    firstName: "delete post",
-                    lastName: "delete post",
-                    displayName: "delete post",
+                    firstName: "get post",
+                    lastName: "get post",
+                    displayName: "get post",
                     email: fakeEmail(),
                     residence: "ET",
                 },
@@ -52,15 +52,13 @@ describe('POST /api/post', () => {
             })
             expect(createdPost.status).toBe(201)
 
-            const res = await request(app).delete(`/post/${createdPost.body.post.id}`).send({
-                pageId: pageId,
-                user: {
-                    uid: userId
-                }
-            })
-
-            expect(res.status).toBe(204)
-
+            const res = await request(app).get(`/post/${createdPost.body.post.id}`)
+            expect(res.status).toBe(200)
         }, 50000)
+
+        test('get all posts', async () => {
+            const res = await request(app).get('/post')
+            expect(res.status).toBe(200)
+        })
     })
 })
