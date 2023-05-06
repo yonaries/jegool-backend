@@ -1,15 +1,13 @@
 name: Remove Tests on Approval
 
 on:
-  # pull_request_review:
-  #   types: [submitted]
-  pull_request:
-    types: [closed]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   remove-test-files:
     runs-on: ubuntu-latest
-    # if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
