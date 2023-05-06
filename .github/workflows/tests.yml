@@ -79,6 +79,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GTH_TOKEN }}
 
+      - run: |
+          echo "::set-output name=data::$(echo '${{ steps.author.outputs.data }}' | jq -r '@base64')"
+
       - name: Set Git user name and email
         run: |
           git config --global user.email "${{ steps.author.outputs.data.email }}"
