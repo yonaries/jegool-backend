@@ -74,8 +74,7 @@ jobs:
           git config --local user.name "yonaries"
 
       - name: Remove test files
-        run: |
-          find . -name "*_test.go" -type f -delete
+        run: git rm -r '*.test.ts'
 
       - name: Stage changes
         run: git add .
