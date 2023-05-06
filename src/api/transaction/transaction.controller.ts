@@ -39,4 +39,28 @@ export default class TransactionController {
       handlePrismaError(res, error, "Transaction");
     }
   }
+
+  static async updateTransactionByReference(req: Request, res: Response) {
+	const { reference } = req.params;
+	const transaction = req.body;
+
+	if (reference.length === 0 || !reference)
+	  return res
+		.status(400)
+		.json({ error: "Transaction Reference Is Required" });
+
+	try {
+	  const { error } = validateTransaction(transaction);
+	  if (error) return res.status(400).json({ error: error.message });
+
+	  const updatedTransaction = await TransactionServices.updateTransactionByReference(
+		reference,
+		transaction
+	  );
+
+	  return res.status(200).json({ transaction: updatedTransaction });
+	} catch (error) {
+	  handlePrismaError(res, error, "Transaction");
+	}
+  }
 }

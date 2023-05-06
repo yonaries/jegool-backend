@@ -36,3 +36,21 @@ export const getTransactionByReference = async (
     throw error;
   }
 };
+
+export const updateTransactionByReference = async (
+  reference: string,
+  transaction: Transaction
+): Promise<Transaction | null> => {
+  try {
+    const updatedTransaction = await prisma.transaction.update({
+      where: {
+        reference,
+      },
+      data: transaction,
+    });
+
+    return updatedTransaction;
+  } catch (error) {
+    throw error;
+  }
+};
