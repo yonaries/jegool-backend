@@ -35,3 +35,23 @@ export const deletePost = async (id: string): Promise<{ id: string }> => {
         throw error;
     }
 }
+
+export const updatePost = async (id: string, post: Post): Promise<{ id: string }> => {
+    try {
+        const { visibleTo, ...rest } = post;
+        console.log(visibleTo, rest);
+        const updatedPost = await prisma.post.update({
+            where: { id },
+            data: {
+                ...rest,
+                visibleTo: visibleTo as Prisma.JsonArray
+            },
+            select: {
+                id: true,
+            },
+        });
+        return updatedPost;
+    } catch (error) {
+        throw error;
+    }
+}

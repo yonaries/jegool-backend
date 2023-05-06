@@ -1,66 +1,153 @@
+import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import app from '../../app';
 import fakeEmail from '../utils/randomEmailGenerator';
-import { Page, PrismaClient } from '@prisma/client';
 
 
 const prisma = new PrismaClient()
 
-describe('POST /api/post', () => {
-    describe("DELETE /", () => {
-        test('delete post', async () => {
-            let userId: string = "";
+const createPost = async (): Promise<{ pageId: string, userId: string, postId: string }> => {
+    let pageId: string = "";
+    let userId: string = "";
+    let postId: string = ""
 
-            const createdUser = await prisma.user.create({
-                data: {
-                    firstName: "delete post",
-                    lastName: "delete post",
-                    displayName: "delete post",
-                    email: fakeEmail(),
-                    residence: "ET",
-                },
-            });
+    const date = new Date().toISOString()
+    const fakeName = () => (Math.random() + 1).toString(36).substring(7)
 
-            if (createdUser) userId = createdUser.id;
+    const createdUser = await prisma.user.create({
+        data: {
+            firstName: "testPostUser",
+            lastName: "testPostUser",
+            displayName: "testPostUser",
+            email: fakeEmail(),
+            residence: "ET",
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (createdUser) userId = createdUser.id;
+    const createdPage = await prisma.page.create({
+        data: {
+            url: `www.jegool.com/${fakeName()}`,
+            name: fakeName(),
+            ownerId: userId,
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (createdPage) pageId = createdPage.id;
 
-            const name = (Math.random() + 1).toString(36).substring(7)
-            const page = {
-                ownerId: userId,
-                name: name,
-                url: `https://jegool.com/${name.replace(/\s+/g, '').toLowerCase()}`
-            } as Page
+    const createdPost = await request(app).post('/post').send({
+        pageId: pageId,
+        title: `post ${fakeName()}`,
+        type: 'TEXT',
+        caption: 'post test caption',
+        scheduled: date,
+        visibleTo: ['member1', 'member2'],
+    })
 
-            let pageId: string = "";
-            const createdPage = await prisma.page.create({
-                data: page,
-                select: {
-                    id: true,
-                },
-            });
+    postId = createdPost.body.post.id
 
-            if (createdPage) pageId = createdPage.id;
+    return { pageId, userId, postId }
+};
 
-            const date = new Date().toISOString()
+describe('/post', () => {
 
-            const createdPost = await request(app).post('/post').send({
-                pageId: pageId,
-                title: 'post test title',
-                type: 'TEXT',
-                caption: 'post test caption',
-                scheduled: date,
-                visibleTo: ['member1', 'member2'],
-            })
-            expect(createdPost.status).toBe(201)
+    beforeEach(async () => {
+        prisma.$connect();
+    });
 
-            const res = await request(app).delete(`/post/${createdPost.body.post.id}`).send({
-                pageId: pageId,
-                user: {
-                    uid: userId
-                }
-            })
+    afterEach(async () => {
+        await prisma.$disconnect();
+    });
+    describe("PUT /", () => {
+        // beforeAll(async () => {
+        //     await prisma.post.deleteMany({});
+        //     await prisma.page.deleteMany({});
+        //     await prisma.user.deleteMany({});
+        // }, 200000);
 
+        // afterAll(async () => {
+        //     await prisma.post.deleteMany({});
+        //     await prisma.page.deleteMany({});
+        //     await prisma.user.deleteMany({});
+        // }, 200000);
+        test('update post', async () => {
+            const { pageId, userId, postId } = await createPost()
+
+            const res = await request(app)
+                .put(`/post/${postId}`)
+                .send({
+                    userId: userId,
+                    pageId: pageId,
+                    title: 'post test title updated',
+                    type: 'TEXT',
+                    caption: 'post test caption updated',
+                    visibleTo: ['member2'],
+                })
             expect(res.status).toBe(204)
-
         }, 50000)
+
+        test("update post with wrong id", async () => {
+            const { pageId, userId, postId } = await createPost()
+
+            const res = await request(app)
+                .put(`/post/${postId}wrong`)
+                .send({
+                    userId: userId,
+                    pageId: pageId,
+                    title: "post test title updated",
+                    type: "TEXT",
+                    caption: "post test caption updated",
+                    visibleTo: ["member2", "member1"],
+                });
+            expect(res.status).toBe(404);
+        }, 50000);
+
+        test("update post with wrong userId", async () => {
+            const { pageId, userId, postId } = await createPost()
+
+            const res = await request(app)
+                .put(`/post/${postId}`)
+                .send({
+                    userId: `${userId}wrong`,
+                    pageId: pageId,
+                    title: "post test title updated",
+                    type: "TEXT",
+                    caption: "post test caption updated",
+                    visibleTo: ["member2", "member1"],
+                });
+            expect(res.status).toBe(403);
+        }, 50000);
+
+        test("update post with wrong pageId", async () => {
+            const { pageId, userId, postId } = await createPost()
+
+            const res = await request(app)
+                .put(`/post/${postId}`)
+                .send({
+                    userId: userId,
+                    pageId: `${pageId}wrong`,
+                    title: "post test title updated",
+                    type: "TEXT",
+                    caption: "post test caption updated",
+                    visibleTo: ["member2", "member1"],
+                });
+            expect(res.status).toBe(403);
+        }, 50000);
+    })
+
+    describe("DELETE /", () => {
+        test("delete post", async () => {
+            const { pageId, userId, postId } = await createPost()
+
+            const res = await request(app).delete(`/post/${postId}`).send({
+                userId: userId,
+                pageId: pageId,
+            });
+            expect(res.status).toBe(204);
+        }, 50000);
     })
 })
