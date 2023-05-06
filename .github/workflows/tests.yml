@@ -7,61 +7,9 @@ on:
     types: [closed]
 
 jobs:
-  approved:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          ref: ${{ github.event.pull_request.head.ref }}
-
-      # - name: Git add remote
-      #   run: git remote add origin https://github.com/yonaries/jegool-backend.git
-
-      # - name: Git fetch
-      #   run: git fetch pipeline
-
-      # - name: Git checkout
-      #   run: git checkout pipeline/${{ github.event.pull_request.head.ref }}
-
-      # - name: Git pull
-      #   run: git pull pipeline ${{ github.event.pull_request.head.ref }} --rebase --autostash
-
-      # - name: Remove tests
-      #   run: git rm -r '*.test.ts'
-
-      # - name: Add, commit and push
-      #   run: |
-      #     git config --local user.email ${{github.event.pull_request.user.email}}"
-      #     git config --local user.name ${{github.event.pull_request.user.name}}"
-      #     git add .
-      #     git commit -m "Test removed from CI pipeline" --signoff
-      #     git push pipeline ${{ github.event.pull_request.head.ref }}
-
-      # - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
-      #   with:
-      #     add: "."
-
-      #     remove: "--cached -r '*.test.ts'"
-
-      #     author_name: ${{github.event.pull_request.user.name}}
-
-      #     author_email: ${{github.event.pull_request.user.email}}
-
-      #     commit: --signoff
-
-      #     default_author: github_actor
-
-      #     fetch: false
-
-      #     message: "Test removed from CI pipeline"
-      #     pathspec_error_handling: ignore
-
-      #     push: "git push origin ${{ github.event.pull_request.head.ref }}"
-
   remove-test-files:
     runs-on: ubuntu-latest
+    # if: github.event.review.state == 'approved'
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -80,7 +28,10 @@ jobs:
         run: git add .
 
       - name: Commit changes
-        run: git commit -m "Remove test files"
+        run: git commit -m "CI(pipeline) - Remove test files"
+
+      - name: Git pull
+        run: git pull origin ${{ github.event.pull_request.head.ref }} --rebase --autostash
 
       - name: Push changes
         run: git push origin HEAD:${{ github.event.pull_request.head.ref }}
