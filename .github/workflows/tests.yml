@@ -50,5 +50,4 @@ jobs:
           message: "Test removed from CI pipeline"
           pathspec_error_handling: ignore
 
-          pull: "--rebase --autostash"
           push: "git push origin ${{ github.event.pull_request.head.ref }}"
