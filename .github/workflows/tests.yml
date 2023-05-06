@@ -68,25 +68,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Get pull request author info
-        id: author
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /users/${{ github.event.pull_request.user.login }}
-          mediaType: '{"header":"Accept: application/vnd.github.v3+json"}'
-          repo: ${{ github.event.pull_request.head.repo.full_name }}
-          owner: ${{ github.event.pull_request.head.repo.owner.login }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GTH_TOKEN }}
-
       - run: |
-          echo "Author name: ${{ steps.author.outputs.data.name }}"
-          echo "Author email: ${{ steps.author.outputs.data.email }}"
+          echo "Author name: ${{ github.event.pull_request.user.login }}"
+          echo "Author email: ${{ github.event.pull_request.user.email }}"
 
       - name: Set Git user name and email
         run: |
-          git config --global user.email "${{ steps.author.outputs.data.email }}"
-          git config --global user.name "${{ steps.author.outputs.data.name }}"
+          git config --global user.email "${{ github.event.pull_request.user.email }}"
+          git config --global user.name "${{ github.event.pull_request.user.login }}"
 
       - name: Remove test files
         run: |
