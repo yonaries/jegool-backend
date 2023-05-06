@@ -20,3 +20,19 @@ export const createTransaction = async (
     throw error;
   }
 };
+
+export const getTransactionByReference = async (
+  reference: string
+): Promise<Transaction | null> => {
+  try {
+    const transaction = await prisma.transaction.findUnique({
+      where: {
+        reference,
+      },
+    });
+
+    return transaction;
+  } catch (error) {
+    throw error;
+  }
+};
