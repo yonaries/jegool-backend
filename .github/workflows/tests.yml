@@ -28,14 +28,14 @@ jobs:
       - name: Git pull
         run: git pull pipeline ${{ github.event.pull_request.head.ref }} --rebase --autostash
 
-      - name: Remove tests
-        run: git rm -r '*.test.ts'
+      # - name: Remove tests
+      #   run: git rm -r '*.test.ts'
 
       - uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
         with:
           add: "."
 
-          # remove: "--cached -r '*.test.ts'"
+          remove: "--cached -r '*.test.ts'"
 
           author_name: ${{github.event.pull_request.user.login}}
 
@@ -50,5 +50,4 @@ jobs:
           message: "Test removed from CI pipeline"
           pathspec_error_handling: ignore
 
-          # pull: "git pull pipeline ${{ github.event.pull_request.head.ref }} --rebase --autostash"
-          push: true
+          push: "git push pipeline ${{ github.event.pull_request.head.ref }}"
