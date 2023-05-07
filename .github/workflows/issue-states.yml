@@ -1,4 +1,4 @@
-name: 'Issue States'
+name: "Issue States"
 
 on:
   project_card:
@@ -14,3 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: dessant/issue-states@v3
+        with:
+          github-token: ${{ github.token }}
+          open-issue-columns: ""
+          closed-issue-columns: "Closed, Done"
+          log-output: false

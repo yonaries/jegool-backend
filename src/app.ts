@@ -7,7 +7,7 @@ import pageRouter from "./api/page/page.routes";
 import membershipRouter from "./api/membership/membership.routes";
 import postRouter from "./api/post/post.routes";
 import transactionRouter from "./api/transaction/transaction.routes";
-import subscriptionRouter from "./api/subscription/subscription.routes";
+import projectRouter from "./api/project/project.routes";
 
 const app = express();
 
@@ -20,7 +20,7 @@ app.use("/page", pageRouter);
 app.use("/membership", membershipRouter);
 app.use("/post", postRouter);
 app.use("/transaction", transactionRouter);
-app.use("/subscription", subscriptionRouter);
+app.use("/project", projectRouter);
 
 app.get("/", (_req, res) => {
   res.status(200).send("Hello World!");
