@@ -9,12 +9,8 @@ const options = {
 };
 
 const subscriptionSchema = Joi.object({
-  status: Joi.string()
-    .valid(PaymentStatus.PENDING, PaymentStatus.SUCCESS)
-    .required(),
   subscriberId: Joi.string().required(),
   membershipId: Joi.string().required(),
-  transactionId: Joi.string().required(),
 });
 
 export const validateSubscription = (
