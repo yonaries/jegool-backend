@@ -72,4 +72,17 @@ export default class SubscriptionController {
       handlePrismaError(res, error, "Subscription");
     }
   }
+
+  static async getSubscriptionById(req: Request, res: Response) {
+    const { id } = req.params;
+
+    try {
+      const subscription = await SubscriptionServices.getSubscriptionById(id);
+      if (!subscription)
+        return res.status(404).json({ error: "Subscription not found" });
+      return res.status(200).json({ subscription });
+    } catch (error) {
+      handlePrismaError(res, error, "Subscription");
+    }
+  }
 }
