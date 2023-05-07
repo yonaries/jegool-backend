@@ -1,14 +1,10 @@
 import { Transaction, PrismaClient } from "@prisma/client";
+import { TransactionWithoutOnlyNeededFields } from "../transaction.type";
 
 const prisma = new PrismaClient();
 
-type transactionWithoutOnlyNeededFields = Omit<
-  Transaction,
-  "createdAt" | "reference"
->;
-
 export const createTransaction = async (
-  transaction: transactionWithoutOnlyNeededFields
+  transaction: TransactionWithoutOnlyNeededFields
 ): Promise<{
   reference: string;
 } | null> => {
