@@ -131,6 +131,22 @@ describe("subscription", () => {
     });
   });
 
+  describe("DELETE /subscription/:id", () => {
+    it("should delete a subscription if valid id is passed", async () => {
+      const res = await request(app).delete(
+        "/subscription/" + subscription.id
+      );
+
+      expect(res.status).toBe(204);
+    }, 200000);
+
+    it("should return 404 if invalid id is passed", async () => {
+      const res = await request(app).delete("/subscription/123");
+
+      expect(res.status).toBe(404);
+    });
+  });
+
   afterAll(async () => {
     await prisma.subscription.deleteMany();
     await prisma.membership.deleteMany();

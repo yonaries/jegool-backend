@@ -49,3 +49,16 @@ export const getSubscriptionById = async (
     throw error;
   }
 };
+
+export const deleteSubscriptionById = async(id: string): Promise<Subscription | null> => {
+  try {
+    const subscription = await prisma.subscription.delete({
+      where: {
+        id,
+      },
+    });
+    return subscription;
+  } catch (error) {
+    throw error
+  }
+}

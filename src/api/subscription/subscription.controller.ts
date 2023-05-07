@@ -16,7 +16,9 @@ export default class SubscriptionController {
       const { error } = validateSubscription(subscription);
       if (error) return res.status(400).json({ error: error.message });
 
-      const subscriber = await UserService.getUserById(subscription.subscriberId);
+      const subscriber = await UserService.getUserById(
+        subscription.subscriberId
+      );
       if (!subscriber)
         return res.status(404).json({ error: "Subscriber user not found" });
 
@@ -81,6 +83,20 @@ export default class SubscriptionController {
       if (!subscription)
         return res.status(404).json({ error: "Subscription not found" });
       return res.status(200).json({ subscription });
+    } catch (error) {
+      handlePrismaError(res, error, "Subscription");
+    }
+  }
+
+  static async deleteSubscriptionById(req: Request, res: Response) {
+    const { id } = req.params;
+
+    try {
+      const deletedSubscription =
+        await SubscriptionServices.deleteSubscriptionById(id);
+      if (!deletedSubscription)
+        return res.status(404).json({ error: "Subscription not found" });
+      return res.status(204).json({ subscription: deletedSubscription });
     } catch (error) {
       handlePrismaError(res, error, "Subscription");
     }
