@@ -32,9 +32,8 @@ export default class ProjectController {
 		req: express.Request,
 		res: express.Response,
 	) => {
-		const { id } = req.params;
-
 		try {
+			const { id } = req.params;
 			const project = await ProjectServices.getProjectById(id);
 			return res.status(200).json({ project: { ...project } });
 		} catch (error) {
@@ -46,9 +45,10 @@ export default class ProjectController {
 		req: express.Request,
 		res: express.Response,
 	) => {
-		const { pageId } = req.query;
-
 		try {
+			const { pageId } = req.query;
+			console.log("page id:", pageId);
+
 			await PageServices.getPageById(pageId as string);
 			const projects = await ProjectServices.getProjectsByPageId(
 				pageId as string,
@@ -63,14 +63,15 @@ export default class ProjectController {
 		req: express.Request,
 		res: express.Response,
 	) => {
-		const { membershipId } = req.query;
-
 		try {
-			await MembershipService.getMembershipById(membershipId as string);
+			const { membershipId } = req.query;
+			console.log("membership id:", membershipId);
 
+			await MembershipService.getMembershipById(membershipId as string);
 			const project = await ProjectServices.getProjectsByMembershipId(
 				membershipId as string,
 			);
+
 			return res.status(200).json({ project: [...project] });
 		} catch (error) {
 			return handlePrismaError(res, error, "Project");
