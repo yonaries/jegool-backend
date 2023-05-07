@@ -1,131 +1,104 @@
 import request from "supertest";
 import app from "../../app";
 import { Subscription, PrismaClient } from "@prisma/client";
-import { subscribe } from "diagnostics_channel";
 
+const userData = {
+  firstName: "John",
+  lastName: "Doe",
+  email: "johndoe@gmail.com",
+  displayName: "johndoe",
+  residence: "ET",
+};
 const prisma = new PrismaClient();
 
 describe("subscription", () => {
   describe("POST /subscription", () => {
-    let subscriberId = "";
-    let membershipId = "";
-    let transactionId = "";
+    let subscriber: any;
+    let pageOwner: any;
+    let page: any;
+    let membership: any;
+    let subscription: any;
     beforeAll(async () => {
-      const subscriber = await prisma.user.create({
-        data: {
-          firstName: "John",
-          lastName: "Doe",
-          displayName: "John Doe",
-          email: "johndoe@gmail.com",
-          residence: "Lagos",
-        },
-      });
-      subscriberId = subscriber.id;
-      const pageOwner = await prisma.user.create({
-        data: {
-          firstName: "pageOwner",
-          lastName: "pageOwner",
-          displayName: "pageOwner",
-          email: "pageOwner@gmail.com",
-          residence: "Lagos",
-        },
+      // create a subscriber
+      subscriber = await prisma.user.create({ data: userData });
+      // create a pageOwner
+      pageOwner = await prisma.user.create({
+        data: { ...userData, email: "abcd@gmail.com" },
       });
 
-      const page = await prisma.page.create({
+      // create a page
+      page = await prisma.page.create({
         data: {
           ownerId: pageOwner.id,
-          name: "testing subscription",
-          url: "https://www.testing.com",
+          name: "John Doe Page",
+          url: "https://johndoe.com",
         },
       });
-
-      const membership = await prisma.membership.create({
+      // create a membership
+      membership = await prisma.membership.create({
         data: {
-          title: "test membership",
-          fee: 1000,
-          status: true,
+          title: "Gold",
+          fee: 100,
           pageId: page.id,
         },
       });
-      membershipId = membership.id;
-
-      const transaction = await prisma.transaction.create({
-        data: {
-          reference: "testingsubscription",
-          provider: "paystack",
-          payer: subscriberId,
-          payee: pageOwner.id,
-          amount: 1000,
-          currency: "NGN",
-          remark: "test transaction",
-          status: "SUCCESS",
-        },
-      });
-      transactionId = transaction.reference;
     }, 200000);
 
-    test("should create a subscription and return 201 status", async () => {
-      const res = await request(app).post("/subscription").send({
-        status: "SUCCESS",
-        subscriberId,
-        membershipId,
-        transactionId,
-      });
-
+    it("should create a subscription", async () => {
+      subscription = {
+        subscriberId: subscriber.id,
+        membershipId: membership.id,
+      };
+      const res = await request(app).post("/subscription").send(subscription);
+      // console.log(res);
       expect(res.status).toBe(201);
-    });
+      expect(res.body.subscription).toBeTruthy();
+      expect(res.body.subscription.id).toBeTruthy();
+    }, 200000);
 
-    test("should return 400 status if subscriberId is not provided", async () => {
-      const res = await request(app).post("/subscription").send({
-        status: "SUCCESS",
-        membershipId,
-        transactionId,
-      });
-
+    it("should return 400 if subscriberId is not provided", async () => {
+      subscription = {
+        membershipId: membership.id,
+      };
+      const res = await request(app).post("/subscription").send(subscription);
       expect(res.status).toBe(400);
     });
 
-    test("should return 400 status if membershipId is not provided", async () => {
-      const res = await request(app).post("/subscription").send({
-        status: "SUCCESS",
-        subscriberId,
-        transactionId,
-      });
-
+    it("should return 400 if membershipId is not provided", async () => {
+      subscription = {
+        subscriberId: subscriber.id,
+      };
+      const res = await request(app).post("/subscription").send(subscription);
       expect(res.status).toBe(400);
     });
 
-    test("should return 400 status if transactionId is not provided", async () => {
-      const res = await request(app).post("/subscription").send({
-        status: "SUCCESS",
-        subscriberId,
-        membershipId,
-      });
+    it("should return 404 if subscriber is not found", async () => {
+      subscription = {
+        subscriberId: "123",
+        membershipId: membership.id,
+      };
+      const res = await request(app).post("/subscription").send(subscription);
+      expect(res.status).toBe(404);
+    });
 
+    it("should return 404 if membership is not found", async () => {
+      subscription = {
+        subscriberId: subscriber.id,
+        membershipId: "123",
+      };
+      const res = await request(app).post("/subscription").send(subscription);
+      expect(res.status).toBe(404);
+    });
+
+    it("should return 400 if subscriber is already subscribed to this membership", async () => {
+      subscription = {
+        subscriberId: subscriber.id,
+        membershipId: membership.id,
+      };
+      const res = await request(app).post("/subscription").send(subscription);
       expect(res.status).toBe(400);
     });
 
-    test("should return 400 status if status is not provided", async () => {
-      const res = await request(app).post("/subscription").send({
-        subscriberId,
-        membershipId,
-        transactionId,
-      });
-
-      expect(res.status).toBe(400);
-    });
-
-    test("should return 400 status if status is not valid", async () => {
-      const res = await request(app).post("/subscription").send({
-        status: "NOT_VALID",
-        subscriberId,
-        membershipId,
-        transactionId,
-      });
-
-      expect(res.status).toBe(400);
-    });
-	
 
     afterAll(async () => {
       await prisma.subscription.deleteMany();

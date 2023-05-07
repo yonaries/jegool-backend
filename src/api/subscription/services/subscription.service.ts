@@ -17,3 +17,20 @@ export const createSubscription = async (
     throw error;
   }
 };
+
+export const getSubscriptionByUserIdAndMembershipId = async (
+  membershipId: string,
+  subscriberId: string
+) => {
+  try {
+    const subscription = await prisma.subscription.findFirst({
+      where: {
+        membershipId,
+        subscriberId,
+      },
+    });
+    return subscription;
+  } catch (error) {
+    throw error;
+  }
+};
