@@ -151,8 +151,6 @@ describe("/subscription", () => {
         .send({
           expiryDate: dayjs().format("DD-MM-YYYY"),
         });
-      console.log("====================================");
-      console.log(res.body);
       expect(res.status).toBe(400);
     });
 
