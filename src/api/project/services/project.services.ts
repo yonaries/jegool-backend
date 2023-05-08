@@ -38,7 +38,9 @@ export const getProjectsByPageId = async (pageId: string) => {
 	try {
 		const projects = prisma.project.findMany({
 			where: {
-				pageId: pageId,
+				pageId: {
+					equals: pageId,
+				},
 			},
 		});
 		return projects;

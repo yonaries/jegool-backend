@@ -9,6 +9,7 @@ import PageServices from "../page/services";
 import { handlePrismaError } from "../utils/prismaErrorHandler.util";
 import MembershipService from "../membership/services";
 import { override } from "joi";
+import cleanObject from "@/utils/cleanObject";
 
 export default class ProjectController {
 	static createProject = async (
@@ -55,10 +56,15 @@ export default class ProjectController {
 		try {
 			switch (true) {
 				case !!req.query.pageId:
-					const pageProjects = await ProjectServices.getProjectsByPageId(
-						req.query.pageId as string,
-					);
-					return pageProjects;
+					try {
+						await PageServices.getPageById(req.query.pageId as string);
+						const pageProjects = await ProjectServices.getProjectsByPageId(
+							req.query.pageId as string,
+						);
+						return res.status(200).json({ projects: pageProjects });
+					} catch (error) {
+						throw error;
+					}
 
 				case !!req.query.membershipId:
 					const membershipProjects =
@@ -67,25 +73,23 @@ export default class ProjectController {
 						);
 					return res.status(200).json({ projects: membershipProjects });
 
-				case req.body.length > 0:
-					const { error } = validateProjectQuery(req.body);
-					if (error) return res.status(400).json({ error: error.message });
-					const obj = req.body;
+				case !!Object.keys(req.body).length:
+					const query = cleanObject(req.body);
 
-					// const filteredObj = Object.keys(obj)
-					// 	.filter((key) => obj[key] !== undefined && obj[key] !== null)
-					// 	.reduce((acc, key) => {
-					// 		acc[key] = obj[key];
-					// 		return acc;
-					// 	}, {});
-					const projects = await ProjectServices.getProjectsByQuery(req.body);
+					const { error } = validateProjectQuery(query);
+					if (error) return res.status(400).json({ error: error.message });
+
+					const projects = await ProjectServices.getProjectsByQuery(query);
 					return res.status(200).json({ projects: projects });
 
 				default:
 					return res.status(403).json({ error: "Invalid query" });
 			}
 		} catch (error) {
-			return handlePrismaError(res, error, "Project");
+			switch (true) {
+				case error:
+					return handlePrismaError(res, error, "Project");
+			}
 		}
 	};
 }
