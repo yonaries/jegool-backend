@@ -53,43 +53,43 @@ export default class ProjectController {
 	};
 
 	static getProjects = async (req: express.Request, res: express.Response) => {
-		try {
-			switch (true) {
-				case !!req.query.pageId:
-					try {
-						await PageServices.getPageById(req.query.pageId as string);
-						const pageProjects = await ProjectServices.getProjectsByPageId(
-							req.query.pageId as string,
-						);
-						return res.status(200).json({ projects: pageProjects });
-					} catch (error) {
-						throw error;
-					}
+		switch (true) {
+			case !!req.query.pageId:
+				try {
+					await PageServices.getPageById(req.query.pageId as string);
+					const pageProjects = await ProjectServices.getProjectsByPageId(
+						req.query.pageId as string,
+					);
+					return res.status(200).json({ projects: pageProjects });
+				} catch (error) {
+					return handlePrismaError(res, error, "Page");
+				}
 
-				case !!req.query.membershipId:
+			case !!req.query.membershipId:
+				try {
+					await MembershipService.getMembershipById(
+						req.query.membershipId as string,
+					);
+
 					const membershipProjects =
 						await ProjectServices.getProjectsByMembershipId(
 							req.query.membershipId as string,
 						);
 					return res.status(200).json({ projects: membershipProjects });
+				} catch (error) {
+					return handlePrismaError(res, error, "Membership");
+				}
 
-				case !!Object.keys(req.body).length:
-					const query = cleanObject(req.body);
+			case !!Object.keys(req.body).length:
+				const query = cleanObject(req.body);
+				const { error } = validateProjectQuery(query);
+				if (error) return res.status(400).json({ error: error.message });
 
-					const { error } = validateProjectQuery(query);
-					if (error) return res.status(400).json({ error: error.message });
+				const projects = await ProjectServices.getProjectsByQuery(query);
+				return res.status(200).json({ projects: projects });
 
-					const projects = await ProjectServices.getProjectsByQuery(query);
-					return res.status(200).json({ projects: projects });
-
-				default:
-					return res.status(403).json({ error: "Invalid query" });
-			}
-		} catch (error) {
-			switch (true) {
-				case error:
-					return handlePrismaError(res, error, "Project");
-			}
+			default:
+				return res.status(403).json({ error: "Invalid query" });
 		}
 	};
 }
