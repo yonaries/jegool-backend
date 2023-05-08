@@ -34,3 +34,18 @@ export const getSubscriptionByUserIdAndMembershipId = async (
     throw error;
   }
 };
+
+export const getSubscriptionById = async (
+  id: string
+): Promise<Subscription | null> => {
+  try {
+    const subscription = await prisma.subscription.findUnique({
+      where: {
+        id,
+      },
+    });
+    return subscription;
+  } catch (error) {
+    throw error;
+  }
+};
