@@ -7,6 +7,7 @@ import MembershipService from "../membership/services";
 import PageServices from "../page/services";
 import TransactionServices from "../transaction/services";
 import { TransactionWithOnlyNeededFields } from "../transaction/transaction.type";
+import dayjs from "dayjs";
 
 export default class SubscriptionController {
   static async createSubscription(req: Request, res: Response) {
@@ -65,7 +66,8 @@ export default class SubscriptionController {
 
       const newSubscription = await SubscriptionServices.createSubscription({
         ...subscription,
-        status: "PENDING",
+        status: "INACTIVE",
+        expiryDate: dayjs().toISOString(),
       });
       res.status(201).json({ subscription: newSubscription });
     } catch (error) {
