@@ -50,7 +50,7 @@ describe("subscription", () => {
       subscriptionData = {
         subscriberId: subscriber.id,
         membershipId: membership.id,
-      };
+      }; 
       const res = await request(app)
         .post("/subscription")
         .send(subscriptionData);
