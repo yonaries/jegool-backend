@@ -47,6 +47,11 @@ const createProject = async (): Promise<{
 };
 
 describe("GET /project", () => {
+	beforeAll(async () => {
+		await request(app).delete("/project");
+		await request(app).delete("/membership");
+		await request(app).delete("/page");
+	}, 50000);
 	test("should get a project", async () => {
 		const { id } = await createProject();
 		const getResponse = await request(app).get(`/project/${id}`);
@@ -100,10 +105,4 @@ describe("GET /project", () => {
 		const response = await request(app).get("/project/");
 		expect(response.status).toBe(400);
 	}, 50000);
-
-	// afterAll(async () => {
-	// 	await request(app).delete("/project");
-	// 	await request(app).delete("/membership");
-	// 	await request(app).delete("/page");
-	// }, 50000);
 });
