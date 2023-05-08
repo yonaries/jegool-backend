@@ -74,21 +74,19 @@ model Membership {
 
 model Subscription {
   id        String        @id @unique @default(cuid())
-  status    PaymentStatus @default(PENDING)
+  status    SubscriptionStatus @default(INACTIVE)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+  expiryDate DateTime     @default(now())
 
   subscriber   User   @relation(fields: [subscriberId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   subscriberId String
 
   membership    Membership  @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   membershipId  String
-  transaction   Transaction @relation(fields: [transactionId], references: [reference], onUpdate: Cascade, onDelete: NoAction)
-  transactionId String
 
   @@index([subscriberId])
   @@index([membershipId])
-  @@index([transactionId])
 }
 
 model Goal {
@@ -275,7 +273,6 @@ model Transaction {
   createdAt DateTime          @default(now())
 
   donation     Donation[]
-  subscription Subscription[]
 }
 
 enum TransactionStatus {
@@ -285,6 +282,7 @@ enum TransactionStatus {
 }
 
 enum PaymentStatus {
+  FAILED
   PENDING
   SUCCESS
 }
@@ -323,4 +321,11 @@ enum PageStatus {
   BANNED
   ACTIVE
   INACTIVE
+}
+
+enum SubscriptionStatus {
+  EXPIRED
+  ACTIVE
+  INACTIVE
+  CANCELLED
 }
