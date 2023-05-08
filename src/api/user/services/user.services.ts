@@ -1,4 +1,4 @@
-import { PrismaError } from "../../../errors/PrismaError.util";
+import { PrismaError } from "../../../errors/prisma.error";
 import { User, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();

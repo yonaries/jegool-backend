@@ -3,7 +3,7 @@ import express from "express";
 import cleanObject from "../../utils/cleanObject";
 import MembershipService from "../membership/services";
 import PageServices from "../page/services";
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 import {
 	validateCreateProject,
 	validateProjectQuery,

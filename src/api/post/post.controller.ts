@@ -1,4 +1,4 @@
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 import { Request, Response } from "express";
 import PostServices from "./services/index";
 import { validatePost, validatePostFilter } from "./post.validate";

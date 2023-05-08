@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import TransactionServices from "./services";
 import { validateTransaction } from "./transaction.validate";
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 
 export default class TransactionController {
 	static async createTransaction(req: Request, res: Response) {

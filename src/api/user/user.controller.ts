@@ -1,7 +1,7 @@
 import UserService from "./services";
 import { Request, Response } from "express";
 import { validateUser } from "./user.validate";
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 
 //todo: after firebase auth integration, request should only contain firebase auth token in headers
 //todo: we'll have a middleware that handle the firebase auth token verification and add the user object to the request object then we'll use it to create/update the user in the database

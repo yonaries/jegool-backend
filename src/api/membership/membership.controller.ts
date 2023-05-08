@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import MembershipService from "./services";
 import { validateMembership } from "./membership.validate";
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 
 export default class MembershipController {
 	static async createMembership(req: Request, res: Response) {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 import SubscriptionServices from "./services";
 import { validateSubscription } from "./subscription.validate";
 import UserService from "../user/services";

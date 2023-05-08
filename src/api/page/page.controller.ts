@@ -1,4 +1,4 @@
-import { PrismaError } from "../../errors/PrismaError.util";
+import { PrismaError } from "../../errors/prisma.error";
 import { validatePage } from "./page.validate";
 import PageServices from "./services";
 import { Request, Response } from "express";
