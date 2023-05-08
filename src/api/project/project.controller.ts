@@ -1,15 +1,14 @@
-import express from "express";
-import ProjectServices from "./services";
 import { Project } from "@prisma/client";
+import express from "express";
+import cleanObject from "../../utils/cleanObject";
+import MembershipService from "../membership/services";
+import PageServices from "../page/services";
+import { handlePrismaError } from "../utils/prismaErrorHandler.util";
 import {
 	validateCreateProject,
 	validateProjectQuery,
 } from "./project.validate";
-import PageServices from "../page/services";
-import { handlePrismaError } from "../utils/prismaErrorHandler.util";
-import MembershipService from "../membership/services";
-import { override } from "joi";
-import cleanObject from "@/utils/cleanObject";
+import ProjectServices from "./services";
 
 export default class ProjectController {
 	static createProject = async (
@@ -52,6 +51,7 @@ export default class ProjectController {
 		}
 	};
 
+	// TODO: Refactor this function
 	static getProjects = async (req: express.Request, res: express.Response) => {
 		switch (true) {
 			case !!req.query.pageId:
@@ -89,7 +89,7 @@ export default class ProjectController {
 				return res.status(200).json({ projects: projects });
 
 			default:
-				return res.status(403).json({ error: "Invalid query" });
+				return res.status(400).json({ error: "Invalid query" });
 		}
 	};
 }

@@ -8,20 +8,10 @@ const createProject = async (): Promise<{
 }> => {
 	const randomName = () => Math.random().toString(36).substring(10);
 
-	const user = {
-		email: `${randomName()}@test.com`,
-		displayName: "test",
-		fullName: "test",
-		lastNames: "test",
-		residence: "Earth",
-	};
-
-	const userResponse = await request(app).post("/user").send(user);
-
 	const page = {
 		url: `https://test.com/${randomName()}`,
 		name: randomName(),
-		ownerId: userResponse.body.user.id,
+		ownerId: randomName(),
 		status: "BANNED",
 	};
 
@@ -52,7 +42,7 @@ const createProject = async (): Promise<{
 	return {
 		id: projectResponse.body.project.id,
 		pageId: pageResponse.body.page.id,
-		membershipId: membershipResponse.body.id,
+		membershipId: membershipResponse.body.membership.id,
 	};
 };
 
