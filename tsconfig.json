@@ -22,7 +22,6 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", ".vscode"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   }
