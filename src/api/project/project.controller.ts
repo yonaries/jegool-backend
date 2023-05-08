@@ -7,6 +7,7 @@ import { PrismaError } from "../../errors/prisma.error";
 import {
 	validateCreateProject,
 	validateProjectQuery,
+	validateUpdateProject,
 } from "./project.validate";
 import ProjectServices from "./services";
 
@@ -99,8 +100,11 @@ export default class ProjectController {
 			const { id } = req.params;
 			const project: Project = req.body;
 
+			const { error } = validateUpdateProject(project);
+			if (error) return res.status(400).json({ error: error.message });
+
 			const updatedProject = await ProjectServices.updateProject(id, project);
-			return res.status(200).json({ project: updatedProject });
+			return res.status(204).json({ project: updatedProject });
 		} catch (error) {
 			return PrismaError(res, error);
 		}

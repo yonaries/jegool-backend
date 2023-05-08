@@ -6,7 +6,8 @@ describe("Update Project", () => {
 		const project = {
 			title: "Test Project",
 			description: "Test Project Description",
-			pageId: "1",
+			coverImage: "https://test.com/test.png",
+			pageId: "clhere4s40002q3e8jh992c76",
 			visibleTo: ["1"],
 		};
 
@@ -15,12 +16,23 @@ describe("Update Project", () => {
 		const updatedProject = await request(app)
 			.put(`/project/${createdProject.body.project.id}`)
 			.send({
-				name: "Updated Project",
+				title: "Updated Project",
 				description: "Updated Project Description",
-				pageId: "1",
 				visibleTo: ["1"],
 			});
 
 		expect(updatedProject.status).toBe(204);
-	});
+	}, 10000);
+
+	it("should return an error if the project id is not found", async () => {
+		const updatedProject = await request(app)
+			.put("/project/5f7d2a8a1c9d440000d3c9a0")
+			.send({
+				title: "Updated Project",
+				description: "Updated Project Description",
+				visibleTo: ["1"],
+			});
+
+		expect(updatedProject.status).toBe(404);
+	}, 10000);
 });
