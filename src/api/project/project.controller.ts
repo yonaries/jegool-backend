@@ -7,6 +7,7 @@ import { PrismaError } from "../../errors/prisma.error";
 import {
 	validateCreateProject,
 	validateProjectQuery,
+	validateUpdateProject,
 } from "./project.validate";
 import ProjectServices from "./services";
 
@@ -18,14 +19,12 @@ export default class ProjectController {
 		const project: Project = req.body;
 
 		try {
-			const page = await PageServices.getPageById(project.pageId);
-			if (!page) return res.status(404).json({ error: "Page not found" });
-
 			const { error } = validateCreateProject(project);
 			if (error) return res.status(400).json({ error: error.message });
 
-			const createdProject = await ProjectServices.createProject(project);
+			// await PageServices.getPageById(project.pageId);
 
+			const createdProject = await ProjectServices.createProject(project);
 			return res.status(201).json({ project: { ...createdProject } });
 		} catch (error) {
 			return PrismaError(res, error);
@@ -90,6 +89,24 @@ export default class ProjectController {
 
 			default:
 				return res.status(400).json({ error: "Invalid query" });
+		}
+	};
+
+	static updateProject = async (
+		req: express.Request,
+		res: express.Response,
+	) => {
+		try {
+			const { id } = req.params;
+			const project: Project = req.body;
+
+			const { error } = validateUpdateProject(project);
+			if (error) return res.status(400).json({ error: error.message });
+
+			const updatedProject = await ProjectServices.updateProject(id, project);
+			return res.status(204).json({ project: updatedProject });
+		} catch (error) {
+			return PrismaError(res, error);
 		}
 	};
 }

@@ -19,7 +19,16 @@ const createProjectSchema = Joi.object<Project>({
 	visibleTo: Joi.array().items(Joi.string()).required(),
 });
 
-const getProjectsSchema = Joi.object<Project>({
+const getProjectsQuerySchema = Joi.object<Project>({
+	pageId: Joi.string().id(),
+	title: Joi.string(),
+	coverImage: Joi.string().uri(),
+	description: Joi.string(),
+	status: Joi.string(),
+	visibleTo: Joi.array().items(Joi.string()),
+});
+
+const updateProjectSchema = Joi.object<Project>({
 	pageId: Joi.string().id(),
 	title: Joi.string(),
 	coverImage: Joi.string().uri(),
@@ -40,7 +49,16 @@ export const validateCreateProject = (
 export const validateProjectQuery = (
 	project: Project,
 ): { error: Joi.ValidationError; value: Project } => {
-	return getProjectsSchema.validate(project, options) as unknown as {
+	return getProjectsQuerySchema.validate(project, options) as unknown as {
+		error: Joi.ValidationError;
+		value: Project;
+	};
+};
+
+export const validateUpdateProject = (
+	project: Project,
+): { error: Joi.ValidationError; value: Project } => {
+	return updateProjectSchema.validate(project, options) as unknown as {
 		error: Joi.ValidationError;
 		value: Project;
 	};
