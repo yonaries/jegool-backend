@@ -3,6 +3,9 @@ import { Response } from "express";
 
 // rome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const PrismaError = (res: Response, error: any) => {
+	console.log("Error::CODE", error.code);
+	console.log("Error::", error);
+
 	if (error instanceof PrismaClientKnownRequestError) {
 		if (!error.code)
 			return res.status(500).json({ error: { message: error.message } });
