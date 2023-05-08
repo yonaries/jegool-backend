@@ -18,7 +18,7 @@ export const createMembership = (membership: Membership) => {
 
 export const getMembershipById = async (id: string) => {
 	try {
-		const membership = await prisma.membership.findUnique({
+		const membership = await prisma.membership.findUniqueOrThrow({
 			where: {
 				id: id,
 			},
