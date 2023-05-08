@@ -3,7 +3,7 @@ import express from "express";
 import cleanObject from "../../utils/cleanObject";
 import MembershipService from "../membership/services";
 import PageServices from "../page/services";
-import { handlePrismaError } from "../utils/prismaErrorHandler.util";
+import { PrismaError } from "../../errors/PrismaError.util";
 import {
 	validateCreateProject,
 	validateProjectQuery,
@@ -28,7 +28,7 @@ export default class ProjectController {
 
 			return res.status(201).json({ project: { ...createdProject } });
 		} catch (error) {
-			return handlePrismaError(res, error, "Project");
+			return PrismaError(res, error);
 		}
 	};
 
@@ -47,7 +47,7 @@ export default class ProjectController {
 			const project = await ProjectServices.getProjectById(id);
 			return res.status(200).json({ project: project });
 		} catch (error) {
-			return handlePrismaError(res, error, "Project");
+			return PrismaError(res, error);
 		}
 	};
 
@@ -62,7 +62,7 @@ export default class ProjectController {
 					);
 					return res.status(200).json({ projects: pageProjects });
 				} catch (error) {
-					return handlePrismaError(res, error, "Page");
+					return PrismaError(res, error);
 				}
 
 			case !!req.query.membershipId:
@@ -77,7 +77,7 @@ export default class ProjectController {
 						);
 					return res.status(200).json({ projects: membershipProjects });
 				} catch (error) {
-					return handlePrismaError(res, error, "Membership");
+					return PrismaError(res, error);
 				}
 
 			case !!Object.keys(req.body).length:
