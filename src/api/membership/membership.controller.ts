@@ -13,7 +13,7 @@ export default class MembershipController {
       const newMembership = await MembershipService.createMembership(
         membership
       );
-      res.status(201).json(newMembership);
+      res.status(201).json({membership: newMembership});
     } catch (error) {
       handlePrismaError(res, error, "Membership");
     }
