@@ -77,7 +77,7 @@ model Subscription {
   status    SubscriptionStatus @default(INACTIVE)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  expiryDate DateTime
+  expiryDate DateTime     @default(now())
 
   subscriber   User   @relation(fields: [subscriberId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   subscriberId String
