@@ -5,10 +5,6 @@ const router = express.Router();
 
 router.post("/", ProjectController.createProject);
 router.get("/:id", ProjectController.getProjectById);
-router.get("/?pageId=pageId", ProjectController.getProjectsByPageId);
-router.get(
-	"/?membershipId=membershipId",
-	ProjectController.getProjectsByMembershipId,
-);
+router.get("/", ProjectController.getProjects);
 
 export default router;

@@ -1,5 +1,6 @@
 import Joi from "joi";
 import { Project } from "@prisma/client";
+import QueryString from "qs";
 
 const options = {
 	errors: {
@@ -18,8 +19,8 @@ const createProjectSchema = Joi.object<Project>({
 	visibleTo: Joi.array().items(Joi.string()).required(),
 });
 
-const updateProjectSchema = Joi.object<Project>({
-	pageId: Joi.string().id().required(),
+const getProjectsSchema = Joi.object<Project>({
+	pageId: Joi.string().id(),
 	title: Joi.string(),
 	coverImage: Joi.string().uri(),
 	description: Joi.string(),
@@ -36,10 +37,10 @@ export const validateCreateProject = (
 	};
 };
 
-export const validateUpdateProject = (
+export const validateProjectQuery = (
 	project: Project,
 ): { error: Joi.ValidationError; value: Project } => {
-	return updateProjectSchema.validate(project, options) as unknown as {
+	return getProjectsSchema.validate(project, options) as unknown as {
 		error: Joi.ValidationError;
 		value: Project;
 	};

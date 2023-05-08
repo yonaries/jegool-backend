@@ -61,3 +61,26 @@ export const getProjectsByMembershipId = async (membershipId: string) => {
 		throw error;
 	}
 };
+
+export const getProjectsByQuery = async (query?: Project) => {
+	try {
+		if (!query) {
+			const projects = prisma.project.findMany();
+			return projects;
+		}
+		const { visibleTo, ...rest } = query;
+
+		const projects = prisma.project.findMany({
+			where: {
+				AND: [
+					{
+						...rest,
+					},
+				],
+			},
+		});
+		return projects;
+	} catch (error) {
+		throw error;
+	}
+};

@@ -6,17 +6,26 @@ const createProject = async (): Promise<{
 	pageId: string;
 	membershipId: string;
 }> => {
-	const randomName = () => Math.random().toString(36).substring(7);
+	const randomName = () => Math.random().toString(36).substring(10);
+
+	const user = {
+		email: `${randomName()}@test.com`,
+		displayName: "test",
+		fullName: "test",
+		lastNames: "test",
+		residence: "Earth",
+	};
+
+	const userResponse = await request(app).post("/user").send(user);
 
 	const page = {
 		url: `https://test.com/${randomName()}`,
 		name: randomName(),
-		ownerId: randomName(),
+		ownerId: userResponse.body.user.id,
 		status: "BANNED",
 	};
 
 	const pageResponse = await request(app).post("/page").send(page);
-	console.log(pageResponse.body.page.id);
 
 	const membership = {
 		title: "Octopus",
@@ -29,7 +38,6 @@ const createProject = async (): Promise<{
 	const membershipResponse = await request(app)
 		.post("/membership")
 		.send(membership);
-	console.log(membershipResponse.body);
 
 	const project = {
 		title: "test project",
@@ -40,7 +48,6 @@ const createProject = async (): Promise<{
 	};
 
 	const projectResponse = await request(app).post("/project").send(project);
-	console.log(projectResponse.body);
 
 	return {
 		id: projectResponse.body.project.id,
@@ -53,6 +60,11 @@ describe("GET /project", () => {
 	test("should get a project", async () => {
 		const { id } = await createProject();
 		const getResponse = await request(app).get(`/project/${id}`);
+		expect(getResponse.status).toBe(200);
+	}, 50000);
+
+	test("should get all projects", async () => {
+		const getResponse = await request(app).get("/project/all");
 		expect(getResponse.status).toBe(200);
 	}, 50000);
 
@@ -99,9 +111,9 @@ describe("GET /project", () => {
 		expect(response.status).toBe(400);
 	}, 50000);
 
-	afterAll(async () => {
-		await request(app).delete("/project");
-		await request(app).delete("/membership");
-		await request(app).delete("/page");
-	}, 50000);
+	// afterAll(async () => {
+	// 	await request(app).delete("/project");
+	// 	await request(app).delete("/membership");
+	// 	await request(app).delete("/page");
+	// }, 50000);
 });
