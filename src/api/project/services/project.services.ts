@@ -86,3 +86,22 @@ export const getProjectsByQuery = async (query?: Project) => {
 		throw error;
 	}
 };
+
+export const updateProject = async (id: string, project: Project) => {
+	const { visibleTo, ...rest } = project;
+
+	try {
+		const updatedProject = prisma.project.update({
+			where: {
+				id: id,
+			},
+			data: {
+				...rest,
+				visibleTo: visibleTo as Prisma.JsonArray,
+			},
+		});
+		return updatedProject;
+	} catch (error) {
+		throw error;
+	}
+};

@@ -1,4 +1,4 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Response } from "express";
 
 // rome-ignore lint/suspicious/noExplicitAny: <explanation>
