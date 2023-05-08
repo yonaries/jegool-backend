@@ -8,6 +8,8 @@ export const handlePrismaError = (
 ) => {
   const e = error as PrismaClientKnownRequestError;
 
+  console.log("ERROR:: ", e.code);
+  console.log("ERROR:: ", e);
   if (!e.code)
     return res.status(500).json({ message: "Internal Server Error" });
 
