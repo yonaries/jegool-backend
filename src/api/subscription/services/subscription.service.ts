@@ -1,4 +1,5 @@
-import { PrismaClient, Subscription } from "@prisma/client";
+import { PrismaClient, Subscription, SubscriptionStatus } from "@prisma/client";
+import dayjs from "dayjs";
 
 const prisma = new PrismaClient();
 
@@ -50,7 +51,9 @@ export const getSubscriptionById = async (
   }
 };
 
-export const deleteSubscriptionById = async(id: string): Promise<Subscription | null> => {
+export const deleteSubscriptionById = async (
+  id: string
+): Promise<Subscription | null> => {
   try {
     const subscription = await prisma.subscription.delete({
       where: {
@@ -59,6 +62,32 @@ export const deleteSubscriptionById = async(id: string): Promise<Subscription | 
     });
     return subscription;
   } catch (error) {
-    throw error
+    throw error;
   }
-}
+};
+
+export const updateSubscriptionById = async (
+  id: string,
+  data: {
+    status: SubscriptionStatus;
+    expiryDate: string;
+  } = {
+    status: "INACTIVE",
+    expiryDate: dayjs().toISOString(),
+  }
+) => {
+  try {
+    const subscription = await prisma.subscription.update({
+      where: {
+        id: id,
+      },
+      data: {
+        expiryDate: data.expiryDate,
+        status: data.status,
+      },
+    });
+    return subscription;
+  } catch (error) {
+    throw error;
+  }
+};
