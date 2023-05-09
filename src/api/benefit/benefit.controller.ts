@@ -6,7 +6,7 @@ import BenefitService from "./services";
 
 export default class BenefitController {
 	static createBenefit = async (req: Request, res: Response) => {
-		const benefit: Benefit = req.body;
+		const benefit = req.body;
 		try {
 			const { error } = validateCreateBenefit(benefit);
 			if (error) return res.status(400).json({ error: error.message });

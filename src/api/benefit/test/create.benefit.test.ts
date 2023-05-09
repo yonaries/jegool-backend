@@ -22,12 +22,11 @@ const createMembership = async () => {
 describe("Benefit API", () => {
 	beforeAll(async () => {
 		await prisma.$connect();
-		await prisma.membership.deleteMany();
 		await prisma.benefit.deleteMany();
 	}, 10000);
 	describe("POST /benefit", () => {
 		it("should return 201", async () => {
-			const id = createMembership();
+			const id = await createMembership();
 
 			const res = await request(app).post("/benefit").send({
 				title: "test",
@@ -38,6 +37,7 @@ describe("Benefit API", () => {
 		}, 10000);
 	});
 	afterAll(async () => {
+		await prisma.benefit.deleteMany();
 		await prisma.$disconnect();
 	}, 10000);
 });

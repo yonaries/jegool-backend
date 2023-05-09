@@ -2,7 +2,7 @@ import Joi from "joi";
 import { Benefit } from "@prisma/client";
 
 const createBenefitSchema = Joi.object<Benefit>({
-	membershipId: Joi.number().required(),
+	membershipId: Joi.string().required(),
 	title: Joi.string().required(),
 	description: Joi.string().required(),
 });
