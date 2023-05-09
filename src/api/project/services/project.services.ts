@@ -105,3 +105,16 @@ export const updateProject = async (id: string, project: Project) => {
 		throw error;
 	}
 };
+
+export const deleteProject = async (id: string) => {
+	try {
+		const deletedProject = prisma.project.delete({
+			where: {
+				id: id,
+			},
+		});
+		return deletedProject;
+	} catch (error) {
+		throw error;
+	}
+};

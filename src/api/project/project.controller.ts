@@ -109,4 +109,19 @@ export default class ProjectController {
 			return PrismaError(res, error);
 		}
 	};
+
+	static deleteProject = async (
+		req: express.Request,
+		res: express.Response,
+	) => {
+		try {
+			const { id } = req.params;
+			if (!id) return res.status(400).json({ error: "Invalid id" });
+
+			await ProjectServices.deleteProject(id);
+			return res.status(204).json({ message: "Project deleted" });
+		} catch (error) {
+			return PrismaError(res, error);
+		}
+	};
 }
