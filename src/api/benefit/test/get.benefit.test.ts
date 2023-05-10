@@ -44,13 +44,6 @@ describe("Benefit API", () => {
 			const res = await request(app).get("/benefit/all");
 			expect(res.status).toBe(200);
 		}, 10000);
-
-		afterAll(async () => {
-			await prisma.benefit.deleteMany();
-			await prisma.membership.deleteMany();
-			await prisma.page.deleteMany();
-			await prisma.user.deleteMany();
-		}, 10000);
 	});
 
 	describe("GET /benefit/?query", () => {
@@ -65,13 +58,6 @@ describe("Benefit API", () => {
 				`/benefit/?membershipId=${membership}`,
 			);
 			expect(res.status).toBe(200);
-		}, 10000);
-
-		afterAll(async () => {
-			await prisma.benefit.deleteMany();
-			await prisma.membership.deleteMany();
-			await prisma.page.deleteMany();
-			await prisma.user.deleteMany();
 		}, 10000);
 	});
 });
