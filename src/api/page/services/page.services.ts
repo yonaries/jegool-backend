@@ -1,4 +1,4 @@
-import { Page, PrismaClient } from "@prisma/client";
+import { Membership, Page, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -71,6 +71,26 @@ export const getAllPages = async (): Promise<Page[] | null> => {
    },
   });
   return pages;
+ } catch (error) {
+  throw error;
+ }
+};
+
+export const getPageMemberShips = async (id: string): Promise<Membership[]> => {
+ try {
+  const page = await prisma.page.findUniqueOrThrow({
+   where: {
+    id: id,
+   },
+   include: {
+    Membership: {
+     orderBy: {
+      createdAt: "desc",
+     },
+    },
+   },
+  });
+  return page.Membership;
  } catch (error) {
   throw error;
  }
