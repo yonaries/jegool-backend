@@ -17,4 +17,24 @@ export default class BenefitController {
 			return PrismaError(res, error);
 		}
 	};
+
+	static getBenefitById = async (req: Request, res: Response) => {
+		try {
+			const { id } = req.params;
+
+			const benefit = await BenefitService.getBenefitById(id);
+			return res.status(200).json({ benefit: benefit });
+		} catch (error) {
+			return PrismaError(res, error);
+		}
+	};
+
+	static getAllBenefits = async (req: Request, res: Response) => {
+		try {
+			const benefits = await BenefitService.getBenefits();
+			return res.status(200).json({ benefits: benefits });
+		} catch (error) {
+			return PrismaError(res, error);
+		}
+	};
 }
