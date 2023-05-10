@@ -1,3 +1,3 @@
-import * as SubscriptionServices from './subscription.service';
+import * as SubscriptionServices from "./subscription.service";
 
 export default SubscriptionServices;
