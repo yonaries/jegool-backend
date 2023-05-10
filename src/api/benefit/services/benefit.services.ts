@@ -15,7 +15,6 @@ export const createBenefit = async (benefit: Benefit) => {
 };
 
 export const getBenefitById = async (id: string) => {
-	console.log("id:", id);
 	try {
 		const benefit = prisma.benefit.findUniqueOrThrow({
 			where: {
@@ -34,6 +33,19 @@ export const getBenefitById = async (id: string) => {
 export const getBenefits = async () => {
 	try {
 		const benefits = await prisma.benefit.findMany();
+		return benefits;
+	} catch (error) {
+		throw error;
+	}
+};
+
+export const getBenefitsByQuery = async (id: string) => {
+	try {
+		const benefits = await prisma.benefit.findMany({
+			where: {
+				membershipId: id,
+			},
+		});
 		return benefits;
 	} catch (error) {
 		throw error;

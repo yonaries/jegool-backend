@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post("/", BenefitController.createBenefit);
 router.get("/:id", BenefitController.getBenefitById);
-router.get("/", BenefitController.getAllBenefits);
+router.get("/", BenefitController.getBenefitsByQuery);
 
 export default router;
