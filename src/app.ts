@@ -27,7 +27,7 @@ app.use("/subscription", subscriptionRouter);
 app.use("/benefit", benefitRouter);
 
 app.get("/", (_req, res) => {
-	res.status(200).send("Hello World!");
+ res.status(200).send("Hello World!");
 });
 
 export default app;

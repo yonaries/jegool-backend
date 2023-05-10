@@ -1,3 +1,3 @@
-import * as TransactionServices from './transaction.service';
+import * as TransactionServices from "./transaction.service";
 
-export default TransactionServices
+export default TransactionServices;

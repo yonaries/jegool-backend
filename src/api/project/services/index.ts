@@ -1,3 +1,3 @@
-import * as ProjectServices from './project.services';
+import * as ProjectServices from "./project.services";
 
 export default ProjectServices;

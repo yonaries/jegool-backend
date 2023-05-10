@@ -1,3 +1,3 @@
-import * as PageServices from './page.services'
+import * as PageServices from "./page.services";
 
-export default PageServices 
+export default PageServices;
