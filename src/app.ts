@@ -9,6 +9,7 @@ import postRouter from "./api/post/post.routes";
 import transactionRouter from "./api/transaction/transaction.routes";
 import projectRouter from "./api/project/project.routes";
 import subscriptionRouter from "./api/subscription/subscription.routes";
+import benefitRouter from "./api/benefit/benefit.routes";
 
 const app = express();
 
@@ -23,9 +24,10 @@ app.use("/post", postRouter);
 app.use("/transaction", transactionRouter);
 app.use("/project", projectRouter);
 app.use("/subscription", subscriptionRouter);
+app.use("/benefit", benefitRouter);
 
 app.get("/", (_req, res) => {
-  res.status(200).send("Hello World!");
+	res.status(200).send("Hello World!");
 });
 
 export default app;
