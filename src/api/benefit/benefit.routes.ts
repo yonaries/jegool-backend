@@ -6,5 +6,6 @@ const router = express.Router();
 router.post("/", BenefitController.createBenefit);
 router.get("/:id", BenefitController.getBenefitById);
 router.get("/", BenefitController.getBenefitsByQuery);
+router.put("/:id", BenefitController.updateBenefit);
 
 export default router;

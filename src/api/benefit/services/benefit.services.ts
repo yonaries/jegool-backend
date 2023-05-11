@@ -51,3 +51,20 @@ export const getBenefitsByQuery = async (id: string) => {
   throw error;
  }
 };
+
+export const updateBenefit = async (id: string, benefit: Benefit) => {
+ try {
+  const updatedBenefit = await prisma.benefit.update({
+   where: {
+    id: id,
+   },
+   data: benefit,
+   select: {
+    id: true,
+   },
+  });
+  return updatedBenefit;
+ } catch (error) {
+  throw error;
+ }
+};
