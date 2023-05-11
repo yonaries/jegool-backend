@@ -80,4 +80,17 @@ export default class PageController {
    return PrismaError(res, error);
   }
  }
+
+ static async getPageMemberShips(req: Request, res: Response) {
+  try {
+   const { id } = req.params;
+
+   if (!id || id.length === 0) return res.status(400).json({ error: "Page Id Is Required" });
+
+   const memberships = await PageServices.getPageMemberShips(id);
+   return res.status(200).json({ memberships: memberships });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }

@@ -8,5 +8,6 @@ router.put("/:id", PageController.updatePage);
 router.delete("/:id", PageController.deletePage);
 router.get("/:id", PageController.getPageById);
 router.get("/", PageController.getAllPages);
+router.get("/:id/memberships", PageController.getPageMemberShips);
 
 export default router;
