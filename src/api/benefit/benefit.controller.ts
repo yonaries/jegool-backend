@@ -1,15 +1,14 @@
-import { PrismaError } from "../../errors/prisma.error";
-import { Benefit } from "@prisma/client";
 import { Request, Response } from "express";
-import { validateCreateBenefit } from "./benefit.validate";
-import BenefitService from "./services";
+import { PrismaError } from "../../errors/prisma.error";
 import MembershipService from "../membership/services";
+import { validateBenefit } from "./benefit.validate";
+import BenefitService from "./services";
 
 export default class BenefitController {
  static createBenefit = async (req: Request, res: Response) => {
   const benefit = req.body;
   try {
-   const { error } = validateCreateBenefit(benefit);
+   const { error } = validateBenefit(benefit);
    if (error) return res.status(400).json({ error: { message: error.message } });
 
    const newBenefit = await BenefitService.createBenefit(benefit);
@@ -38,7 +37,6 @@ export default class BenefitController {
  static getBenefitsByQuery = async (req: Request, res: Response) => {
   try {
    const { membershipId } = req.query;
-   console.log("id: ", membershipId);
    if (membershipId) {
     const id = membershipId as string;
 
@@ -48,6 +46,18 @@ export default class BenefitController {
    } else {
     return res.status(400).json({ error: { message: "invalid query" } });
    }
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ };
+
+ static updateBenefit = async (req: Request, res: Response) => {
+  try {
+   const { id } = req.params;
+   const benefit = req.body;
+
+   const updatedBenefit = await BenefitService.updateBenefit(id, benefit);
+   return res.status(204).json({ benefit: updatedBenefit });
   } catch (error) {
    return PrismaError(res, error);
   }
