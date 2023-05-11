@@ -1,3 +1,4 @@
+import { ContentType, PostStatus } from ".prisma/client";
 import { PrismaError } from "../../errors/prisma.error";
 import { validatePage } from "./page.validate";
 import PageServices from "./services";
@@ -89,6 +90,41 @@ export default class PageController {
 
    const memberships = await PageServices.getPageMemberShips(id);
    return res.status(200).json({ memberships: memberships });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
+
+ static async getPagePosts(req: Request, res: Response) {
+  try {
+   const { id } = req.params;
+   const { type, visibleTo, status } = req.query;
+
+   if (!id || id.length === 0) return res.status(400).json({ error: "Page Id Is Required" });
+
+   //    Validating the query parameters if there are any
+   const typeTypes = Object.keys(ContentType);
+   const statusTypes = Object.keys(PostStatus);
+
+   if (type && typeTypes.indexOf(String(type).toUpperCase()) < 0)
+    return res.status(400).json({ error: "Invalid Type on query parameter" });
+   if (status && statusTypes.indexOf(String(status).toUpperCase()) < 0)
+    return res.status(400).json({ error: "Invalid Status on query parameter" });
+   if (visibleTo) {
+    const memberships = (await PageServices.getPageMemberShips(id)).map((membership) => membership.id);
+    if (memberships.indexOf(String(visibleTo)) < 0) {
+     return res.status(400).json({ error: "There is no membership with that id" });
+    }
+   }
+
+   const queryParams = {
+    status: status ? (String(status).toUpperCase() as PostStatus) : undefined,
+    type: type ? (String(type).toUpperCase() as ContentType) : undefined,
+    visibleTo: visibleTo ? (String(visibleTo) as string) : undefined,
+   };
+
+   const posts = req.query ? await PageServices.getPagePosts(id, queryParams) : await PageServices.getPagePosts(id);
+   return res.status(200).json({ posts: posts });
   } catch (error) {
    return PrismaError(res, error);
   }
