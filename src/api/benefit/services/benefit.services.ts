@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-import { Benefit } from "@prisma/client";
+import { Benefit, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -64,6 +63,22 @@ export const updateBenefit = async (id: string, benefit: Benefit) => {
    },
   });
   return updatedBenefit;
+ } catch (error) {
+  throw error;
+ }
+};
+
+export const deleteBenefit = async (id: string) => {
+ try {
+  const deletedBenefit = await prisma.benefit.delete({
+   where: {
+    id: id,
+   },
+   select: {
+    id: true,
+   },
+  });
+  return deletedBenefit;
  } catch (error) {
   throw error;
  }
