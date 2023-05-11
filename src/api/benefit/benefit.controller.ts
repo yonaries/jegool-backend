@@ -62,4 +62,14 @@ export default class BenefitController {
    return PrismaError(res, error);
   }
  };
+
+ static deleteBenefit = async (req: Request, res: Response) => {
+  try {
+   const { id } = req.params;
+   const benefit = await BenefitService.deleteBenefit(id);
+   return res.status(204).json({ benefit: benefit });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ };
 }
