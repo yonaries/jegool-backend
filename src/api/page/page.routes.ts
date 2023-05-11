@@ -9,5 +9,6 @@ router.delete("/:id", PageController.deletePage);
 router.get("/:id", PageController.getPageById);
 router.get("/", PageController.getAllPages);
 router.get("/:id/memberships", PageController.getPageMemberShips);
+router.get("/:id/posts", PageController.getPagePosts);
 
 export default router;
