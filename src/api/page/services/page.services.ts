@@ -1,4 +1,4 @@
-import { ContentType, Membership, Page, Post, PostStatus, Prisma, PrismaClient } from "@prisma/client";
+import { ContentType, Membership, Page, Post, PostStatus, Prisma, PrismaClient, Project } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -139,6 +139,52 @@ export const getPagePosts = async (
        },
       });
   return page.Post;
+ } catch (error) {
+  throw error;
+ }
+};
+
+export const getPageProjects = async (
+ id: string,
+ query?: {
+  status: PostStatus | undefined;
+  visibleTo: string | undefined;
+ },
+): Promise<Project[]> => {
+ try {
+  const page =
+   query === null
+    ? await prisma.page.findUniqueOrThrow({
+       where: {
+        id: id,
+       },
+       include: {
+        Project: {
+         orderBy: {
+          createdAt: "desc",
+         },
+        },
+       },
+      })
+    : await prisma.page.findUniqueOrThrow({
+       where: {
+        id: id,
+       },
+       include: {
+        Project: {
+         orderBy: {
+          createdAt: "desc",
+         },
+         where: {
+          status: query?.status,
+          visibleTo: {
+           array_contains: query?.visibleTo,
+          },
+         },
+        },
+       },
+      });
+  return page.Project;
  } catch (error) {
   throw error;
  }
