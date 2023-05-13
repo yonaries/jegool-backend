@@ -28,4 +28,16 @@ export default class CommunityChatController {
    PrismaError(res, error);
   }
  }
+
+ static async deleteCommunityChatById(req: Request, res: Response) {
+  const { id } = req.params;
+  if (!id || id.length === 0) return res.status(400).json({ error: "chatId is required" });
+  try {
+   const communityChat = await ChatServices.deleteCommunityChatById(id);
+   if (!communityChat) return res.status(404).json({ error: "Community Chat Not Found" });
+   return res.status(200).json({ communityChat });
+  } catch (error) {
+   PrismaError(res, error);
+  }
+ }
 }
