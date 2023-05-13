@@ -16,4 +16,20 @@ export default class privateChatController {
    PrismaError(res, error);
   }
  }
+
+ static async getPrivateChatById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) {
+   return res.status(400).json({ error: "Private Chat Id Is Required" });
+  }
+
+  try {
+   const privateChat = await ChatServices.getPrivateChatById(id);
+   if (!privateChat) return res.status(404).json({ error: "Private Chat Not Found" });
+   return res.status(200).json({ privateChat });
+  } catch (error) {
+   PrismaError(res, error);
+  }
+ }
 }
