@@ -52,6 +52,9 @@ model Page {
   SocialLink    SocialLink[]
   Project       Project[]
   Post          Post[]
+  Donation      Donation[]
+  BankAccount   BankAccount[]
+  Wallet        Wallet[]
 }
 
 model Membership {
@@ -73,17 +76,17 @@ model Membership {
 }
 
 model Subscription {
-  id        String        @id @unique @default(cuid())
-  status    SubscriptionStatus @default(INACTIVE)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  expiryDate DateTime     @default(now())
+  id         String             @id @unique @default(cuid())
+  status     SubscriptionStatus @default(INACTIVE)
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  expiryDate DateTime           @default(now())
 
   subscriber   User   @relation(fields: [subscriberId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   subscriberId String
 
-  membership    Membership  @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  membershipId  String
+  membership   Membership @relation(fields: [membershipId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  membershipId String
 
   @@index([subscriberId])
   @@index([membershipId])
@@ -214,10 +217,13 @@ model Donation {
   transactionId String
   donor         User?        @relation(fields: [donorId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   donorId       String?
+  page          Page         @relation(fields: [pageId], references: [id])
+  pageId        String
 
   @@index([itemId])
   @@index([transactionId])
   @@index([donorId])
+  @@index([pageId])
 }
 
 model Project {
@@ -261,6 +267,32 @@ model Post {
   @@index([projectId])
 }
 
+model BankAccount {
+  id          String   @id @unique @default(cuid())
+  bankName    String
+  accountNo   String
+  accountName String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId String
+
+  @@index([pageId])
+}
+
+model Wallet {
+  id        String   @id @unique @default(cuid())
+  balance   Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  pageId String
+
+  @@index([pageId])
+}
+
 model Transaction {
   reference String            @id @unique @default(cuid())
   provider  String
@@ -272,7 +304,7 @@ model Transaction {
   status    TransactionStatus @default(PENDING)
   createdAt DateTime          @default(now())
 
-  donation     Donation[]
+  donation Donation[]
 }
 
 enum TransactionStatus {
