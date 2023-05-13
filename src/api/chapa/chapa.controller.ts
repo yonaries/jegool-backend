@@ -4,10 +4,11 @@ import { ChapaError } from "@/errors/chapa.error";
 import { Request, Response } from "express";
 import SubscriptionServices from "../subscription/services";
 import dayjs from "dayjs";
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { PrismaError } from "@/errors/prisma.error";
 
+const prisma = new PrismaClient();
 export default class ChapaController {
  static chapa: Chapa;
 
@@ -71,6 +72,54 @@ export default class ChapaController {
    }
    if (type === "DONATION") {
     //todo: delete donation
+   }
+  }
+ }
+
+ static async success(req: Request, res: Response) {
+  const { type, id } = req.query as { type: keyof typeof PayFor; id: string };
+  try {
+   if (type === "SUBSCRIPTION") {
+    const response = await prisma.subscription.findUnique({
+     where: {
+      id,
+     },
+     select: {
+      membership: {
+       select: {
+        page: {
+         select: {
+          id: true,
+          url: true,
+         },
+        },
+       },
+      },
+     },
+    });
+
+    return res.redirect(`${response?.membership.page.url}`);
+   } else if (type === "DONATION") {
+    const response = await prisma.donation.findUnique({
+     where: {
+      id,
+     },
+     select: {
+      page: {
+       select: {
+        id: true,
+        url: true,
+       },
+      },
+     },
+    });
+    return res.redirect(`${response?.page.url}`);
+   }
+  } catch (error) {
+   if (error instanceof ChapaError) {
+    console.log(error);
+   }
+   if (type === "DONATION") {
    }
   }
  }
