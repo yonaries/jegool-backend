@@ -6,6 +6,7 @@ import {
  updateUserData,
  deleteUserData,
  getUserSubscriptionsById,
+ getUserPrivateChats,
 } from "./user.controller";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.get("/:id", getUserDataById);
 router.put("/:id", updateUserData);
 router.delete("/:id", deleteUserData);
 router.get("/:id/subscriptions", getUserSubscriptionsById);
+router.get("/:id/privateChats", getUserPrivateChats);
 
 export default router;
