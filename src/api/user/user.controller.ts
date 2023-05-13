@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { validateUser } from "./user.validate";
 import { PrismaError } from "../../errors/prisma.error";
 import { SubscriptionStatus } from "@prisma/client";
+import ChatServices from "../chat/service";
 
 //todo: after firebase auth integration, request should only contain firebase auth token in headers
 //todo: we'll have a middleware that handle the firebase auth token verification and add the user object to the request object then we'll use it to create/update the user in the database
@@ -107,6 +108,24 @@ export const getUserSubscriptionsById = async (req: Request, res: Response) => {
    : await UserService.getUserSubscriptionsById(id);
 
   return res.status(200).json({ subscriptions: subscriptions });
+ } catch (error) {
+  return PrismaError(res, error);
+ }
+};
+
+export const getUserPrivateChats = async (req: Request, res: Response) => {
+ const { id } = req.params;
+
+ if (id.length === 0 || !id) return res.status(400).json({ error: "User Id Is Required" });
+
+ try {
+  const user = await UserService.getUserById(id);
+  if (!user) return res.status(404).json({ error: "User Not Found" });
+  const privateChats = await ChatServices.getPrivateChatsByUserId(id);
+
+  if (!privateChats) return res.status(404).json({ error: "Private Chats Not Found" });
+
+  return res.status(200).json({ privateChats: privateChats });
  } catch (error) {
   return PrismaError(res, error);
  }
