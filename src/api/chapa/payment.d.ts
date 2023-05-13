@@ -1,4 +1,4 @@
-export enum PayFor {
+export enum PaymentType {
  DONATION = "donation",
  SUBSCRIPTION = "subscription",
 }
