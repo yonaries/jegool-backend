@@ -3,7 +3,7 @@ import { validatePrivateChat } from "./privateChat.validate";
 import ChatServices from "../service";
 import { PrismaError } from "../../../errors/prisma.error";
 
-export default class privateChatController {
+export default class PrivateChatController {
  static async createPrivateChat(req: Request, res: Response) {
   const privateChat = req.body;
   try {
