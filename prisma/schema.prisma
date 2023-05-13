@@ -43,6 +43,7 @@ model Page {
   coverImage            String?
   introVideo            String?
   brandColor            String?
+  thankYouMessage       String?    @db.Text
 
   owner         User           @relation(fields: [ownerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   ownerId       String         @unique
