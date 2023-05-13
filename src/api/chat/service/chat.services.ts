@@ -107,3 +107,50 @@ export const deleteCommunityChatById = async (chatId: string): Promise<Community
   throw error;
  }
 };
+
+export const getPrivateChatsByUserId = async (userId: string): Promise<{
+    chatId: string;
+    user1Id: string | null | undefined;
+    user2Id: string | null | undefined;
+    createdAt: Date;
+}[] | null> => {
+ try {
+  const chats = await prisma.chat.findMany({
+   where: {
+    PrivateChat: {
+     OR: [
+      {
+       user1Id: userId,
+      },
+      {
+       user2Id: userId,
+      },
+     ],
+    },
+   },
+   select: {
+    id: true,
+    createdAt: true,
+    PrivateChat: {
+     select: {
+      user1Id: true,
+      user2Id: true,
+     },
+    },
+   },
+  });
+
+  const filteredPrivateChats = chats.map((chat) => {
+   return {
+    chatId: chat.id,
+    user1Id: chat.PrivateChat?.user1Id,
+    user2Id: chat.PrivateChat?.user2Id,
+    createdAt: chat.createdAt,
+   };
+  });
+
+  return filteredPrivateChats;
+ } catch (error) {
+  throw error;
+ }
+};
