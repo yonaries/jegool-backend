@@ -56,3 +56,20 @@ export const getCommunityChatById = async (chatId: string): Promise<CommunityCha
   throw error;
  }
 };
+
+export const getPrivateChatById = async (chatId: string): Promise<PrivateChat | null> => {
+ try {
+  const chat = await prisma.chat.findUniqueOrThrow({
+   where: {
+    id: chatId,
+   },
+   include: {
+    PrivateChat: true,
+   },
+  });
+
+  return chat.PrivateChat;
+ } catch (error) {
+  throw error;
+ }
+};
