@@ -129,4 +129,37 @@ export default class PageController {
    return PrismaError(res, error);
   }
  }
+
+ static async getPageProjects(req: Request, res: Response) {
+  const { id } = req.params;
+  const { visibleTo, status } = req.query;
+
+  if (!id || id.length === 0) return res.status(400).json({ error: "Page Id Is Required" });
+
+  //    Validating the query parameters if there are any
+  const statusTypes = Object.keys(PostStatus);
+
+  try {
+   if (status && statusTypes.indexOf(String(status).toUpperCase()) < 0)
+    return res.status(400).json({ error: "Invalid Status on query parameter" });
+   if (visibleTo) {
+    const memberships = (await PageServices.getPageMemberShips(id)).map((membership) => membership.id);
+    if (memberships.indexOf(String(visibleTo)) < 0) {
+     return res.status(400).json({ error: "There is no membership with that id" });
+    }
+   }
+
+   const queryParams = {
+    status: status ? (String(status).toUpperCase() as PostStatus) : undefined,
+    visibleTo: visibleTo ? (String(visibleTo) as string) : undefined,
+   };
+
+   const projects = req.query
+    ? await PageServices.getPageProjects(id, queryParams)
+    : await PageServices.getPageProjects(id);
+   return res.status(200).json({ projects: projects });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }
