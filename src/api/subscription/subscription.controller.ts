@@ -14,7 +14,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 export default class SubscriptionController {
  static async createSubscription(req: Request, res: Response) {
   const subscription = req.body;
-  let subscriptionId;
+  let subscriptionId: string;
 
   try {
    const { error } = validateSubscription(subscription);
@@ -46,7 +46,7 @@ export default class SubscriptionController {
      status: "INACTIVE",
      expiryDate: dayjs().toISOString(),
     });
-    subscriptionId = newSubscription?.id;
+    subscriptionId = newSubscription?.id!;
    }
 
    // create transaction
@@ -74,7 +74,7 @@ export default class SubscriptionController {
     last_name: subscriber.lastName!,
    });
 
-   res.status(201).json({ subscription: subscriptionId, checkout_url: checkoutUrl });
+   res.status(201).json({ subscription: subscriptionId!, checkout_url: checkoutUrl });
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
     PrismaError(res, error);
