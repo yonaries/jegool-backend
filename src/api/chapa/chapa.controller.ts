@@ -19,6 +19,7 @@ const CHAPA_URL = "https://api.chapa.co/v1/transaction/initialize";
 const config = {
  headers: {
   Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
+  "Content-Type": "application/json",
  },
 };
 export default class ChapaController {
