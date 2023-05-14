@@ -127,10 +127,6 @@ export default class ChapaController {
  static async success(req: Request, res: Response) {
   const query = parseQueryFromUrl(req.url);
   const { type, tx_ref } = query as { type: keyof typeof PaymentType; tx_ref: string };
-  console.log("success query:", {
-   type,
-   tx_ref,
-  });
 
   try {
    if (type === "SUBSCRIPTION") {
@@ -144,26 +140,27 @@ export default class ChapaController {
      },
     });
 
-    console.log("payee:", payee.payee);
-
     // get the page url from the membership table
-    const response = await prisma.membership.findUniqueOrThrow({
+    const response = await prisma.subscription.findUniqueOrThrow({
      where: {
       id: payee.payee,
      },
      select: {
-      page: {
-       select: {
-        id: true,
-        url: true,
-       },
-      },
+      membership:{
+        select:{
+          page:{
+            select: {
+              id: true,
+              url: true,
+            }
+          }
+        }
+      }
      },
     });
 
-    console.log("page:", response.page);
-
-    return res.redirect(`${response.page.url}`);
+    console.log("url:", response.membership.page.url);
+    return res.redirect(`${response.membership.page.url}`);
    } else if (type === "DONATION") {
     const response = await prisma.donation.findUniqueOrThrow({
      where: {
