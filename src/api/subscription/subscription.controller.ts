@@ -72,7 +72,8 @@ export default class SubscriptionController {
     last_name: subscriber.lastName!,
    });
 
-   res.status(201).json({ subscription: subscriptionId!, checkout_url });
+   //todo: change response to redirect with checkout_url
+   res.redirect(checkout_url);
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
     PrismaError(res, error);
