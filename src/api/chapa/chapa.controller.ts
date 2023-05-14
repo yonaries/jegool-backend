@@ -44,7 +44,7 @@ export default class ChapaController {
    else if (type === "DONATION")
     return `${process.env.BASE_URL}/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
   };
-   
+
   try {
    const tx_ref = await chapa.generateTransactionReference();
    const payload: InitializeOptions = {
@@ -62,7 +62,7 @@ export default class ChapaController {
    const response = await axios.post(CHAPA_URL, payload, config);
    return res.status(201).json({ checkout_url: response.data.data.checkout_url });
   } catch (error: any) {
-   return res.status(error.status).json({
+   return res.status(500).json({
     error: {
      provider: "chapa",
      message: error.message,
