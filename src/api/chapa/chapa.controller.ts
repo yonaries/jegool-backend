@@ -1,16 +1,26 @@
 import { PrismaError } from "@/errors/prisma.error";
 import { PrismaClient, Subscription } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import { Chapa, InitializeOptions } from "chapa-nodejs";
+import { Chapa, InitializeOptions, CreateSubaccountOptions } from "chapa-nodejs";
 import dayjs from "dayjs";
 import { Request, Response } from "express";
 import SubscriptionServices from "../subscription/services";
 import { PaymentType } from "./payment";
+import axios from "axios";
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
  secretKey: process.env.CHAPA_SECRET_KEY as string,
 });
+
+const CHAPA_URL = "https://api.chapa.co/v1/transaction/initialize";
+
+// req header with chapa secret key
+const config = {
+ headers: {
+  Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
+ },
+};
 export default class ChapaController {
  //* ------------------ INITIALIZE ------------------
  // initialize is called by the frontend to initialize a transaction
@@ -31,9 +41,9 @@ export default class ChapaController {
   // generate callback url based on the type of transaction
   const generateCallbackUrl = () => {
    if (type === "SUBSCRIPTION")
-    return `${process.env.BASE_URL}/api/chapa/callback?&subscriberId=${userId}&membershipId=${membershipId}&type=${type}`;
+    return `${process.env.BASE_URL}/chapa/callback?&subscriberId=${userId}&membershipId=${membershipId}&type=${type}`;
    else if (type === "DONATION")
-    return `${process.env.BASE_URL}/api/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
+    return `${process.env.BASE_URL}/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
   };
 
   const payload: InitializeOptions = {
@@ -43,15 +53,16 @@ export default class ChapaController {
    last_name: req.body.last_name,
    currency: "ETB",
    tx_ref,
-   return_url: `${process.env.BASE_URL}/api/chapa/success/?type=${type}&tx_ref=${tx_ref}`,
+   return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${tx_ref}`,
    callback_url: generateCallbackUrl(),
   };
 
   try {
-   const response = await chapa.initialize(payload);
-   return res.redirect(response.data.checkout_url);
+   //  const response = await chapa.initialize(payload);
+   const response = await axios.post(CHAPA_URL, payload, config);
+   return res.status(201).json({ checkout_url: response.data.data.checkout_url });
   } catch (error: any) {
-   return res.status(500).json({
+   return res.status(error.status).json({
     error: {
      provider: "chapa",
      message: error.message,
@@ -87,7 +98,7 @@ export default class ChapaController {
   try {
    const response = await chapa.verify({ tx_ref });
 
-   if (response.status === "success") {
+   if (response.status === "200" || response.status === "success") {
     if (type === "SUBSCRIPTION") {
      const subscription = await SubscriptionServices.getSubscriptionByUserIdAndMembershipId(
       membershipId as string,
@@ -170,7 +181,7 @@ export default class ChapaController {
    }
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
-    PrismaError(res, error);
+    return PrismaError(res, error);
    } else {
     return res.status(500).json({ error });
    }

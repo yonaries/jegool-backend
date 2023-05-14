@@ -37,7 +37,7 @@ const initializeChapaSchema = Joi.object({
 
 const callbackChapaSchema = Joi.object({
  tx_ref: Joi.string().required(),
- status: Joi.string().valid("successful", "failed").required(),
+ status: Joi.required(),
  type: Joi.string().valid("SUBSCRIPTION", "DONATION").required(),
  membershipId: Joi.string().when("type", {
   is: "SUBSCRIPTION",
