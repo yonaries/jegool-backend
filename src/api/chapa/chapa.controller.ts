@@ -8,6 +8,7 @@ import SubscriptionServices from "../subscription/services";
 import { PaymentType } from "./payment";
 import axios from "axios";
 import TransactionServices from "../transaction/services";
+import parseQueryFromUrl from "@/utils/parse_query_string";
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
@@ -124,12 +125,8 @@ export default class ChapaController {
  // if the transaction was successful and the type of transaction is a subscription, redirect to the page url
  // if the transaction was successful and the type of transaction is a donation, redirect to the page url/donate/success
  static async success(req: Request, res: Response) {
-  let queryString = req.url.split("?")[1];
-  queryString = decodeURIComponent(queryString.replace(/\+/g, " "));
-  queryString = queryString.replace(/&amp;/g, "&");
-  console.log("query strings", queryString);
-
-  const { type, tx_ref } = req.query as { type: keyof typeof PaymentType; tx_ref: string; id: string };
+  const query = parseQueryFromUrl(req.url);
+  const { type, tx_ref } = query as { type: keyof typeof PaymentType; tx_ref: string };
   console.log("success query:", {
    type,
    tx_ref,
