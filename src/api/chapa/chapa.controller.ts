@@ -37,6 +37,8 @@ export default class ChapaController {
    message: string;
   };
 
+  console.log("chapa initialize:", req.body);
+
   // generate callback url based on the type of transaction
   const generateCallbackUrl = () => {
    if (type === "SUBSCRIPTION")
