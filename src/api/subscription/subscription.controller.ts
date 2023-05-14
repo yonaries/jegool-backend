@@ -43,8 +43,6 @@ export default class SubscriptionController {
    if (!existingSubscription) {
     const newSubscription = await SubscriptionServices.createSubscription({
      ...subscription,
-     status: "INACTIVE",
-     expiryDate: dayjs().toISOString(),
     });
     subscriptionId = newSubscription?.id!;
    }
@@ -64,7 +62,7 @@ export default class SubscriptionController {
    });
    if (!transaction) return res.status(500).json({ error: "Failed to create transaction" });
 
-   const checkoutUrl = await ChapaController.initialize({
+   const checkout_url = await ChapaController.initialize({
     reference: transaction?.reference,
     type: "SUBSCRIPTION",
     id: subscriptionId!,
@@ -74,7 +72,7 @@ export default class SubscriptionController {
     last_name: subscriber.lastName!,
    });
 
-   res.status(201).json({ subscription: subscriptionId!, checkoutUrl });
+   res.status(201).json({ subscription: subscriptionId!, checkout_url });
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
     PrismaError(res, error);

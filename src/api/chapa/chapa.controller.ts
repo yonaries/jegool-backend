@@ -44,12 +44,7 @@ export default class ChapaController {
   email: string;
   amount: number;
   reference: string;
- }): Promise<
-  | {
-     checkout_url: string;
-    }
-  | {}
- > {
+ }): Promise<string> {
   try {
    const payload: InitializeOptions = {
     amount: amount.toString(),
@@ -59,12 +54,12 @@ export default class ChapaController {
     currency: "ETB",
     tx_ref: reference,
     return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${reference}`,
-    callback_url: `${process.env.BASE_URL}/chapa/callback?type=${type}&id${id}`,
+    callback_url: `${process.env.BASE_URL}/chapa/callback?type=${type}&id=${id}`,
    };
 
    //  const response = await chapa.initialize(payload);
    const response = await axios.post(CHAPA_URL, payload, config);
-   return { checkout_url: response.data.data.checkout_url };
+   return response.data.data.checkout_url;
   } catch (error: any) {
    throw {
     error: {
@@ -92,6 +87,8 @@ export default class ChapaController {
   console.log("callback query:", {
    type,
    id,
+   trx_ref,
+   status,
   });
 
   try {
@@ -127,12 +124,17 @@ export default class ChapaController {
  // if the transaction was successful and the type of transaction is a subscription, redirect to the page url
  // if the transaction was successful and the type of transaction is a donation, redirect to the page url/donate/success
  static async success(req: Request, res: Response) {
+  let queryString = req.url.split("?")[1];
+  queryString = decodeURIComponent(queryString.replace(/\+/g, " "));
+  queryString = queryString.replace(/&amp;/g, "&");
+  console.log("query strings", queryString);
+
   const { type, tx_ref } = req.query as { type: keyof typeof PaymentType; tx_ref: string; id: string };
   console.log("success query:", {
    type,
    tx_ref,
   });
-   
+
   try {
    if (type === "SUBSCRIPTION") {
     // get the payee from the transaction table
