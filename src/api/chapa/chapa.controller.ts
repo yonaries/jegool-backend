@@ -38,18 +38,17 @@ export default class ChapaController {
    message: string;
   };
 
-  console.log("chapa initialize:", req.body);
-
-  // generate callback url based on the type of transaction
-  const generateCallbackUrl = () => {
-   if (type === "SUBSCRIPTION")
-    return `${process.env.BASE_URL}/chapa/callback?&subscriberId=${userId}&membershipId=${membershipId}&type=${type}`;
-   else if (type === "DONATION")
-    return `${process.env.BASE_URL}/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
-  };
-
   try {
    const tx_ref = await chapa.generateTransactionReference();
+
+   // generate callback url based on the type of transaction
+   const generateCallbackUrl = () => {
+    if (type === "SUBSCRIPTION")
+     return `${process.env.BASE_URL}/chapa/callback?&subscriberId=${userId}&membershipId=${membershipId}&type=${type}&tx_ref=${tx_ref}`;
+    else if (type === "DONATION")
+     return `${process.env.BASE_URL}/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
+   };
+
    const payload: InitializeOptions = {
     amount: req.body.amount,
     email: req.body.email,
@@ -86,12 +85,12 @@ export default class ChapaController {
  // if the transaction was successful and the type of transaction is a subscription, the subscription status is updated to active or create a new subscription
  // if the transaction was successful and the type of transaction is a donation, create a new donation
  static async callback(req: Request, res: Response) {
-  const { type, pageId, membershipId, userId, itemId, quantity, message } = req.query;
-  const { tx_ref, status } = req.body as { tx_ref: string; status: string };
-
+  const { type, pageId, membershipId, userId, itemId, quantity, message, tx_ref } = req.query;
+  // const { tx_ref, status } = req.body
+  console.log("chapa callback:", req.body);
   try {
-   const response = await chapa.verify({ tx_ref });
-   console.log("chapa callback:", response);
+   const response = await chapa.verify({ tx_ref: tx_ref as string });
+   console.log("chapa verify:", response);
 
    if (response.status === "200" || response.status === "success") {
     if (type === "SUBSCRIPTION") {
@@ -107,12 +106,14 @@ export default class ChapaController {
        status: "ACTIVE",
        expiryDate: dayjs().add(1, "month").toISOString(),
       });
+      console.log("subscription updated");
      } else {
       await SubscriptionServices.createSubscription({
        membershipId: membershipId,
        subscriberId: userId,
        status: "ACTIVE",
       } as Subscription);
+      console.log("subscription created");
      }
     } else if (type === "DONATION") {
      //todo: create a new donation
