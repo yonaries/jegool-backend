@@ -38,6 +38,8 @@ export default class ChapaController {
    message: string;
   };
 
+  console.log("user id: ", userId, req.body.userId);
+
   try {
    const tx_ref = await chapa.generateTransactionReference();
 
@@ -101,7 +103,6 @@ export default class ChapaController {
 
   try {
    const response = await chapa.verify({ tx_ref: trx_ref });
-   console.log("chapa verify:", response);
 
    if (response.status === "success") {
     if (type === "SUBSCRIPTION") {
@@ -119,11 +120,13 @@ export default class ChapaController {
       });
       console.log("subscription updated");
      } else {
-      await SubscriptionServices.createSubscription({
-       membershipId: membershipId,
-       subscriberId: userId,
+      const payload = {
        status: "ACTIVE",
-      } as Subscription);
+       subscriberId: userId,
+       membershipId: membershipId,
+      } as Subscription;
+
+      await SubscriptionServices.createSubscription(payload);
       console.log("subscription created");
      }
     } else if (type === "DONATION") {
