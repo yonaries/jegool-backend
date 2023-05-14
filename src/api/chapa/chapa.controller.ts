@@ -1,5 +1,5 @@
 import { PrismaError } from "@/errors/prisma.error";
-import { PrismaClient, Subscription } from "@prisma/client";
+import { PrismaClient, Subscription, Transaction } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { Chapa, InitializeOptions, CreateSubaccountOptions } from "chapa-nodejs";
 import dayjs from "dayjs";
@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import SubscriptionServices from "../subscription/services";
 import { PaymentType } from "./payment";
 import axios from "axios";
+import TransactionServices from "../transaction/services";
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
@@ -27,50 +28,51 @@ export default class ChapaController {
  // initialize is called by the frontend to initialize a transaction
  // it is called with a payload that has InitializeOptions type
  // it returns a redirect url to the frontend
- static async initialize(req: Request, res: Response) {
-  const { type, pageId, membershipId, userId, itemId, quantity, message } = req.body as {
-   type: keyof typeof PaymentType;
-   pageId: string;
-   membershipId: string;
-   userId: string;
-   itemId: string;
-   quantity: number;
-   message: string;
-  };
-
+ static async initialize({
+  type,
+  id,
+  first_name,
+  last_name,
+  email,
+  amount,
+  reference,
+ }: {
+  type: keyof typeof PaymentType;
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  amount: number;
+  reference: string;
+ }): Promise<
+  | {
+     checkout_url: string;
+    }
+  | {}
+ > {
   try {
-   const tx_ref = await chapa.generateTransactionReference();
-
-   // generate callback url based on the type of transaction
-   const generateCallbackUrl = () => {
-    if (type === "SUBSCRIPTION")
-     return `${process.env.BASE_URL}/chapa/callback?&userId=${userId}&membershipId=${membershipId}&type=${type}&tx_ref=${tx_ref}`;
-    else if (type === "DONATION")
-     return `${process.env.BASE_URL}/chapa/callback?&userId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
-   };
-
    const payload: InitializeOptions = {
-    amount: req.body.amount,
-    email: req.body.email,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
+    amount: amount.toString(),
+    email: email,
+    first_name: first_name,
+    last_name: last_name,
     currency: "ETB",
-    tx_ref,
-    return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${tx_ref}`,
-    callback_url: generateCallbackUrl(),
+    tx_ref: reference,
+    return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${reference}`,
+    callback_url: `${process.env.BASE_URL}/chapa/callback?type=${type}&id${id}`,
    };
 
    //  const response = await chapa.initialize(payload);
    const response = await axios.post(CHAPA_URL, payload, config);
-   return res.status(201).json({ checkout_url: response.data.data.checkout_url });
+   return { checkout_url: response.data.data.checkout_url };
   } catch (error: any) {
-   return res.status(500).json({
+   throw {
     error: {
      provider: "chapa",
      message: error.message,
      status: error.status,
     },
-   });
+   };
   }
  }
 
@@ -82,58 +84,40 @@ export default class ChapaController {
  // the status is used to determine if the transaction was successful or not
 
  // if the transaction was successful, the type of transaction is used to determine what to do
- // if the transaction was successful and the type of transaction is a subscription, the subscription status is updated to active or create a new subscription
- // if the transaction was successful and the type of transaction is a donation, create a new donation
+ // if the transaction was successful and the type of transaction is a subscription, the subscription status is updated to active and the expiry date is set to 1 month from now
+ // if the transaction was successful and the type of transaction is a donation, update the donation status to successful or failed
  static async callback(req: Request, res: Response) {
-  const { type, pageId, membershipId, userId, itemId, quantity, message } = req.query;
+  const { type, id } = req.query;
   const { trx_ref, status } = req.body;
   console.log("callback query:", {
    type,
-   pageId,
-   membershipId,
-   userId,
-   itemId,
-   quantity,
-   message,
-   trx_ref,
-   status,
+   id,
   });
 
   try {
    const response = await chapa.verify({ tx_ref: trx_ref });
 
    if (response.status === "success") {
+    await TransactionServices.updateTransactionByReference(trx_ref, {
+     status: "SUCCESS",
+    } as Transaction);
+
     if (type === "SUBSCRIPTION") {
-     const subscription = await SubscriptionServices.getSubscriptionByUserIdAndMembershipId(
-      membershipId as string,
-      userId as string,
-     );
-
-     // if subscription exists, update the subscription status to active and set the expiry date to 1 month from now
-     // if subscription does not exist, create a new subscription
-     if (subscription?.id) {
-      await SubscriptionServices.updateSubscriptionById(subscription.id, {
-       status: "ACTIVE",
-       expiryDate: dayjs().add(1, "month").toISOString(),
-      });
-      console.log("subscription updated");
-     } else {
-      const payload = {
-       status: "ACTIVE",
-       subscriberId: userId as string,
-       membershipId: membershipId as string,
-       expiryDate: dayjs().add(1, "month").toISOString(),
-      } as unknown as Subscription;
-
-      await SubscriptionServices.createSubscription(payload);
-      console.log("subscription created");
-     }
+     // update the subscription status to active and set the expiry date to 1 month from now
+     await SubscriptionServices.updateSubscriptionById(id as string, {
+      status: "ACTIVE",
+      expiryDate: dayjs().add(1, "month").toISOString(),
+     });
+     console.log("subscription updated");
     } else if (type === "DONATION") {
-     //todo: create a new donation
+     //todo: update the donation status to successful or failed
     }
    }
   } catch (error: any) {
    console.error(error.message);
+   await TransactionServices.updateTransactionByReference(trx_ref, {
+    status: "FAILED",
+   } as Transaction);
   }
  }
 
