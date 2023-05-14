@@ -10,6 +10,7 @@ import transactionRouter from "./api/transaction/transaction.routes";
 import projectRouter from "./api/project/project.routes";
 import subscriptionRouter from "./api/subscription/subscription.routes";
 import benefitRouter from "./api/benefit/benefit.routes";
+import chapaRouter from "./api/chapa/chapa.routes";
 import privateChatRouter from "./api/chat/privateChat/privateChat.routes";
 import communityChatRouter from "./api/chat/communityChat/communityChat.routes";
 
@@ -27,6 +28,7 @@ app.use("/transaction", transactionRouter);
 app.use("/project", projectRouter);
 app.use("/subscription", subscriptionRouter);
 app.use("/benefit", benefitRouter);
+app.use("/chapa", chapaRouter);
 app.use("/privateChat", privateChatRouter);
 app.use("/communityChat", communityChatRouter);
 
