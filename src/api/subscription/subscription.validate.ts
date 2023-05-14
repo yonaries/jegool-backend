@@ -15,12 +15,7 @@ const subscriptionSchema = Joi.object({
 
 const subscriptionUpdateSchema = Joi.object()
  .keys({
-  status: Joi.string().valid(
-   SubscriptionStatus.ACTIVE,
-   SubscriptionStatus.INACTIVE,
-   SubscriptionStatus.EXPIRED,
-   SubscriptionStatus.CANCELLED,
-  ),
+  status: Joi.string().valid(...Object.values(SubscriptionStatus)),
   expiryDate: Joi.date().iso(),
  })
  .or("status", "expiryDate");
