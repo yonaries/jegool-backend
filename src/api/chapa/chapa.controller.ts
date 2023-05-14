@@ -144,6 +144,8 @@ export default class ChapaController {
      },
     });
 
+    console.log("payee:", payee.payee);
+
     // get the page url from the membership table
     const response = await prisma.membership.findUniqueOrThrow({
      where: {
@@ -158,6 +160,8 @@ export default class ChapaController {
       },
      },
     });
+
+    console.log("page:", response.page);
 
     return res.redirect(`${response.page.url}`);
    } else if (type === "DONATION") {
