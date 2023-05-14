@@ -44,9 +44,9 @@ export default class ChapaController {
    // generate callback url based on the type of transaction
    const generateCallbackUrl = () => {
     if (type === "SUBSCRIPTION")
-     return `${process.env.BASE_URL}/chapa/callback?&subscriberId=${userId}&membershipId=${membershipId}&type=${type}&tx_ref=${tx_ref}`;
+     return `${process.env.BASE_URL}/chapa/callback?&userId=${userId}&membershipId=${membershipId}&type=${type}&tx_ref=${tx_ref}`;
     else if (type === "DONATION")
-     return `${process.env.BASE_URL}/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
+     return `${process.env.BASE_URL}/chapa/callback?&userId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
    };
 
    const payload: InitializeOptions = {
