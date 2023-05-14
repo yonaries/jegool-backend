@@ -86,17 +86,9 @@ export default class ChapaController {
   const { type, pageId, membershipId, userId, itemId, quantity, message } = req.query;
   const { tx_ref, status } = req.body as { tx_ref: string; status: string };
 
-  // assign the query string to the body
-  req.body.type = type;
-  req.body.membershipId = membershipId;
-  req.body.userId = userId;
-  req.body.pageId = pageId;
-  req.body.itemId = itemId;
-  req.body.quantity = quantity;
-  req.body.message = message;
-
   try {
    const response = await chapa.verify({ tx_ref });
+   console.log("chapa callback:", response);
 
    if (response.status === "200" || response.status === "success") {
     if (type === "SUBSCRIPTION") {
@@ -107,15 +99,15 @@ export default class ChapaController {
 
      // if subscription exists, update the subscription status to active and set the expiry date to 1 month from now
      // if subscription does not exist, create a new subscription
-     if (subscription) {
+     if (subscription?.id) {
       await SubscriptionServices.updateSubscriptionById(subscription.id, {
        status: "ACTIVE",
        expiryDate: dayjs().add(1, "month").toISOString(),
       });
      } else {
       await SubscriptionServices.createSubscription({
-       membershipId: req.body.membershipId,
-       subscriberId: req.body.userId,
+       membershipId: membershipId,
+       subscriberId: userId,
        status: "ACTIVE",
       } as Subscription);
      }
