@@ -27,7 +27,6 @@ export default class ChapaController {
  // it is called with a payload that has InitializeOptions type
  // it returns a redirect url to the frontend
  static async initialize(req: Request, res: Response) {
-  const tx_ref = await chapa.generateTransactionReference();
   const { type, pageId, membershipId, userId, itemId, quantity, message } = req.body as {
    type: keyof typeof PaymentType;
    pageId: string;
@@ -45,19 +44,20 @@ export default class ChapaController {
    else if (type === "DONATION")
     return `${process.env.BASE_URL}/chapa/callback?&donorId=${userId}&pageId=${pageId}&itemId=${itemId}&quantity=${quantity}&message=${message}&type=${type}`;
   };
-
-  const payload: InitializeOptions = {
-   amount: req.body.amount,
-   email: req.body.email,
-   first_name: req.body.first_name,
-   last_name: req.body.last_name,
-   currency: "ETB",
-   tx_ref,
-   return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${tx_ref}`,
-   callback_url: generateCallbackUrl(),
-  };
-
+   
   try {
+   const tx_ref = await chapa.generateTransactionReference();
+   const payload: InitializeOptions = {
+    amount: req.body.amount,
+    email: req.body.email,
+    first_name: req.body.first_name,
+    last_name: req.body.last_name,
+    currency: "ETB",
+    tx_ref,
+    return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${tx_ref}`,
+    callback_url: generateCallbackUrl(),
+   };
+
    //  const response = await chapa.initialize(payload);
    const response = await axios.post(CHAPA_URL, payload, config);
    return res.status(201).json({ checkout_url: response.data.data.checkout_url });
