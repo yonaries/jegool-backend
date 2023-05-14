@@ -128,6 +128,11 @@ export default class ChapaController {
  // if the transaction was successful and the type of transaction is a donation, redirect to the page url/donate/success
  static async success(req: Request, res: Response) {
   const { type, tx_ref } = req.query as { type: keyof typeof PaymentType; tx_ref: string; id: string };
+  console.log("success query:", {
+   type,
+   tx_ref,
+  });
+   
   try {
    if (type === "SUBSCRIPTION") {
     // get the payee from the transaction table

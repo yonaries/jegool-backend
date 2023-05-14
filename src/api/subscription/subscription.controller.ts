@@ -74,7 +74,7 @@ export default class SubscriptionController {
     last_name: subscriber.lastName!,
    });
 
-   res.status(201).json({ subscription: subscriptionId!, checkout_url: checkoutUrl });
+   res.status(201).json({ subscription: subscriptionId!, checkoutUrl });
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
     PrismaError(res, error);
