@@ -38,8 +38,6 @@ export default class ChapaController {
    message: string;
   };
 
-  console.log("user id: ", userId, req.body.userId);
-
   try {
    const tx_ref = await chapa.generateTransactionReference();
 
@@ -122,9 +120,10 @@ export default class ChapaController {
      } else {
       const payload = {
        status: "ACTIVE",
-       subscriberId: userId,
-       membershipId: membershipId,
-      } as Subscription;
+       subscriberId: userId as string,
+       membershipId: membershipId as string,
+       expiryDate: dayjs().add(1, "month").toISOString(),
+      } as unknown as Subscription;
 
       await SubscriptionServices.createSubscription(payload);
       console.log("subscription created");
