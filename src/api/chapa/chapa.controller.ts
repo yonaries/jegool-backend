@@ -85,14 +85,25 @@ export default class ChapaController {
  // if the transaction was successful and the type of transaction is a subscription, the subscription status is updated to active or create a new subscription
  // if the transaction was successful and the type of transaction is a donation, create a new donation
  static async callback(req: Request, res: Response) {
-  const { type, pageId, membershipId, userId, itemId, quantity, message, tx_ref } = req.query;
-  // const { tx_ref, status } = req.body
-  console.log("chapa callback:", req.body);
+  const { type, pageId, membershipId, userId, itemId, quantity, message } = req.query;
+  const { trx_ref, status } = req.body;
+  console.log("callback query:", {
+   type,
+   pageId,
+   membershipId,
+   userId,
+   itemId,
+   quantity,
+   message,
+   trx_ref,
+   status,
+  });
+
   try {
-   const response = await chapa.verify({ tx_ref: tx_ref as string });
+   const response = await chapa.verify({ tx_ref: trx_ref });
    console.log("chapa verify:", response);
 
-   if (response.status === "200" || response.status === "success") {
+   if (response.status === "success") {
     if (type === "SUBSCRIPTION") {
      const subscription = await SubscriptionServices.getSubscriptionByUserIdAndMembershipId(
       membershipId as string,
