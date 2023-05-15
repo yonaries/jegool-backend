@@ -8,10 +8,13 @@ import PageServices from "../page/services";
 import TransactionServices from "../transaction/services";
 import { TransactionWithOnlyNeededFields } from "../transaction/transaction.type";
 import dayjs from "dayjs";
+import ChapaController from "../chapa/chapa.controller";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 export default class SubscriptionController {
  static async createSubscription(req: Request, res: Response) {
   const subscription = req.body;
+  let subscriptionId: string;
 
   try {
    const { error } = validateSubscription(subscription);
@@ -28,7 +31,7 @@ export default class SubscriptionController {
     membership.id,
     subscriber.id,
    );
-   if (existingSubscription) return res.status(400).json({ error: "User already subscribed to this membership" });
+   if (existingSubscription) subscriptionId = existingSubscription.id;
 
    // get payee info
    const page = await PageServices.getPageById(membership.pageId);
@@ -37,11 +40,18 @@ export default class SubscriptionController {
      error: "The Page that this membership belongs to is not found",
     });
 
+   if (!existingSubscription) {
+    const newSubscription = await SubscriptionServices.createSubscription({
+     ...subscription,
+    });
+    subscriptionId = newSubscription?.id!;
+   }
+
    // create transaction
    const transactionData: TransactionWithOnlyNeededFields = {
     amount: membership.fee,
     currency: "ETB",
-    payee: page.id,
+    payee: subscriptionId!,
     payer: subscriber.id,
     remark: `Subscription fee for ${membership.title}`,
     provider: "chapa",
@@ -50,17 +60,26 @@ export default class SubscriptionController {
    const transaction = await TransactionServices.createTransaction({
     ...transactionData,
    });
-
    if (!transaction) return res.status(500).json({ error: "Failed to create transaction" });
 
-   const newSubscription = await SubscriptionServices.createSubscription({
-    ...subscription,
-    status: "INACTIVE",
-    expiryDate: dayjs().toISOString(),
+   const checkout_url = await ChapaController.initialize({
+    reference: transaction?.reference,
+    type: "SUBSCRIPTION",
+    id: subscriptionId!,
+    amount: membership.fee,
+    email: subscriber.email,
+    first_name: subscriber.firstName!,
+    last_name: subscriber.lastName!,
    });
-   res.status(201).json({ subscription: newSubscription });
+
+   //todo: change response to redirect with checkout_url
+   res.redirect(checkout_url);
   } catch (error) {
-   PrismaError(res, error);
+   if (error instanceof PrismaClientKnownRequestError) {
+    PrismaError(res, error);
+   } else {
+    res.status(500).json({ error });
+   }
   }
  }
 
