@@ -1,6 +1,6 @@
 import { PrismaError } from "@/errors/prisma.error";
 import { PrismaClient, Subscription, Transaction } from "@prisma/client";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { Chapa, InitializeOptions, CreateSubaccountOptions } from "chapa-nodejs";
 import dayjs from "dayjs";
 import { Request, Response } from "express";
