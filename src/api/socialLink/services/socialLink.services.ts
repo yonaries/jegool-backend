@@ -15,3 +15,17 @@ export const createSocialLink = async (data: SocialLink) => {
   throw error;
  }
 };
+
+export const updateSocialLinkById = async (id: string, data: SocialLink) => {
+ try {
+  const socialLink = await prisma.socialLink.update({
+   where: {
+    id,
+   },
+   data,
+  });
+  return socialLink;
+ } catch (error) {
+  throw error;
+ }
+};
