@@ -1,3 +1,3 @@
-import * as socialLinkServices from './socialLink.service';
+import * as socialLinkServices from "./socialLink.services";
 
 export default socialLinkServices;
