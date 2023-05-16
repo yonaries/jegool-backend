@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import SocialLinkService from "./services";
 import { validateSocialLink } from "./socialLink.validate";
 import PageServices from "../page/services";
+import { PrismaError } from "../../errors/prisma.error";
 
 export default class SocialLinkController {
  static async createSocialLink(req: Request, res: Response) {
@@ -17,7 +18,7 @@ export default class SocialLinkController {
 
    return res.status(201).json({ socialLink: createdSocialLink });
   } catch (error) {
-   throw error;
+   return PrismaError(res, error);
   }
  }
 }

@@ -11,7 +11,7 @@ const options = {
 
 const socialLinkSchema = Joi.object({
  url: Joi.string().uri().required(),
- platform: Joi.string().valid("FACEBOOK", "INSTAGRAM", "TWITTER", "YOUTUBE", "LINKEDIN", "TIKTOK").required(),
+ type: Joi.string().valid("FACEBOOK", "INSTAGRAM", "TWITTER", "YOUTUBE", "LINKEDIN", "TIKTOK").required(),
  pageId: Joi.string().required(),
 });
 
