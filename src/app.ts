@@ -13,6 +13,7 @@ import benefitRouter from "./api/benefit/benefit.routes";
 import chapaRouter from "./api/chapa/chapa.routes";
 import privateChatRouter from "./api/chat/privateChat/privateChat.routes";
 import communityChatRouter from "./api/chat/communityChat/communityChat.routes";
+import socialLinkRouter from "./api/socialLink/socialLink.routes";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/benefit", benefitRouter);
 app.use("/chapa", chapaRouter);
 app.use("/privateChat", privateChatRouter);
 app.use("/communityChat", communityChatRouter);
+app.use("/socialLink", socialLinkRouter);
 
 app.get("/", (_req, res) => {
  res.status(200).send("Hello World!");
