@@ -1,4 +1,4 @@
-import { PrismaError } from "@/errors/prisma.error";
+import { PrismaError } from "../../errors/prisma.error";
 import { PrismaClient, Subscription, Transaction } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import { Chapa, InitializeOptions, CreateSubaccountOptions } from "chapa-nodejs";
@@ -8,7 +8,7 @@ import SubscriptionServices from "../subscription/services";
 import { PaymentType } from "./payment";
 import axios from "axios";
 import TransactionServices from "../transaction/services";
-import parseQueryFromUrl from "@/utils/parse_query_string";
+import parseQueryFromUrl from "../../utils/parse_query_string";
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
