@@ -29,3 +29,16 @@ export const updateSocialLinkById = async (id: string, data: SocialLink) => {
   throw error;
  }
 };
+
+export const deleteSocialLinkById = async (id: string) => {
+ try {
+  const socialLink = await prisma.socialLink.delete({
+   where: {
+    id,
+   },
+  });
+  return socialLink;
+ } catch (error) {
+  throw error;
+ }
+};

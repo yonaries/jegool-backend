@@ -23,7 +23,7 @@ export default class SocialLinkController {
  }
 
  static async updateSocialLinkById(req: Request, res: Response) {
-	  const { id } = req.params;
+  const { id } = req.params;
   const socialLink = req.body;
 
   if (id.length === 0 || !id) return res.status(400).json({ error: "SocialLink Id Is Required" });
@@ -35,6 +35,19 @@ export default class SocialLinkController {
    const updatedSocialLink = await SocialLinkService.updateSocialLinkById(id, socialLink);
 
    return res.status(200).json({ socialLink: updatedSocialLink });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
+
+ static async deleteSocialLinkById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "SocialLink Id Is Required" });
+
+  try {
+   const deletedSocialLink = await SocialLinkService.deleteSocialLinkById(id);
+   return res.status(200).json({ socialLink: deletedSocialLink });
   } catch (error) {
    return PrismaError(res, error);
   }
