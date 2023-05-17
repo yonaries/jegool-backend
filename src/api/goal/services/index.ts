@@ -1,3 +1,3 @@
-import * as goalServices from './goal.services';
+import * as GoalServices from "./goal.services";
 
-export default goalServices;
+export default GoalServices;
