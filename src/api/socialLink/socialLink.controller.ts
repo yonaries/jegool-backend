@@ -52,4 +52,18 @@ export default class SocialLinkController {
    return PrismaError(res, error);
   }
  }
+
+ static async getSocialLinkById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "SocialLink Id Is Required" });
+
+  try {
+   const socialLink = await SocialLinkService.getSocialLinkById(id);
+   if (!socialLink) return res.status(404).json({ error: "SocialLink not found" });
+   return res.status(200).json({ socialLink });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }

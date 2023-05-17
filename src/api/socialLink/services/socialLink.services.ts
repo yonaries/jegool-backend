@@ -42,3 +42,16 @@ export const deleteSocialLinkById = async (id: string) => {
   throw error;
  }
 };
+
+export const getSocialLinkById = async (id: string) => {
+ try {
+  const socialLink = await prisma.socialLink.findFirstOrThrow({
+   where: {
+    id,
+   },
+  });
+  return socialLink;
+ } catch (error) {
+  throw error;
+ }
+};
