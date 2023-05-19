@@ -269,12 +269,12 @@ model Post {
 }
 
 model BankAccount {
-  id          String   @id @unique @default(cuid())
-  bankName    String
-  accountNo   String
-  accountName String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @unique
+  bankCode  String
+  bankName  String
+  accountNo String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   page   Page   @relation(fields: [pageId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   pageId String
