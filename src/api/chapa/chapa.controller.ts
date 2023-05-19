@@ -78,7 +78,8 @@ export default class ChapaController {
  static async createSubaccount(data: CreateSubaccountOptions) {
   try {
    const response = await chapa.createSubaccount(data);
-   return response.data;
+   const { subaccount_id } = response.data as any;
+   return subaccount_id;
   } catch (error: any) {
    throw {
     error: {

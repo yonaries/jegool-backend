@@ -1,53 +1,22 @@
-import request from "supertest";
-import app from "../../app";
-import { PrismaClient } from "@prisma/client";
+import { CreateSubaccountOptions, SplitType } from "chapa-nodejs";
 import ChapaController from "../chapa/chapa.controller";
 
-const prisma = new PrismaClient();
+const randomNumber = () => {
+ const acc = `1000${Math.floor(Math.random() * 900000000) + 100000000}`;
+ return acc;
+};
+describe("Split Chapa", () => {
+ it("should create subaccount on chapa", async () => {
+  const bank: CreateSubaccountOptions = {
+   business_name: "Hobbyist",
+   account_name: "John Doe",
+   bank_code: "96e41186-29ba-4e30-b013-2ca36d7e7025",
+   account_number: randomNumber(),
+   split_value: 0.08,
+   split_type: SplitType.PERCENTAGE,
+  };
 
-describe("Split Chapa", async () => {
- const banks = await ChapaController.getBanks();
- console.log(banks);
-
- //  const user = await prisma.user.create({
- //   data: {
- //    displayName: "John Doe",
- //    email: " johndoe@example.com",
- //    firstName: "John",
- //    lastName: "Doe",
- //    residence: "Addis Ababa",
- //    Page: {
- //     create: {
- //      name: "Hobbist",
- //      url: "http://google.com/",
- //      BankAccount: {
- //       create: {
- //        id: "1000482103611",
- //        bankName: "Commercial Bank of Ethiopia",
- //        accountNo: "1000482103611",
- //        accountName: "John Doe",
- //       },
- //      },
- //     },
- //    },
- //   },
- //   select: {
- //    id: true,
- //   },
- //  });
-
- //  it("should return a redirect url", async () => {
- //   const response = await request(app).post("/api/chapa/split/initialize").send({
- //    type: "split",
- //    id: "1",
- //    first_name: "John",
- //    last_name: "Doe",
- //    email: "johndoe@gmail.com",
- //    amount: 100,
- //    subaccount: "RS_1234567890",
- //    reference: "1234567890",
- //   });
- //   expect(response.status).toBe(200);
- //   expect(response.body).toHaveProperty("checkout_url");
- //  });
+  const response = await ChapaController.createSubaccount(bank);
+  expect(response).toBeTruthy();
+ });
 });

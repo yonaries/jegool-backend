@@ -70,6 +70,7 @@ export default class SubscriptionController {
     email: subscriber.email,
     first_name: subscriber.firstName!,
     last_name: subscriber.lastName!,
+    subaccount: "93c5d8c9-9842-48a5-80e5-82205ff36a03",
    });
 
    //todo: change response to redirect with checkout_url
