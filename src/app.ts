@@ -15,6 +15,7 @@ import privateChatRouter from "./api/chat/privateChat/privateChat.routes";
 import communityChatRouter from "./api/chat/communityChat/communityChat.routes";
 import socialLinkRouter from "./api/socialLink/socialLink.routes";
 import goalRouter from "./api/goal/goal.routes";
+import bankAccountRouter from "./api/bankAccount/bankAccount.routes";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/privateChat", privateChatRouter);
 app.use("/communityChat", communityChatRouter);
 app.use("/socialLink", socialLinkRouter);
 app.use("/goal", goalRouter);
+app.use("/bankAccount", bankAccountRouter);
 
 app.get("/", (_req, res) => {
  res.status(200).send("Hello World!");
