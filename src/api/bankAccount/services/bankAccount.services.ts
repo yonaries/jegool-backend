@@ -16,3 +16,17 @@ export const createBankAccount = async (data: BankAccount): Promise<{ id: string
   throw error;
  }
 };
+
+export const getBankAccountByPageId = async (pageId: string): Promise<BankAccount> => {
+ try {
+  const bankAccount = await prisma.bankAccount.findFirstOrThrow({
+   where: {
+    pageId: pageId,
+   },
+  });
+
+  return bankAccount;
+ } catch (error) {
+  throw error;
+ }
+};

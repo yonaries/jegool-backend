@@ -16,4 +16,18 @@ export default class BankAccountController {
    return PrismaError(res, error);
   }
  }
+
+ static async getBankAccountByPageId(req: Request, res: Response) {
+  const pageId = req.params.pageId;
+
+  if (pageId.length === 0 || !pageId) return res.status(400).json({ error: "Page Id Is Required" });
+  try {
+   const bankAccount = await BankAccountServices.getBankAccountByPageId(pageId);
+   if (!bankAccount) return res.status(404).json({ error: "Bank Account Not Found" });
+
+   return res.status(200).json({ bankAccount });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }
