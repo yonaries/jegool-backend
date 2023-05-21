@@ -30,4 +30,17 @@ export default class BankAccountController {
    return PrismaError(res, error);
   }
  }
+
+ static async deleteBankAccountById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "Bank Account Id Is Required" });
+  try {
+   const bankAccount = await BankAccountServices.deleteBankAccountById(id);
+
+   return res.status(200).json({ bankAccount });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }
