@@ -43,3 +43,17 @@ export const deleteBankAccountById = async (id: string): Promise<BankAccount> =>
   throw error;
  }
 };
+
+export const updateBankAccountById = async (id: string, data: BankAccount): Promise<BankAccount> => {
+ try {
+  const bankAccount = await prisma.bankAccount.update({
+   data,
+   where: {
+    id: id,
+   },
+  });
+  return bankAccount;
+ } catch (error) {
+  throw error;
+ }
+};
