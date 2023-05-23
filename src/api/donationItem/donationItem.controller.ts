@@ -30,4 +30,18 @@ export default class DonationItemController {
    return PrismaError(res, error);
   }
  }
+
+ static async deleteDonationItemById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "DonationItem Id Is Required" });
+
+  try {
+   const deletedDonationItem = await DonationItemServices.deleteDonationItemById(id);
+   if (!deletedDonationItem) return res.status(404).json({ error: "DonationItem not found" });
+   return res.status(200).json({ donationItem: deletedDonationItem });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }
