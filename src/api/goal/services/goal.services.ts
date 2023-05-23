@@ -30,3 +30,17 @@ export const getGoalById = async (id: string): Promise<Goal | null> => {
   throw error;
  }
 };
+
+export const deleteGoalById = async (id: string): Promise<Goal> => {
+ try {
+  const goal = await prisma.goal.delete({
+   where: {
+    id: id,
+   },
+  });
+
+  return goal;
+ } catch (error) {
+  throw error;
+ }
+};

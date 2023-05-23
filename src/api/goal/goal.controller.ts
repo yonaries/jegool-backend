@@ -35,4 +35,19 @@ export default class GoalController {
    return PrismaError(res, Error);
   }
  }
+
+ static async deleteGoalById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "Goal Id Is Required" });
+
+  try {
+   const goal = await GoalServices.deleteGoalById(id);
+   if (!goal) return res.status(404).json({ error: "Goal not found" });
+
+   return res.status(200).json({ goal });
+  } catch (error) {
+   return PrismaError(res, Error);
+  }
+ }
 }
