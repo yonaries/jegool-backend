@@ -16,3 +16,17 @@ export const createGoal = async (goal: Goal) => {
   throw error;
  }
 };
+
+export const getGoalById = async (id: string): Promise<Goal | null> => {
+ try {
+  const goal = await prisma.goal.findUnique({
+   where: {
+    id: id,
+   },
+  });
+
+  return goal;
+ } catch (error) {
+  throw error;
+ }
+};

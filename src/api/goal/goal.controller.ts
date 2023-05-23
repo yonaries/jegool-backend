@@ -15,9 +15,24 @@ export default class GoalController {
    if (!page) return res.status(404).json({ error: "Page not found" });
 
    const createdGoal = await GoalServices.createGoal(goal);
-   return res.status(201).json({goal: createdGoal});
+   return res.status(201).json({ goal: createdGoal });
   } catch (error) {
    PrismaError(res, Error);
+  }
+ }
+
+ static async getGoalById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "Goal Id Is Required" });
+
+  try {
+   const goal = await GoalServices.getGoalById(id);
+   if (!goal) return res.status(404).json({ error: "Goal not found" });
+
+   return res.status(200).json({ goal });
+  } catch (error) {
+   return PrismaError(res, Error);
   }
  }
 }
