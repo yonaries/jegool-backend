@@ -1,4 +1,5 @@
 import { BankAccount, PrismaClient } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 const prisma = new PrismaClient();
 
@@ -18,15 +19,25 @@ export const createBankAccount = async (data: BankAccount): Promise<{ id: string
 };
 
 export const getBankAccountByPageId = async (pageId: string): Promise<BankAccount> => {
- try {
-  const bankAccount = await prisma.bankAccount.findFirstOrThrow({
-   where: {
-    pageId: pageId,
+ const bankAccount = await prisma.bankAccount.findFirst({
+  where: {
+   pageId: pageId,
+  },
+  include: {
+   page: {
+    select: {
+     name: true,
+     owner: {
+      select: {
+       id: true,
+       firstName: true,
+       lastName: true,
+      },
+     },
+    },
    },
-  });
+  },
+ });
 
-  return bankAccount;
- } catch (error) {
-  throw error;
- }
+ return bankAccount!;
 };

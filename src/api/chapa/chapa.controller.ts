@@ -9,6 +9,7 @@ import parseQueryFromUrl from "../../utils/parse_query_string";
 import SubscriptionServices from "../subscription/services";
 import TransactionServices from "../transaction/services";
 import { PaymentType } from "./payment";
+import ChapaError from "../../errors/chapa.error";
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
@@ -65,13 +66,7 @@ export default class ChapaController {
    const response = await axios.post(CHAPA_URL, payload, config);
    return response.data.data.checkout_url;
   } catch (error: any) {
-   throw {
-    error: {
-     provider: "chapa",
-     message: error.message,
-     status: error.status,
-    },
-   };
+   throw new ChapaError(error.message, error.status);
   }
  }
 
@@ -81,13 +76,7 @@ export default class ChapaController {
    const { subaccount_id } = response.data as any;
    return subaccount_id;
   } catch (error: any) {
-   throw {
-    error: {
-     provider: "chapa",
-     message: error.message,
-     status: error.status,
-    },
-   };
+   throw new ChapaError(error.message, error.status);
   }
  }
 
@@ -96,13 +85,7 @@ export default class ChapaController {
    const response = await chapa.getBanks();
    return response.data;
   } catch (error: any) {
-   throw {
-    error: {
-     provider: "chapa",
-     message: error.message,
-     status: error.status,
-    },
-   };
+   throw new ChapaError(error.message, error.status);
   }
  }
 
@@ -193,7 +176,6 @@ export default class ChapaController {
      },
     });
 
-    console.log("url:", response.membership.page.url);
     return res.redirect(`${response.membership.page.url}`);
    } else if (type === "DONATION") {
     const response = await prisma.donation.findUniqueOrThrow({

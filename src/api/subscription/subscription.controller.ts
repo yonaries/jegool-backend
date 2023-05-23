@@ -10,6 +10,7 @@ import { TransactionWithOnlyNeededFields } from "../transaction/transaction.type
 import dayjs from "dayjs";
 import ChapaController from "../chapa/chapa.controller";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import BankAccountServices from "../bankAccount/services";
 
 export default class SubscriptionController {
  static async createSubscription(req: Request, res: Response) {
@@ -39,6 +40,10 @@ export default class SubscriptionController {
     return res.status(404).json({
      error: "The Page that this membership belongs to is not found",
     });
+
+   // check if page has a bank account
+   const bankAccount = await BankAccountServices.getBankAccountByPageId(page.id);
+   if (!bankAccount) return res.status(404).json({ error: "Page has no bank account" });
 
    if (!existingSubscription) {
     const newSubscription = await SubscriptionServices.createSubscription({
@@ -70,7 +75,7 @@ export default class SubscriptionController {
     email: subscriber.email,
     first_name: subscriber.firstName!,
     last_name: subscriber.lastName!,
-    subaccount: "93c5d8c9-9842-48a5-80e5-82205ff36a03",
+    subaccount: bankAccount.id,
    });
 
    //todo: change response to redirect with checkout_url
