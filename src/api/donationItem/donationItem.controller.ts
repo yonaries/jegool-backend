@@ -1,6 +1,6 @@
 import { PrismaError } from "../../errors/prisma.error";
 import { Request, Response } from "express";
-import { validateDonationItem } from "./donationItem.validate";
+import { validateDonationItem, validateDonationItemOnUpdate } from "./donationItem.validate";
 import DonationItemServices from "./services";
 
 export default class DonationItemController {
@@ -51,6 +51,24 @@ export default class DonationItemController {
    if (!donationItems) return res.status(404).json({ error: "DonationItems not found" });
 
    return res.status(200).json({ donationItems });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
+
+ static async updateDonationItemById(req: Request, res: Response) {
+  const { id } = req.params;
+  const donationItem = req.body;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "DonationItem Id Is Required" });
+
+  try {
+   const { error, value } = validateDonationItemOnUpdate(donationItem);
+   if (error) return res.status(400).json({ error: error.message });
+
+   const updatedDonationItem = await DonationItemServices.updateDonationItemById(id, value);
+
+   return res.status(200).json({ donationItem: updatedDonationItem });
   } catch (error) {
    return PrismaError(res, error);
   }
