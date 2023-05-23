@@ -16,3 +16,16 @@ export const createDonationItem = async (donationItem: DonationItem): Promise<{ 
   throw error;
  }
 };
+
+export const getDonationItemById = async (donationItemId: string): Promise<DonationItem | null> => {
+ try {
+  const donationItem = await prisma.donationItem.findUniqueOrThrow({
+   where: {
+    id: donationItemId,
+   },
+  });
+  return donationItem;
+ } catch (error) {
+  throw error;
+ }
+};
