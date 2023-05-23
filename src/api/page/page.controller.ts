@@ -176,4 +176,18 @@ export default class PageController {
    return PrismaError(res, error);
   }
  }
+
+ static async getPageSocialLinks(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (!id || id.length === 0) return res.status(400).json({ error: "Page Id Is Required" });
+
+  try {
+   const socialLinks = await PageServices.getPageSocialLinks(id);
+   if (!socialLinks) return res.status(404).json({ error: "Page not found" });
+   return res.status(200).json({ socialLinks });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }

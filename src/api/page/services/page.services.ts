@@ -1,4 +1,15 @@
-import { ContentType, Goal, Membership, Page, Post, PostStatus, Prisma, PrismaClient, Project } from "@prisma/client";
+import {
+ ContentType,
+ Goal,
+ Membership,
+ Page,
+ Post,
+ PostStatus,
+ Prisma,
+ PrismaClient,
+ Project,
+ SocialLink,
+} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -201,6 +212,22 @@ export const getPageGoals = async (id: string): Promise<Goal[]> => {
    },
   });
   return page.Goal;
+ } catch (error) {
+  throw error;
+ }
+};
+
+export const getPageSocialLinks = async (id: string): Promise<SocialLink[]> => {
+ try {
+  const page = await prisma.page.findUniqueOrThrow({
+   where: {
+    id: id,
+   },
+   select: {
+    SocialLink: true,
+   },
+  });
+  return page.SocialLink;
  } catch (error) {
   throw error;
  }
