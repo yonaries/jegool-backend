@@ -44,4 +44,15 @@ export default class DonationItemController {
    return PrismaError(res, error);
   }
  }
+
+ static async getDonationItems(req: Request, res: Response) {
+  try {
+   const donationItems = await DonationItemServices.getDonationItems();
+   if (!donationItems) return res.status(404).json({ error: "DonationItems not found" });
+
+   return res.status(200).json({ donationItems });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }

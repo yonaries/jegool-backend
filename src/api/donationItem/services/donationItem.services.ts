@@ -42,3 +42,12 @@ export const deleteDonationItemById = async (donationItemId: string): Promise<Do
   throw error;
  }
 };
+
+export const getDonationItems = async (): Promise<DonationItem[]> => {
+ try {
+  const donationItems = await prisma.donationItem.findMany();
+  return donationItems;
+ } catch (error) {
+  throw error;
+ }
+};
