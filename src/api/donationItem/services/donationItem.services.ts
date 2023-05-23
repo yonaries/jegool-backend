@@ -51,3 +51,21 @@ export const getDonationItems = async (): Promise<DonationItem[]> => {
   throw error;
  }
 };
+
+export const updateDonationItemById = async (
+ donationItemId: string,
+ donationItem: DonationItem,
+): Promise<DonationItem> => {
+ try {
+  const updatedDonationItem = await prisma.donationItem.update({
+   data: donationItem,
+   where: {
+    id: donationItemId,
+   },
+  });
+
+  return updatedDonationItem;
+ } catch (error) {
+  throw error;
+ }
+};
