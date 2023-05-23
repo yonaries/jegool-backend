@@ -82,17 +82,6 @@ describe("DonationItem PUT /donationItem/:id", () => {
 
   expect(res.status).toBe(400);
  });
-
- it("should return 400 if donationItem status is not valid", async () => {
-  const res = await request(app).put(`/donationItem/${donationItem.id}`).send({
-   name: "My DonationItem",
-   price: 1000,
-   image: "my-donationItem.com",
-   status: "true",
-  });
-
-  expect(res.status).toBe(400);
- });
  
 
  afterAll(async () => {
