@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import GoalServices from "./services";
 import { PrismaError } from "../../errors/prisma.error";
-import { validateGoal } from "./goal.validate";
+import { validateGoal, validateGoalOnUpdate } from "./goal.validate";
 import PageServices from "../page/services";
 
 export default class GoalController {
@@ -15,9 +15,60 @@ export default class GoalController {
    if (!page) return res.status(404).json({ error: "Page not found" });
 
    const createdGoal = await GoalServices.createGoal(goal);
-   return res.status(201).json({goal: createdGoal});
+   return res.status(201).json({ goal: createdGoal });
   } catch (error) {
    PrismaError(res, Error);
+  }
+ }
+
+ static async getGoalById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "Goal Id Is Required" });
+
+  try {
+   const goal = await GoalServices.getGoalById(id);
+   if (!goal) return res.status(404).json({ error: "Goal not found" });
+
+   return res.status(200).json({ goal });
+  } catch (error) {
+   return PrismaError(res, Error);
+  }
+ }
+
+ static async deleteGoalById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "Goal Id Is Required" });
+
+  try {
+   const goal = await GoalServices.deleteGoalById(id);
+   if (!goal) return res.status(404).json({ error: "Goal not found" });
+
+   return res.status(200).json({ goal });
+  } catch (error) {
+   return PrismaError(res, Error);
+  }
+ }
+
+ static async updateGoalById(req: Request, res: Response) {
+  const { id } = req.params;
+  const goal = req.body;
+
+  if (id.length === 0 || !id) return res.status(400).json({ error: "Goal Id Is Required" });
+
+  if (!goal || Object.keys(goal).length === 0) return res.status(400).json({ error: "Goal Data Is Required" });
+
+  try {
+   const { error } = validateGoalOnUpdate(goal);
+   if (error) return res.status(400).json({ error: error.message });
+
+   const updatedGoal = await GoalServices.updateGoalById(id, goal);
+   if (!updatedGoal) return res.status(404).json({ error: "Goal not found" });
+
+   return res.status(200).json({ goal: updatedGoal });
+  } catch (error) {
+   return PrismaError(res, Error);
   }
  }
 }

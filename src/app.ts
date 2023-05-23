@@ -16,6 +16,7 @@ import communityChatRouter from "./api/chat/communityChat/communityChat.routes";
 import socialLinkRouter from "./api/socialLink/socialLink.routes";
 import goalRouter from "./api/goal/goal.routes";
 import bankAccountRouter from "./api/bankAccount/bankAccount.routes";
+import donationItemRouter from "./api/donationItem/donationItem.routes";
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use("/communityChat", communityChatRouter);
 app.use("/socialLink", socialLinkRouter);
 app.use("/goal", goalRouter);
 app.use("/bankAccount", bankAccountRouter);
+app.use("/donationItem", donationItemRouter);
 
 app.get("/", (_req, res) => {
  res.status(200).send("Hello World!");
