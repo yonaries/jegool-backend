@@ -29,3 +29,16 @@ export const getDonationItemById = async (donationItemId: string): Promise<Donat
   throw error;
  }
 };
+
+export const deleteDonationItemById = async (donationItemId: string): Promise<DonationItem> => {
+ try {
+  const deletedDonationItem = await prisma.donationItem.delete({
+   where: {
+    id: donationItemId,
+   },
+  });
+  return deletedDonationItem;
+ } catch (error) {
+  throw error;
+ }
+};
