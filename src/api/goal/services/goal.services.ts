@@ -44,3 +44,18 @@ export const deleteGoalById = async (id: string): Promise<Goal> => {
   throw error;
  }
 };
+
+export const updateGoalById = async (id: string, data: Goal): Promise<Goal> => {
+ try {
+  const goal = await prisma.goal.update({
+   data,
+   where: {
+    id: id,
+   },
+  });
+
+  return goal;
+ } catch (error) {
+  throw error;
+ }
+};
