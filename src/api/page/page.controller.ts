@@ -162,4 +162,18 @@ export default class PageController {
    return PrismaError(res, error);
   }
  }
+
+ static async getPageGoals(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (!id || id.length === 0) return res.status(400).json({ error: "Page Id Is Required" });
+
+  try {
+   const goals = await PageServices.getPageGoals(id);
+   if (!goals) return res.status(404).json({ error: "Page not found" });
+   return res.status(200).json({ goals });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }

@@ -1,4 +1,4 @@
-import { ContentType, Membership, Page, Post, PostStatus, Prisma, PrismaClient, Project } from "@prisma/client";
+import { ContentType, Goal, Membership, Page, Post, PostStatus, Prisma, PrismaClient, Project } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -185,6 +185,22 @@ export const getPageProjects = async (
        },
       });
   return page.Project;
+ } catch (error) {
+  throw error;
+ }
+};
+
+export const getPageGoals = async (id: string): Promise<Goal[]> => {
+ try {
+  const page = await prisma.page.findUniqueOrThrow({
+   where: {
+    id: id,
+   },
+   select: {
+    Goal: true,
+   },
+  });
+  return page.Goal;
  } catch (error) {
   throw error;
  }
