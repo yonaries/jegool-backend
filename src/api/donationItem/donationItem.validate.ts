@@ -12,7 +12,7 @@ const donationItemSchema = Joi.object({
  name: Joi.string().required(),
  price: Joi.number().required(),
  image: Joi.string().required(),
- status: Joi.boolean(),
+ status: Joi.boolean().default(true),
 });
 
 export const validateDonationItem = (donationItem: any): { error: ValidationError; value: any } => {
