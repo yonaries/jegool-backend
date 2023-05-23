@@ -1,13 +1,12 @@
-import { Request, Response } from "express";
-import BankAccountServices from "./services";
-import { PrismaError } from "../../errors/prisma.error";
-import { validateBankAccount, validateBankAccountUpdate } from "./bankAccount.validate";
-import ChapaController from "../chapa/chapa.controller";
-import { CreateSubaccountOptions, SplitType } from "chapa-nodejs";
-import PageServices from "../page/services";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 import ChapaError from "@/errors/chapa.error";
+import { CreateSubaccountOptions, SplitType } from "chapa-nodejs";
+import { Request, Response } from "express";
+import { PrismaError } from "../../errors/prisma.error";
+import ChapaController from "../chapa/chapa.controller";
+import PageServices from "../page/services";
 import UserService from "../user/services";
+import { validateBankAccount, validateBankAccountUpdate } from "./bankAccount.validate";
+import BankAccountServices from "./services";
 
 export default class BankAccountController {
  static async createBankAccount(req: Request, res: Response) {
