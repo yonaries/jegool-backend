@@ -9,9 +9,9 @@ const options = {
 };
 
 const bankAccountSchema = Joi.object({
- id: Joi.string().required(),
  bankCode: Joi.string().required(),
  bankName: Joi.string().required(),
+ accountName: Joi.string().required(),
  accountNo: Joi.string().required(),
  pageId: Joi.string().required(),
 });

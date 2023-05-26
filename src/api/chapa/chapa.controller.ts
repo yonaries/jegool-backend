@@ -1,14 +1,15 @@
-import { PrismaError } from "../../errors/prisma.error";
-import { PrismaClient, Subscription, Transaction } from "@prisma/client";
+import { PrismaClient, Transaction } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
-import { Chapa, InitializeOptions, CreateSubaccountOptions } from "chapa-nodejs";
+import axios from "axios";
+import { Chapa, CreateSubaccountOptions, InitializeOptions } from "chapa-nodejs";
 import dayjs from "dayjs";
 import { Request, Response } from "express";
-import SubscriptionServices from "../subscription/services";
-import { PaymentType } from "./payment";
-import axios from "axios";
-import TransactionServices from "../transaction/services";
+import { PrismaError } from "../../errors/prisma.error";
 import parseQueryFromUrl from "../../utils/parse_query_string";
+import SubscriptionServices from "../subscription/services";
+import TransactionServices from "../transaction/services";
+import { PaymentType } from "./payment";
+import ChapaError from "../../errors/chapa.error";
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
@@ -36,6 +37,7 @@ export default class ChapaController {
   last_name,
   email,
   amount,
+  subaccount,
   reference,
  }: {
   type: keyof typeof PaymentType;
@@ -44,6 +46,7 @@ export default class ChapaController {
   last_name: string;
   email: string;
   amount: number;
+  subaccount: string;
   reference: string;
  }): Promise<string> {
   try {
@@ -54,6 +57,7 @@ export default class ChapaController {
     last_name: last_name,
     currency: "ETB",
     tx_ref: reference,
+    subaccounts: [{ id: subaccount }],
     return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${reference}`,
     callback_url: `${process.env.BASE_URL}/chapa/callback?type=${type}&id=${id}`,
    };
@@ -62,13 +66,26 @@ export default class ChapaController {
    const response = await axios.post(CHAPA_URL, payload, config);
    return response.data.data.checkout_url;
   } catch (error: any) {
-   throw {
-    error: {
-     provider: "chapa",
-     message: error.message,
-     status: error.status,
-    },
-   };
+   throw new ChapaError(error.message, error.status);
+  }
+ }
+
+ static async createSubaccount(data: CreateSubaccountOptions) {
+  try {
+   const response = await chapa.createSubaccount(data);
+   const { subaccount_id } = response.data as any;
+   return subaccount_id;
+  } catch (error: any) {
+   throw new ChapaError(error.message, error.status);
+  }
+ }
+
+ static async getBanks() {
+  try {
+   const response = await chapa.getBanks();
+   return response.data;
+  } catch (error: any) {
+   throw new ChapaError(error.message, error.status);
   }
  }
 
@@ -146,20 +163,19 @@ export default class ChapaController {
       id: payee.payee,
      },
      select: {
-      membership:{
-        select:{
-          page:{
-            select: {
-              id: true,
-              url: true,
-            }
-          }
-        }
-      }
+      membership: {
+       select: {
+        page: {
+         select: {
+          id: true,
+          url: true,
+         },
+        },
+       },
+      },
      },
     });
 
-    console.log("url:", response.membership.page.url);
     return res.redirect(`${response.membership.page.url}`);
    } else if (type === "DONATION") {
     const response = await prisma.donation.findUniqueOrThrow({

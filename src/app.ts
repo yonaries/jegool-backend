@@ -22,7 +22,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({ origin: "*" }));
-app.use(morgan("combined"));
+app.use(morgan("dev"));
 
 app.use("/user", userRouter);
 app.use("/page", pageRouter);
