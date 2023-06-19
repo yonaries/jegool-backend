@@ -44,7 +44,10 @@
   "dayjs": "^1.11.7",
   "dotenv": "^16.0.3",
   "express": "^4.18.2",
+  "firebase": "^9.22.2",
+  "firebase-admin": "^11.0.1",
   "joi": "^17.9.2",
-  "morgan": "^1.10.0"
+  "morgan": "^1.10.0",
+  "resend": "^0.15.3"
  }
 }

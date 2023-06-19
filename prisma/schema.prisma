@@ -9,7 +9,7 @@ datasource db {
 }
 
 model User {
-  id           String   @id @unique @default(cuid())
+  id           String   @id @unique
   displayName  String
   email        String   @unique
   status       Boolean  @default(true)

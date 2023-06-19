@@ -2,21 +2,29 @@ import UserService from "./services";
 import { Request, Response } from "express";
 import { validateUser } from "./user.validate";
 import { PrismaError } from "../../errors/prisma.error";
-import { SubscriptionStatus } from "@prisma/client";
+import { SubscriptionStatus, User } from "@prisma/client";
 import ChatServices from "../chat/service";
-
-//todo: after firebase auth integration, request should only contain firebase auth token in headers
-//todo: we'll have a middleware that handle the firebase auth token verification and add the user object to the request object then we'll use it to create/update the user in the database
-//* reference link https://github.com/yonaries/cyllo/blob/master/backend/src/middleware/middleware.ts
+import { UserRecord } from "firebase-admin/lib/auth/user-record";
+import sendVerifyEmail from "./services/send-verify-email";
 
 export const createUserAccount = async (req: Request, res: Response) => {
- const user = req.body;
+ const user = req.body.user as UserRecord;
+ const payload = {
+  id: user.uid,
+  email: user.email,
+  displayName: user.displayName,
+  profileImage: user.photoURL,
+ } as User;
 
  try {
-  const { error } = validateUser(user);
+  const { error } = validateUser(payload);
   if (error) return res.status(400).json({ error: error.message });
-  const createdUser = await UserService.createUserAccount(user);
+  //   if (!user.emailVerified) await sendVerifyEmail(user.email!, user.displayName!);
 
+  const exist = await UserService.userExist(user.uid);
+  if (exist) return res.status(200).json({ user: exist });
+
+  const createdUser = await UserService.createUserAccount(payload);
   return res.status(201).json({ user: createdUser });
  } catch (error) {
   return PrismaError(res, error);

@@ -1,5 +1,4 @@
-import { PrismaError } from "../../../errors/prisma.error";
-import { User, PrismaClient, SubscriptionStatus, Subscription } from "@prisma/client";
+import { PrismaClient, Subscription, SubscriptionStatus, User } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -15,6 +14,17 @@ export const createUserAccount = async (user: User): Promise<{ id: string }> => 
  } catch (error) {
   throw error;
  }
+};
+
+export const userExist = async (uid: string) => {
+ try {
+  const user = await prisma.user.findUnique({
+   where: {
+    id: uid,
+   },
+  });
+  return user?.id;
+ } catch (error) {}
 };
 
 export const getUserById = async (userId: string): Promise<User | null> => {
