@@ -196,3 +196,35 @@ export const getPostsByMembershipIdAndPageId = async (membershipId: string, page
   throw error;
  }
 };
+
+export const getUserFeedPosts = async (uid: string): Promise<Post[]> => {
+ try {
+  const subscriptions = await prisma.subscription.findMany({
+   where: {
+    subscriberId: uid,
+   },
+  });
+
+  const membershipIds = subscriptions.map((subscription) => subscription.membershipId);
+
+  const posts = await prisma.post.findMany({
+   where: {
+    visibleTo: {
+     array_contains: membershipIds,
+    },
+   },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+      profileImage: true,
+     },
+    },
+   },
+  });
+  return posts;
+ } catch (error) {
+  throw error;
+ }
+};

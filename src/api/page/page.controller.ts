@@ -5,6 +5,7 @@ import { validatePage } from "./page.validate";
 import PageServices from "./services";
 import { Request, Response } from "express";
 import UserService from "../user/services";
+import profileImagePlaceholder from "@/utils/RandomProfileImageGenerator";
 
 export default class PageController {
  static async createPage(req: Request, res: Response) {
@@ -15,8 +16,11 @@ export default class PageController {
    if (error) return res.status(400).json({ error: error.message });
    const name = page.name as string;
    if (!page.url) {
-    const url = `https://jegool.vercel.app/creator/${name.replace(/\s+/g, "").toLowerCase()}`;
+    const url = `https://jegool.vercel.app/account/${name.replace(/\s+/g, "").toLowerCase()}`;
     page.url = url;
+   }
+   if (!page.profileImage) {
+    page.profileImage = await profileImagePlaceholder();
    }
 
    const createdPage = await PageServices.createPage(page);

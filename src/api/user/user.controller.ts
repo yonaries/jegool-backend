@@ -5,7 +5,6 @@ import { PrismaError } from "../../errors/prisma.error";
 import { SubscriptionStatus, User } from "@prisma/client";
 import ChatServices from "../chat/service";
 import { UserRecord } from "firebase-admin/lib/auth/user-record";
-import sendVerifyEmail from "./services/send-verify-email";
 
 export const createUserAccount = async (req: Request, res: Response) => {
  const user = req.body.user as UserRecord;
@@ -19,7 +18,6 @@ export const createUserAccount = async (req: Request, res: Response) => {
  try {
   const { error } = validateUser(payload);
   if (error) return res.status(400).json({ error: error.message });
-  //   if (!user.emailVerified) await sendVerifyEmail(user.email!, user.displayName!);
 
   const exist = await UserService.userExist(user.uid);
   if (exist) return res.status(200).json({ user: exist });
