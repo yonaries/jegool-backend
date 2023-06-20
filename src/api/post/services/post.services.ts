@@ -63,6 +63,7 @@ export const getPostById = async (id: string): Promise<Post | null> => {
      select: {
       id: true,
       name: true,
+      profileImage: true,
      },
     },
    },
@@ -83,6 +84,7 @@ export const getPostsByPageId = async (pageId: string): Promise<Post[]> => {
      select: {
       id: true,
       name: true,
+      profileImage: true,
      },
     },
    },
@@ -101,6 +103,7 @@ export const getAllPosts = async (): Promise<Post[]> => {
      select: {
       id: true,
       name: true,
+      profileImage: true,
      },
     },
    },
@@ -134,6 +137,7 @@ export const getPostsFilter = async (fields: Post): Promise<Post[]> => {
      select: {
       id: true,
       name: true,
+      profileImage: true,
      },
     },
    },
@@ -157,6 +161,7 @@ export const getPostsByMembershipId = async (membershipId: string): Promise<Post
      select: {
       id: true,
       name: true,
+      profileImage: true,
      },
     },
    },
@@ -181,6 +186,7 @@ export const getPostsByMembershipIdAndPageId = async (membershipId: string, page
      select: {
       id: true,
       name: true,
+      profileImage: true,
      },
     },
    },
