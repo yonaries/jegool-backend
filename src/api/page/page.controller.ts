@@ -1,8 +1,10 @@
+import { User } from "@prisma/client";
 import { ContentType, PostStatus } from ".prisma/client";
 import { PrismaError } from "../../errors/prisma.error";
 import { validatePage } from "./page.validate";
 import PageServices from "./services";
 import { Request, Response } from "express";
+import UserService from "../user/services";
 
 export default class PageController {
  static async createPage(req: Request, res: Response) {
@@ -67,6 +69,21 @@ export default class PageController {
 
   try {
    const page = await PageServices.getPageById(id);
+   return res.status(200).json({ page: page });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
+ static async getPageUserById(req: Request, res: Response) {
+  const { id } = req.params;
+
+  if (id.length === 0 || !id) {
+   return res.status(400).json({ error: "User Id Is Required" });
+  }
+
+  try {
+   await UserService.getUserById(id);
+   const page = await PageServices.getPageByUserId(id);
    return res.status(200).json({ page: page });
   } catch (error) {
    return PrismaError(res, error);
