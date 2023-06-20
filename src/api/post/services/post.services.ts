@@ -58,6 +58,14 @@ export const getPostById = async (id: string): Promise<Post | null> => {
  try {
   const post = await prisma.post.findUniqueOrThrow({
    where: { id: id },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+     },
+    },
+   },
   });
 
   return post;
@@ -70,6 +78,14 @@ export const getPostsByPageId = async (pageId: string): Promise<Post[]> => {
  try {
   const posts = await prisma.post.findMany({
    where: { pageId },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+     },
+    },
+   },
   });
   return posts;
  } catch (error) {
@@ -79,14 +95,21 @@ export const getPostsByPageId = async (pageId: string): Promise<Post[]> => {
 
 export const getAllPosts = async (): Promise<Post[]> => {
  try {
-  const posts = await prisma.post.findMany();
+  const posts = await prisma.post.findMany({
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+     },
+    },
+   },
+  });
   return posts;
  } catch (error) {
   throw error;
  }
 };
-
-const f: Object = {};
 
 export const getPostsFilter = async (fields: Post): Promise<Post[]> => {
  try {
@@ -106,6 +129,14 @@ export const getPostsFilter = async (fields: Post): Promise<Post[]> => {
      },
     ],
    },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+     },
+    },
+   },
   });
   return posts;
  } catch (error) {
@@ -119,6 +150,14 @@ export const getPostsByMembershipId = async (membershipId: string): Promise<Post
    where: {
     visibleTo: {
      array_contains: membershipId,
+    },
+   },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+     },
     },
    },
   });
@@ -136,6 +175,14 @@ export const getPostsByMembershipIdAndPageId = async (membershipId: string, page
      array_contains: membershipId,
     },
     pageId,
+   },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+     },
+    },
    },
   });
   return posts;
