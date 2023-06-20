@@ -79,6 +79,9 @@ export const getPostsByPageId = async (pageId: string): Promise<Post[]> => {
  try {
   const posts = await prisma.post.findMany({
    where: { pageId },
+   orderBy: {
+    updatedAt: "desc",
+   },
    include: {
     page: {
      select: {
@@ -98,6 +101,9 @@ export const getPostsByPageId = async (pageId: string): Promise<Post[]> => {
 export const getAllPosts = async (): Promise<Post[]> => {
  try {
   const posts = await prisma.post.findMany({
+   orderBy: {
+    updatedAt: "desc",
+   },
    include: {
     page: {
      select: {
@@ -132,6 +138,9 @@ export const getPostsFilter = async (fields: Post): Promise<Post[]> => {
      },
     ],
    },
+   orderBy: {
+    updatedAt: "desc",
+   },
    include: {
     page: {
      select: {
@@ -155,6 +164,9 @@ export const getPostsByMembershipId = async (membershipId: string): Promise<Post
     visibleTo: {
      array_contains: membershipId,
     },
+   },
+   orderBy: {
+    updatedAt: "desc",
    },
    include: {
     page: {
@@ -180,6 +192,9 @@ export const getPostsByMembershipIdAndPageId = async (membershipId: string, page
      array_contains: membershipId,
     },
     pageId,
+   },
+   orderBy: {
+    updatedAt: "desc",
    },
    include: {
     page: {
@@ -212,6 +227,9 @@ export const getUserFeedPosts = async (uid: string): Promise<Post[]> => {
     visibleTo: {
      array_contains: membershipIds,
     },
+   },
+   orderBy: {
+    updatedAt: "desc",
    },
    include: {
     page: {
