@@ -262,3 +262,25 @@ export const getPageSocialLinks = async (id: string): Promise<SocialLink[]> => {
   throw error;
  }
 };
+
+export const getPageByURL = async (url: string): Promise<Page | null> => {
+ try {
+  const page = await prisma.page.findUniqueOrThrow({
+   where: {
+    url: url,
+   },
+   include: {
+    CommunityChat: true,
+    BankAccount: true,
+    Donation: true,
+    Membership: true,
+    Goal: true,
+    SocialLink: true,
+   },
+  });
+
+  return page;
+ } catch (error) {
+  throw error;
+ }
+};

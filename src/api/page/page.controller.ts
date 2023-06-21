@@ -211,4 +211,17 @@ export default class PageController {
    return PrismaError(res, error);
   }
  }
+ static async getPageByUrl(req: Request, res: Response) {
+  const { url } = req.params;
+
+  if (!url || url.length === 0) return res.status(400).json({ error: "Page URL Is Required" });
+
+  try {
+   const page = await PageServices.getPageByURL(url);
+   if (!page) return res.status(404).json({ error: "Page not found" });
+   return res.status(200).json({ page });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
 }
