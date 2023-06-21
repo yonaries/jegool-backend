@@ -262,3 +262,18 @@ export const getPageSocialLinks = async (id: string): Promise<SocialLink[]> => {
   throw error;
  }
 };
+
+export const searchPages = async (query: string): Promise<Page[]> => {
+ try {
+  const pages = await prisma.page.findMany({
+   where: {
+    name: {
+     search: query,
+    },
+   },
+  });
+  return pages;
+ } catch (error) {
+  throw error;
+ }
+};
