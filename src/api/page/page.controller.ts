@@ -19,9 +19,9 @@ export default class PageController {
     const url = `https://jegool.vercel.app/account/${name.replace(/\s+/g, "").toLowerCase()}`;
     page.url = url;
    }
-   if (!page.profileImage) {
-    page.profileImage = await profileImagePlaceholder();
-   }
+   // if (!page.profileImage) {
+   //  page.profileImage = await profileImagePlaceholder();
+   // }
 
    const createdPage = await PageServices.createPage(page);
    return res.status(201).json({ page: createdPage });
