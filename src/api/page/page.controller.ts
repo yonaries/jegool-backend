@@ -219,7 +219,8 @@ export default class PageController {
   try {
    const page = await PageServices.getPageByURL(url);
    if (!page) return res.status(404).json({ error: "Page not found" });
-   return res.status(200).json({ page });
+   console.log("page by url", page);
+   return res.status(200).json({ page: page });
   } catch (error) {
    return PrismaError(res, error);
   }
