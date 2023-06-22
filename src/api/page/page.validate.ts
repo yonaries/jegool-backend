@@ -12,7 +12,7 @@ const options = {
 const pageSchema = Joi.object({
  ownerId: Joi.string().id().required(),
  name: Joi.string().min(3).max(50).required(),
- url: Joi.string().uri(),
+ url: Joi.string(),
  headline: Joi.string(),
  profileImage: Joi.string(),
  description: Joi.string(),

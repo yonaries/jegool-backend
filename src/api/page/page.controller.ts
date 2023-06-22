@@ -16,7 +16,7 @@ export default class PageController {
    if (error) return res.status(400).json({ error: error.message });
    const name = page.name as string;
    if (!page.url) {
-    const url = `https://jegool.vercel.app/account/${name.replace(/\s+/g, "").toLowerCase()}`;
+    const url = `${name.replace(/\s+/g, "-").toLowerCase()}`;
     page.url = url;
    }
    // if (!page.profileImage) {
