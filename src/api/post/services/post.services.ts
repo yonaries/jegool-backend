@@ -220,13 +220,52 @@ export const getUserFeedPosts = async (uid: string): Promise<Post[]> => {
    },
   });
 
-  const membershipIds = subscriptions.map((subscription) => subscription.membershipId);
+  const membershipId = subscriptions.map((subscription) => subscription.membershipId);
 
   const posts = await prisma.post.findMany({
    where: {
     visibleTo: {
-     array_contains: membershipIds,
+     array_contains: membershipId,
     },
+   },
+   orderBy: {
+    updatedAt: "desc",
+   },
+   include: {
+    page: {
+     select: {
+      id: true,
+      name: true,
+      profileImage: true,
+     },
+    },
+   },
+  });
+  return posts;
+ } catch (error) {
+  throw error;
+ }
+};
+
+export const getSubscribedPosts = async (uid: string, pageId: string): Promise<Post[]> => {
+ try {
+  const subscription = await prisma.subscription.findFirstOrThrow({
+   where: {
+    subscriberId: uid,
+    membership: {
+     pageId: pageId,
+    },
+   },
+  });
+
+  const membershipId = subscription.membershipId;
+
+  const posts = await prisma.post.findMany({
+   where: {
+    visibleTo: {
+     array_contains: membershipId,
+    },
+    pageId,
    },
    orderBy: {
     updatedAt: "desc",

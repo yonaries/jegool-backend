@@ -156,4 +156,16 @@ export default class PostController {
    return PrismaError(res, error);
   }
  };
+
+ static getSubscribedPosts = async (req: Request, res: Response) => {
+  const { id } = req.body;
+  const userId = req.body.user.uid;
+
+  try {
+   const posts = await PostServices.getSubscribedPosts(userId, id);
+   return res.status(200).json({ posts: posts });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ };
 }
