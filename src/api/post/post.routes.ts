@@ -14,6 +14,6 @@ router.get("/?pageId=:pageId", verifyToken, PostController.getPostsByPageId);
 router.get("/filter", verifyToken, PostController.getPostsFilter);
 router.get("/feed", verifyToken, PostController.getUserFeedPost);
 router.get("/membership/:id", verifyToken, PostController.getPostsByMembershipId);
-router.get("/sub/:pageId", verifyToken, PostController.getSubscribedPosts);
+router.get("/sub/:id", verifyToken, PostController.getSubscribedPosts);
 
 export default router;
