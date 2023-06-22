@@ -4,6 +4,7 @@ import PostServices from "./services/index";
 import { validatePost, validatePostFilter } from "./post.validate";
 import { Post, PrismaClient } from "@prisma/client";
 import PageServices from "../page/services";
+import { getPostsByMembershipId } from "./services/post.services";
 
 export default class PostController {
  protected static prisma = new PrismaClient();
@@ -139,6 +140,17 @@ export default class PostController {
 
   try {
    const posts = await PostServices.getUserFeedPosts(id);
+   return res.status(200).json({ posts: posts });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ };
+
+ static getPostsByMembershipId = async (req: Request, res: Response) => {
+  const { id } = req.query;
+
+  try {
+   const posts = await getPostsByMembershipId(id as string);
    return res.status(200).json({ posts: posts });
   } catch (error) {
    return PrismaError(res, error);

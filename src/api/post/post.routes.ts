@@ -1,3 +1,4 @@
+import { getPostsByMembershipId } from "./services/post.services";
 import express from "express";
 import PostController from "./post.controller";
 import { verifyToken } from "@/middlewares/firebase.middlewares";
@@ -12,5 +13,6 @@ router.get("/", verifyToken, PostController.getAllPosts);
 router.get("/?pageId=:pageId", verifyToken, PostController.getPostsByPageId);
 router.get("/filter", verifyToken, PostController.getPostsFilter);
 router.get("/feed", verifyToken, PostController.getUserFeedPost);
+router.get("/membership/:id", verifyToken, PostController.getPostsByMembershipId);
 
 export default router;

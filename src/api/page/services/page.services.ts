@@ -73,6 +73,8 @@ export const getPageById = async (id: string): Promise<Page | null> => {
     Membership: true,
     Goal: true,
     SocialLink: true,
+    Post: true,
+    Project: true,
    },
   });
 
@@ -95,6 +97,8 @@ export const getPageByUserId = async (id: string): Promise<Page | null> => {
     Membership: true,
     Goal: true,
     SocialLink: true,
+    Post: true,
+    Project: true,
    },
   });
 
