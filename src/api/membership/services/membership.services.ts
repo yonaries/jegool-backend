@@ -1,11 +1,18 @@
-import { PrismaClient, Membership } from "@prisma/client";
+import { PrismaClient, Membership, Benefit } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const createMembership = (membership: Membership) => {
+export const createMembership = (membership: Membership, benefit?: Benefit[]) => {
  try {
   const newMembership = prisma.membership.create({
-   data: membership,
+   data: {
+    ...membership,
+    Benefit: {
+     createMany: {
+      data: benefit ? benefit : [],
+     },
+    },
+   },
    select: {
     id: true,
    },
@@ -21,6 +28,11 @@ export const getMembershipById = async (id: string) => {
   const membership = await prisma.membership.findUniqueOrThrow({
    where: {
     id: id,
+   },
+   include: {
+    Benefit: true,
+    page: true,
+    Subscription: true,
    },
   });
   return membership;

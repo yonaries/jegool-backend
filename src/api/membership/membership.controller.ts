@@ -7,10 +7,12 @@ export default class MembershipController {
  static async createMembership(req: Request, res: Response) {
   const membership = req.body;
   try {
-   const { error } = validateMembership(membership);
+   const { error, value } = validateMembership(membership);
    if (error) return res.status(400).json({ error: error.message });
 
-   const newMembership = await MembershipService.createMembership(membership);
+   const newMembership = (await membership.benefit)
+    ? MembershipService.createMembership(value, membership.benefit)
+    : MembershipService.createMembership(membership);
    res.status(201).json({ membership: newMembership });
   } catch (error) {
    PrismaError(res, error);
