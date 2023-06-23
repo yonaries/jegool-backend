@@ -296,17 +296,12 @@ export const searchPages = async (query: string): Promise<Page[]> => {
     OR: [
      {
       name: {
-       search: query,
-      },
-     },
-     {
-      description: {
-       search: query,
+       contains: query,
       },
      },
      {
       url: {
-       search: query,
+       contains: query,
       },
      },
     ],
