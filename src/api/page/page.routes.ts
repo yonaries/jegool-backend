@@ -15,5 +15,6 @@ router.get("/:id/goals", PageController.getPageGoals);
 router.get("/:id/socialLinks", PageController.getPageSocialLinks);
 router.get("/owner/:id", PageController.getPageUserById);
 router.get("/url/:url", PageController.getPageByUrl);
+router.get("/search/:query", PageController.searchPages);
 
 export default router;

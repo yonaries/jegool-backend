@@ -288,3 +288,32 @@ export const getPageByURL = async (url: string): Promise<Page | null> => {
   throw error;
  }
 };
+
+export const searchPages = async (query: string): Promise<Page[]> => {
+ try {
+  const pages = await prisma.page.findMany({
+   where: {
+    OR: [
+     {
+      name: {
+       search: query,
+      },
+     },
+     {
+      description: {
+       search: query,
+      },
+     },
+     {
+      url: {
+       search: query,
+      },
+     },
+    ],
+   },
+  });
+  return pages;
+ } catch (error) {
+  throw error;
+ }
+};

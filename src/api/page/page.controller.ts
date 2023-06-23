@@ -1,3 +1,4 @@
+import { searchPages } from "./services/page.services";
 import { User } from "@prisma/client";
 import { ContentType, PostStatus } from ".prisma/client";
 import { PrismaError } from "../../errors/prisma.error";
@@ -220,6 +221,17 @@ export default class PageController {
    const page = await PageServices.getPageByURL(url);
    if (!page) return res.status(404).json({ error: "Page not found" });
    return res.status(200).json({ page: page });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ }
+
+ static async searchPages(req: Request, res: Response) {
+  const { query } = req.params;
+  if (!query || query.length === 0) return res.status(400).json({ error: "Search query is required" });
+  try {
+   const pages = await PageServices.searchPages(query);
+   return res.status(200).json({ pages: pages });
   } catch (error) {
    return PrismaError(res, error);
   }
