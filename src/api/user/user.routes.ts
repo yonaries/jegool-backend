@@ -17,7 +17,7 @@ router.get("/", verifyToken, getAllUsers);
 router.get("/:id", verifyToken, getUserDataById);
 router.put("/:id", verifyToken, updateUserData);
 router.delete("/:id",verifyToken, deleteUserData);
-router.get("/:id/subscriptions",verifyToken, getUserSubscriptionsById);
-router.get("/:id/privateChats",verifyToken, getUserPrivateChats);
+router.get("/:id/subscriptions", getUserSubscriptionsById);
+router.get("/:id/privateChats", getUserPrivateChats);
 
 export default router;
