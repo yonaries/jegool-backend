@@ -10,8 +10,8 @@ export default class MembershipController {
    const { error, value } = validateMembership(membership);
    if (error) return res.status(400).json({ error: error.message });
 
-   const newMembership = membership.benefit
-    ? await MembershipService.createMembership(value, membership.benefit)
+   const newMembership = membership.Benefit
+    ? await MembershipService.createMembership(value, membership.Benefit)
     : await MembershipService.createMembership(membership);
    res.status(201).json({ membership: newMembership });
   } catch (error) {
