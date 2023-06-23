@@ -9,10 +9,17 @@ export default class MembershipController {
   try {
    const { error, value } = validateMembership(membership);
    if (error) return res.status(400).json({ error: error.message });
-
-   const newMembership = membership.Benefit
-    ? await MembershipService.createMembership(value, membership.Benefit)
-    : await MembershipService.createMembership(membership);
+   const newMembership = membership.benefit
+    ? await MembershipService.createMembership(value, membership.benefit)
+    : // @ts-ignore
+      await MembershipService.createMembership({
+       coverImage: membership.coverImage || "",
+       description: membership.description || "",
+       fee: membership.fee || 1,
+       pageId: membership.pageId || "",
+       status: membership.status || true,
+       title: membership.title || "",
+      });
    res.status(201).json({ membership: newMembership });
   } catch (error) {
    PrismaError(res, error);
