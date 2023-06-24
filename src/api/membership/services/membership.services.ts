@@ -48,7 +48,7 @@ export const updateMembershipById = async (id: string, membership: any) => {
     ...membership,
     Benefit: {
      updateMany: {
-      data: membership.Benefit!,
+      data: [...membership.Benefit],
       where: {
        membershipId: id,
       },
