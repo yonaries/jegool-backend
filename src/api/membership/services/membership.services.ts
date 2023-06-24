@@ -47,11 +47,11 @@ export const updateMembershipById = async (id: string, membership: any) => {
    data: {
     ...membership,
     Benefit: {
-     updateMany: {
+     deleteMany: {
+      membershipId: id,
+     },
+     createMany: {
       data: [...membership.Benefit],
-      where: {
-       membershipId: id,
-      },
      },
     },
    },
