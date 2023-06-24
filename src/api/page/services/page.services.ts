@@ -129,6 +129,10 @@ export const getPageMemberShips = async (id: string): Promise<Membership[]> => {
    },
    include: {
     Membership: {
+     include: {
+      Benefit: true,
+      Subscription: true,
+     },
      orderBy: {
       createdAt: "desc",
      },
