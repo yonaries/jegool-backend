@@ -50,7 +50,17 @@ export default class MembershipController {
    const { error } = validateMembership(membership);
    if (error) return res.status(400).json({ error: error.message });
 
-   const updatedMembership = await MembershipService.updateMembershipById(id, membership);
+   const val: any = {
+    coverImage: membership.coverImage || "",
+    description: membership.description || "",
+    fee: membership.fee || 1,
+    pageId: membership.pageId || "",
+    status: membership.status || true,
+    title: membership.title || "",
+    Benefit: membership.benefit,
+   };
+
+   const updatedMembership = await MembershipService.updateMembershipById(id, val);
 
    return res.status(200).json({ membership: updatedMembership });
   } catch (error) {

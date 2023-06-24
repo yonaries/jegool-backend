@@ -41,10 +41,20 @@ export const getMembershipById = async (id: string) => {
  }
 };
 
-export const updateMembershipById = async (id: string, membership: Membership) => {
+export const updateMembershipById = async (id: string, membership: any) => {
  try {
   const updatedMembership = await prisma.membership.update({
-   data: membership,
+   data: {
+    ...membership,
+    Benefit: {
+     updateMany: {
+      data: membership.Benefit!,
+      where: {
+       membershipId: id,
+      },
+     },
+    },
+   },
    where: {
     id: id,
    },
