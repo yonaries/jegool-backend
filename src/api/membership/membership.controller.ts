@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import MembershipService from "./services";
-import { validateMembership } from "./membership.validate";
+import { validateMembership,validateMembershipOnUpdate } from "./membership.validate";
 import { PrismaError } from "../../errors/prisma.error";
 
 export default class MembershipController {
@@ -40,14 +40,14 @@ export default class MembershipController {
   }
  }
 
- static async updateUserById(req: Request, res: Response) {
+ static async updateMembershipById(req: Request, res: Response) {
   const { id } = req.params;
   const membership = req.body;
 
   if (id.length === 0 || !id) return res.status(400).json({ error: "Membership Id Is Required" });
 
   try {
-   const { error } = validateMembership(membership);
+   const { error } = validateMembershipOnUpdate(membership);
    if (error) return res.status(400).json({ error: error.message });
 
    const val: any = {

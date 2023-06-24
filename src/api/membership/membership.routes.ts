@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post("/", MembershipController.createMembership);
 router.get("/:id", MembershipController.getMembershipById);
-router.put("/:id", MembershipController.updateUserById);
+router.put("/:id", MembershipController.updateMembershipById);
 router.delete("/:id", MembershipController.deleteMembershipById);
 
 export default router;

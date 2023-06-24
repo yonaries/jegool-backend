@@ -33,7 +33,7 @@ const membershipUpdateSchema = Joi.object({
  benefit: Joi.array()
   .items(
    Joi.object({
-    id: Joi.string().required(),
+    id: Joi.string(),
     title: Joi.string().min(3).max(50).required(),
     description: Joi.string().min(20).required(),
     membershipId: Joi.string().required(),
