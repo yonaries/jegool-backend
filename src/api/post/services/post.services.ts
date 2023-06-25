@@ -2,7 +2,7 @@ import { Post, Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const createPost = async (post: Post, attachment?:any[]): Promise<{ id: string }> => {
+export const createPost = async (post: Post, attachment?: any[]): Promise<{ id: string }> => {
  try {
   const { visibleTo, ...rest } = post;
   const createdPost = await prisma.post.create({
@@ -10,10 +10,10 @@ export const createPost = async (post: Post, attachment?:any[]): Promise<{ id: s
     ...rest,
     visibleTo: visibleTo as Prisma.JsonArray,
     Attachment: {
-        createMany: {
-            data: attachment? attachment : []
-        }
-    }
+     createMany: {
+      data: attachment ? attachment : [],
+     },
+    },
    },
    select: {
     id: true,
@@ -39,7 +39,7 @@ export const deletePost = async (id: string): Promise<{ id: string }> => {
  }
 };
 
-export const updatePost = async (id: string, post: Post): Promise<{ id: string }> => {
+export const updatePost = async (id: string, post: Post, attachment?: any[]): Promise<{ id: string }> => {
  try {
   const { visibleTo, ...rest } = post;
 
@@ -48,6 +48,14 @@ export const updatePost = async (id: string, post: Post): Promise<{ id: string }
    data: {
     ...rest,
     visibleTo: visibleTo as Prisma.JsonArray,
+    Attachment: {
+     deleteMany: {
+      postId: id,
+     },
+     createMany: {
+      data: attachment ? attachment : [],
+     },
+    },
    },
    select: {
     id: true,

@@ -54,7 +54,15 @@ export default class PostController {
    const { error } = validatePost(post);
    if (error) return res.status(400).json({ error: error.message });
 
-   const updatedPost = await PostServices.updatePost(id, post);
+   const attachment = post.attachment;
+   delete post["attachment"];
+   console.log(post);
+   console.log(attachment);
+
+   const updatedPost =
+    attachment.length > 0
+     ? await PostServices.updatePost(id, post, attachment)
+     : await PostServices.updatePost(id, post);
    return res.status(204).json({ post: updatedPost });
   } catch (error) {
    return PrismaError(res, error);
