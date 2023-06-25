@@ -10,7 +10,7 @@ export default class PostController {
  protected static prisma = new PrismaClient();
 
  static createPost = async (req: Request, res: Response) => {
-  const post = req.body;
+  const {post} = req.body;
 
   try {
    const page = await PageServices.getPageById(post.pageId);
