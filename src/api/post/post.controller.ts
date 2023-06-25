@@ -16,7 +16,7 @@ export default class PostController {
    const page = await PageServices.getPageById(post.pageId);
    if (!page) return res.status(404).json({ error: "Page not found" });
 
-   console.log(post);
+   console.log("Post :: ",post);
    const { error } = validatePost(post);
    if (error) return res.status(400).json({ error: error.message });
    const attachment = post.attachment;
