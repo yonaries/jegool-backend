@@ -16,9 +16,10 @@ const postSchema = Joi.object({
  caption: Joi.string(),
  thumbnail: Joi.string(),
  file: Joi.string().uri(),
- visibleTo: Joi.array().items(Joi.string().id()),
+ visibleTo: Joi.array().items(Joi.string()),
  scheduled: Joi.date(),
  status: Joi.string().valid("SCHEDULED", "BANNED", "ACTIVE", "INACTIVE"),
+ attachment: Joi.array().items(Joi.string()),
 });
 
 const postFilterSchema = Joi.object({

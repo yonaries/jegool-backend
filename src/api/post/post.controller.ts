@@ -19,7 +19,10 @@ export default class PostController {
    const { error } = validatePost(post);
    if (error) return res.status(400).json({ error: error.message });
 
-   const createdPost = await PostServices.createPost(post);
+   delete post["attachment"];
+   const createdPost = post.attchment
+    ? await PostServices.createPost(post, post.attachment)
+    : await PostServices.createPost(post);
    return res.status(201).json({ post: createdPost });
   } catch (error) {
    return PrismaError(res, error);

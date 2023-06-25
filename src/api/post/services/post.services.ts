@@ -2,13 +2,18 @@ import { Post, Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const createPost = async (post: Post): Promise<{ id: string }> => {
+export const createPost = async (post: Post, attachment?:any[]): Promise<{ id: string }> => {
  try {
   const { visibleTo, ...rest } = post;
   const createdPost = await prisma.post.create({
    data: {
     ...rest,
     visibleTo: visibleTo as Prisma.JsonArray,
+    Attachment: {
+        createMany: {
+            data: attachment? attachment : []
+        }
+    }
    },
    select: {
     id: true,
