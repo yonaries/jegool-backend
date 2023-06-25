@@ -13,13 +13,13 @@ const postSchema = Joi.object({
  pageId: Joi.string().id().required(),
  title: Joi.string().required(),
  type: Joi.string().valid("TEXT", "IMAGE", "VIDEO", "AUDIO", "FILE").required(),
- caption: Joi.string(),
- thumbnail: Joi.string(),
- file: Joi.string().uri(),
- visibleTo: Joi.array().items(Joi.string()),
- scheduled: Joi.date(),
- status: Joi.string().valid("SCHEDULED", "BANNED", "ACTIVE", "INACTIVE"),
- attachment: Joi.array().items(Joi.string()),
+ caption: Joi.string().optional(),
+ thumbnail: Joi.string().optional(),
+ file: Joi.string().uri().optional(),
+ visibleTo: Joi.array().items(Joi.string()).optional(),
+ scheduled: Joi.date().optional(),
+ status: Joi.string().valid("SCHEDULED", "BANNED", "ACTIVE", "INACTIVE").optional(),
+ attachment: Joi.array().items(Joi.string()).optional(),
 });
 
 const postFilterSchema = Joi.object({
