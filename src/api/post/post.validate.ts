@@ -19,7 +19,9 @@ const postSchema = Joi.object({
  visibleTo: Joi.array().items(Joi.string()).optional(),
  scheduled: Joi.date().optional(),
  status: Joi.string().valid("SCHEDULED", "BANNED", "ACTIVE", "INACTIVE").optional(),
- attachment: Joi.array().items(Joi.string()).optional(),
+ attachment: Joi.array()
+  .items(Joi.object({ url: Joi.string() }))
+  .optional(),
 });
 
 const postFilterSchema = Joi.object({
