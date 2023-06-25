@@ -10,13 +10,13 @@ export default class PostController {
  protected static prisma = new PrismaClient();
 
  static createPost = async (req: Request, res: Response) => {
-  const {post} = req.body;
+  const post = req.body;
 
   try {
    const page = await PageServices.getPageById(post.pageId);
    if (!page) return res.status(404).json({ error: "Page not found" });
 
-   console.log("Post :: ",post);
+   console.log("Post :: ", post);
    const { error } = validatePost(post);
    if (error) return res.status(400).json({ error: error.message });
    const attachment = post.attachment;
