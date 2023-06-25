@@ -20,9 +20,10 @@ export default class PostController {
    if (error) return res.status(400).json({ error: error.message });
    const attachment = post.attachment;
    delete post["attachment"];
-   const createdPost = post.attchment.length > 0
-    ? await PostServices.createPost(post, attachment)
-    : await PostServices.createPost(post);
+   console.log(post);
+   console.log(attachment);
+   const createdPost =
+    post.attchment.length > 0 ? await PostServices.createPost(post, attachment) : await PostServices.createPost(post);
    return res.status(201).json({ post: createdPost });
   } catch (error) {
    return PrismaError(res, error);
