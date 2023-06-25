@@ -48,21 +48,9 @@ export default class PostController {
 
  static updatePost = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { userId, ...post } = req.body;
+  const post = req.body;
 
   try {
-   const page = await PageServices.getPageById(post.pageId);
-   if (page?.ownerId !== userId) return res.status(403).json({ error: "Unauthorized request" });
-
-   //todo: Replace this with service to check if post is in page before updating post
-   const postInPage = await PostController.prisma.post.findFirst({
-    where: {
-     id,
-     pageId: post.pageId,
-    },
-   });
-   if (!postInPage) return res.status(404).json({ error: "Post not found" });
-
    const { error } = validatePost(post);
    if (error) return res.status(400).json({ error: error.message });
 
