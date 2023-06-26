@@ -62,7 +62,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const updateUserData = async (req: Request, res: Response) => {
  const { id } = req.params;
  const user = req.body;
-
+ console.log(user);
  if (id.length === 0 || !id) return res.status(400).json({ error: "User Id Is Required" });
 
  try {
