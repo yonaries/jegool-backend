@@ -97,6 +97,7 @@ export const getPostsByPageId = async (pageId: string): Promise<Post[]> => {
     updatedAt: "desc",
    },
    include: {
+    Attachment:true,
     page: {
      select: {
       id: true,

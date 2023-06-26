@@ -162,9 +162,6 @@ export const getPagePosts = async (
        },
        include: {
         Post: {
-         select: {
-            Attachment: true,
-         },
          include: {
             Attachment: true,
          },
