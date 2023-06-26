@@ -23,6 +23,7 @@ const pageSchema = Joi.object({
  coverImage: Joi.string().uri().allow(""),
  introVideo: Joi.string().uri().allow(""),
  brandColor: Joi.string().allow(""),
+ thankYouMessage: Joi.string().allow(""),
 });
 
 export const validatePage = (page: Page): { error: ValidationError; value: Page } => {
