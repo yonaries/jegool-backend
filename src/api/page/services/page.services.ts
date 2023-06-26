@@ -162,8 +162,11 @@ export const getPagePosts = async (
        },
        include: {
         Post: {
+         select: {
+            Attachment: true,
+         },
          include: {
-          Attachment: true,
+            Attachment: true,
          },
          orderBy: {
           createdAt: "desc",
