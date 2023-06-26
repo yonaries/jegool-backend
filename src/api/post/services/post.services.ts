@@ -309,3 +309,16 @@ export const getSubscribedPosts = async (uid: string, pageId: string): Promise<P
   throw error;
  }
 };
+
+export const getPostAttachments = async (id: string): Promise<any[]> => {
+ try {
+  const attachments = await prisma.attachment.findMany({
+   where: {
+    postId: id,
+   },
+  });
+  return attachments;
+ } catch (error) {
+  throw error;
+ }
+};

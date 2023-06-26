@@ -15,5 +15,6 @@ router.get("/filter", verifyToken, PostController.getPostsFilter);
 router.get("/feed", verifyToken, PostController.getUserFeedPost);
 router.get("/membership/:id", verifyToken, PostController.getPostsByMembershipId);
 router.get("/sub/:id", verifyToken, PostController.getSubscribedPosts);
+router.get("/:id/attachment", PostController.getPostAttachments);
 
 export default router;

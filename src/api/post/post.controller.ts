@@ -156,4 +156,17 @@ export default class PostController {
    return PrismaError(res, error);
   }
  };
+
+ static getPostAttachments = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!id) return res.status(400).json({ error: "Post Id is required" });
+
+  try {
+   const attachments = await PostServices.getPostAttachments(id);
+   return res.status(200).json({ attachments: attachments });
+  } catch (error) {
+   return PrismaError(res, error);
+  }
+ };
 }
