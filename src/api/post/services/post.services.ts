@@ -72,6 +72,7 @@ export const getPostById = async (id: string): Promise<Post | null> => {
   const post = await prisma.post.findUniqueOrThrow({
    where: { id: id },
    include: {
+    Attachment: true,
     page: {
      select: {
       id: true,
