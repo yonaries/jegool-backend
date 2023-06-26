@@ -12,17 +12,17 @@ const options = {
 const pageSchema = Joi.object({
  ownerId: Joi.string().id().required(),
  name: Joi.string().min(3).max(50).required(),
- url: Joi.string(),
- headline: Joi.string(),
- profileImage: Joi.string(),
- description: Joi.string(),
- status: Joi.string().valid("DORMANT", "BANNED", "ACTIVE", "INACTIVE"),
+ url: Joi.string().allow(""),
+ headline: Joi.string().allow(""),
+ profileImage: Joi.string().allow(""),
+ description: Joi.string().allow(""),
+ status: Joi.string().valid("DORMANT", "BANNED", "ACTIVE", "INACTIVE").allow(""),
  earningsVisibility: Joi.boolean(),
  supportersVisibility: Joi.boolean(),
- highlightedMembership: Joi.string().id(),
- coverImage: Joi.string().uri(),
- introVideo: Joi.string().uri(),
- brandColor: Joi.string(),
+ highlightedMembership: Joi.string().id().allow(""),
+ coverImage: Joi.string().uri().allow(""),
+ introVideo: Joi.string().uri().allow(""),
+ brandColor: Joi.string().allow(""),
 });
 
 export const validatePage = (page: Page): { error: ValidationError; value: Page } => {
