@@ -58,7 +58,7 @@ export default class ChapaController {
     amount: amount.toString(),
     currency: "ETB",
     tx_ref: reference,
-    // subaccounts: [{ id: subaccount }],
+    subaccounts: [{ id: subaccount }],
     return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${reference}`,
     callback_url: `${process.env.BASE_URL}/chapa/callback?type=${type}&id=${id}`,
    };
@@ -186,7 +186,7 @@ export default class ChapaController {
      },
     });
 
-    return res.redirect(`${response.membership.page.url}`);
+    return res.redirect(`https://jegool.vercel.app/${response.membership.page.url}`);
    } else if (type === "DONATION") {
     const response = await prisma.donation.findUniqueOrThrow({
      where: {
@@ -201,7 +201,7 @@ export default class ChapaController {
       },
      },
     });
-    return res.redirect(`${response.page.url}/donate/success`);
+    return res.redirect(`${response.page.url}/success`);
    }
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
