@@ -22,6 +22,7 @@ const postSchema = Joi.object({
  attachment: Joi.array()
   .items(Joi.object({ url: Joi.string() }))
   .optional(),
+ projectId: Joi.string().allow("").optional(),
 });
 
 const postFilterSchema = Joi.object({
