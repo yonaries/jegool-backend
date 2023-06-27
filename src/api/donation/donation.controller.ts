@@ -65,7 +65,7 @@ export default class DonationController {
     subaccount: bank.id,
    });
 
-   return res.redirect(200, checkout_url);
+   return res.status(200).send(checkout_url);
   } catch (error) {
    return PrismaError(res, error);
   }
