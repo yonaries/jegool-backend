@@ -17,6 +17,7 @@ import socialLinkRouter from "./api/socialLink/socialLink.routes";
 import goalRouter from "./api/goal/goal.routes";
 import bankAccountRouter from "./api/bankAccount/bankAccount.routes";
 import donationItemRouter from "./api/donationItem/donationItem.routes";
+import donationRouter from "./api/donation/donation.route";
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/socialLink", socialLinkRouter);
 app.use("/goal", goalRouter);
 app.use("/bankAccount", bankAccountRouter);
 app.use("/donationItem", donationItemRouter);
+app.use("/donation", donationRouter);
 
 app.get("/", (_req, res) => {
  res.status(200).send("Hello World!");

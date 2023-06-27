@@ -16,14 +16,14 @@ export default class BankAccountController {
    if (error) return res.status(400).json({ error: error.message });
 
    const page = await PageServices.getPageById(bankAccount.pageId);
-   const user = await UserService.getUserById(page?.ownerId!);
-   const fullName: string[] = bankAccount.accountName.split(" ");
+   //  const user = await UserService.getUserById(page?.ownerId!);
+   //  const fullName: string[] = bankAccount.accountName.split(" ");
 
-   if (user?.firstName != fullName[0] || user?.lastName != fullName[1]) {
-    return res
-     .status(400)
-     .json({ error: { message: "Account name must be matched with the user first and last name" } });
-   }
+   //  if (user?.firstName != fullName[0] || user?.lastName != fullName[1]) {
+   //   return res
+   //    .status(400)
+   //    .json({ error: { message: "Account name must be matched with the user first and last name" } });
+   //  }
 
    // todo: if sub-account is already exist chapa will thrown an error
    // in order to handle that add status property at bankAccount where status can be DEFAULT, HIDDEN or ALTER

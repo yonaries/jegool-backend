@@ -4,7 +4,7 @@ import { validateInitializeChapa } from "./chapa.validate";
 import { verifyToken } from "@/middlewares/firebase.middlewares";
 
 const router = Router();
-router.get("/callback", verifyToken, ChapaController.callback);
-router.get("/success", verifyToken, ChapaController.success);
+router.get("/callback", ChapaController.callback);
+router.get("/success", ChapaController.success);
 
 export default router;

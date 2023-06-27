@@ -1,4 +1,4 @@
-import { PrismaClient, Transaction } from "@prisma/client";
+import { Donation, PrismaClient, Transaction } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import axios from "axios";
 import { Chapa, CreateSubaccountOptions, InitializeOptions } from "chapa-nodejs";
@@ -10,6 +10,10 @@ import SubscriptionServices from "../subscription/services";
 import TransactionServices from "../transaction/services";
 import { PaymentType } from "./payment";
 import ChapaError from "../../errors/chapa.error";
+import DonationService from "../donation/services";
+import dot from "dotenv";
+
+dot.config();
 
 const prisma = new PrismaClient();
 const chapa = new Chapa({
@@ -50,20 +54,20 @@ export default class ChapaController {
   reference: string;
  }): Promise<string> {
   try {
-   const payload: InitializeOptions = {
+   const payload = {
     amount: amount.toString(),
-    email: email,
-    first_name: first_name,
-    last_name: last_name,
     currency: "ETB",
     tx_ref: reference,
-    subaccounts: [{ id: subaccount }],
+    // subaccounts: [{ id: subaccount }],
     return_url: `${process.env.BASE_URL}/chapa/success/?type=${type}&tx_ref=${reference}`,
     callback_url: `${process.env.BASE_URL}/chapa/callback?type=${type}&id=${id}`,
    };
 
+   console.log("payload =>", payload);
+
    //  const response = await chapa.initialize(payload);
    const response = await axios.post(CHAPA_URL, payload, config);
+   console.log("response =>", response.data);
    return response.data.data.checkout_url;
   } catch (error: any) {
    throw new ChapaError(error.message, error.status);
@@ -126,6 +130,12 @@ export default class ChapaController {
      console.log("subscription updated");
     } else if (type === "DONATION") {
      //todo: update the donation status to successful or failed
+     await DonationService.updateDonation(
+      id as string,
+      {
+       status: "SUCCESS",
+      } as Donation,
+     );
     }
    }
   } catch (error: any) {
