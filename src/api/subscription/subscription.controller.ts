@@ -79,7 +79,7 @@ export default class SubscriptionController {
    });
 
    //todo: change response to redirect with checkout_url
-   res.redirect(checkout_url);
+   res.redirect(200, checkout_url);
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
     PrismaError(res, error);

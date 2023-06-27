@@ -29,7 +29,7 @@ export default class DonationController {
     currency: "ETB",
     payee: donation.pageId,
     payer: donation.donorName,
-    remark: `Donation fee`,
+    remark: "Donation fee",
     provider: "chapa",
     status: "PENDING",
    };
@@ -65,7 +65,7 @@ export default class DonationController {
     subaccount: bank.id,
    });
 
-   return res.redirect(checkout_url);
+   return res.redirect(200, checkout_url);
   } catch (error) {
    return PrismaError(res, error);
   }
