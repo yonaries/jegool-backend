@@ -63,10 +63,10 @@ export const updateUserData = async (req: Request, res: Response) => {
  const { id } = req.params;
  const user = {
   id: req.body.id,
-  displayName:req.body.displayName,
-  firstName:req.body.firstName,
-  lastName:req.body.lastName,
-  profileImage:req.body.profileImage
+  displayName: req.body.displayName,
+  firstName: req.body.firstName,
+  lastName: req.body.lastName,
+  profileImage: req.body.profileImage,
  } as User;
  console.log(user);
  if (id.length === 0 || !id) return res.status(400).json({ error: "User Id Is Required" });
