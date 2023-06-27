@@ -188,9 +188,9 @@ export default class ChapaController {
 
     return res.redirect(`https://jegool.vercel.app/${response.membership.page.url}`);
    } else if (type === "DONATION") {
-    const response = await prisma.donation.findUniqueOrThrow({
+    const response = await prisma.donation.findFirstOrThrow({
      where: {
-      id: tx_ref,
+      transactionId: tx_ref,
      },
      select: {
       page: {
@@ -201,7 +201,7 @@ export default class ChapaController {
       },
      },
     });
-    return res.redirect(`${response.page.url}/success`);
+    return res.redirect(`https://jegool.vercel.app/success`);
    }
   } catch (error) {
    if (error instanceof PrismaClientKnownRequestError) {
