@@ -27,6 +27,9 @@ export const getProjectById = async (id: string) => {
    where: {
     id: id,
    },
+   include:{
+    post:true,
+   }
   });
   return project;
  } catch (error) {
