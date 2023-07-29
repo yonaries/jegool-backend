@@ -1,5 +1,6 @@
 ## Jegool Backend - GitHub repository 
-> **Info**
+Jegool Frontend Repo found [here](https://github.com/yonaries/creator)
+> **Note**
 > STATUS: UNDER DEVELOPMENT
 
 In this repository, you will find the entire backend codebase for Jegool.
